@@ -1,0 +1,102 @@
+---
+title: Create a Dash Identity
+description: Create a real identity on Dash Platform testnet with the JavaScript SDK and verify it on-chain.
+module: 9
+tier: sdk
+estimatedMinutes: 12
+verification: testnet
+prerequisites: [8]
+---
+
+## Before you start
+
+This lesson continues from the environment setup. You need:
+
+- Node.js and `@dashevo/evo-sdk` installed locally;
+- the mnemonic-backed `setupDashClient.mjs` from the previous lesson;
+- at least 5,000,000 testnet credits in `addressKeyManager.primaryAddress`.
+
+If you need to rebuild that setup, follow the [SDK client setup](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/setup-sdk-client.html) and [wallet funding](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/create-and-fund-a-wallet.html) guides.
+
+<Callout type="warn" title="Keep private keys private">
+Never paste your mnemonic or private keys into Dash Academy, a chat, or a browser form. The verifier below only accepts a public identity ID.
+</Callout>
+
+## What you are creating
+
+A Dash identity is the on-chain actor your application uses to sign changes on Dash Platform. It contains a unique public identifier, public keys, and a balance of Platform credits.
+
+An identity is not a wallet address or a username. The Platform address supplies its credits, while a DPNS username can point to it later.
+
+## Register the identity
+
+Create `identity-register.mjs` beside `setupDashClient.mjs` and add the following script:
+
+```js title="identity-register.mjs"
+import { randomBytes } from 'node:crypto';
+import { Identity, Identifier } from '@dashevo/evo-sdk';
+import { setupDashClient } from './setupDashClient.mjs';
+
+const { sdk, keyManager, addressKeyManager } = await setupDashClient({
+  requireIdentity: false,
+});
+
+try {
+  const identity = new Identity(new Identifier(randomBytes(32)));
+
+  keyManager.getKeysInCreation().forEach((key) => {
+    identity.addPublicKey(key.toIdentityPublicKey());
+  });
+
+  const result = await sdk.addresses.createIdentity({
+    identity,
+    inputs: [
+      {
+        address: addressKeyManager.primaryAddress.bech32m,
+        amount: 5000000n,
+      },
+    ],
+    identitySigner: keyManager.getFullSigner(),
+    addressSigner: addressKeyManager.getSigner(),
+  });
+
+  console.log(
+    'Identity registered!\nIdentity ID:',
+    result.identity.id.toString(),
+  );
+} catch (error) {
+  // Known SDK issue: proof verification can fail after creation succeeds.
+  const match = error.message?.match(/proof returned identity (\w+) but/);
+
+  if (match) {
+    console.log('Identity registered!\nIdentity ID:', match[1]);
+  } else {
+    console.error('Something went wrong:\n', error.message);
+  }
+}
+```
+
+The identity signer proves control of the new identity's keys. The address signer separately authorizes moving 5,000,000 credits from the funded Platform address.
+
+## Run the script
+
+```bash
+node identity-register.mjs
+```
+
+Successful output includes the public identity ID:
+
+```text
+Identity registered!
+Identity ID: 5P9p...yourBase58IdentityId
+```
+
+The catch block handles a known case where proof verification fails after Platform has already created the identity. Other errors still fail normally.
+
+Copy the complete identity ID, then verify it below.
+
+<IdentityVerifier challengeId="create-a-dash-identity" />
+
+## What you accomplished
+
+You created a real actor on Dash Platform testnet. The same identity ID can later own data contracts, submit documents, and receive a human-readable DPNS name.

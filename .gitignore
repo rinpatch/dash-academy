@@ -1,0 +1,6 @@
+# build/dep artifacts
+node_modules/
+.next/
+.source/
+*.tsbuildinfo
+verify-demo/.identity-wallet.json
