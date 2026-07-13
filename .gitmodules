@@ -1,0 +1,8 @@
+[submodule ".agents/skills/dash-docs/docs"]
+	path = .agents/skills/dash-docs/docs
+	url = https://github.com/dashpay/docs
+	branch = 23.0.0
+[submodule ".agents/skills/dash-docs/docs-platform"]
+	path = .agents/skills/dash-docs/docs-platform
+	url = https://github.com/dashpay/docs-platform
+	branch = 3.1.0
