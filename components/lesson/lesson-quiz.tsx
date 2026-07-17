@@ -274,7 +274,6 @@ export function LessonQuiz({
             disabled={currentIndex === 0}
             className="h-10 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-35"
           >
-            <span aria-hidden="true" className="mr-2">←</span>
             Back
           </button>
 
@@ -289,7 +288,6 @@ export function LessonQuiz({
                   ? "Finish review"
                   : "See results"
                 : "Next question"}
-              <span aria-hidden="true" className="ml-2">→</span>
             </button>
           ) : (
             <button
