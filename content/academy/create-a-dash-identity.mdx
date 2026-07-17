@@ -13,7 +13,7 @@ prerequisites: [8]
 This lesson continues from the environment setup. You need:
 
 - Node.js and `@dashevo/evo-sdk` installed locally;
-- the mnemonic-backed `setupDashClient.mjs` from the previous lesson;
+- the mnemonic-backed `setupDashClient.js` from the previous lesson;
 - at least 5,000,000 testnet credits in `addressKeyManager.primaryAddress`.
 
 If you need to rebuild that setup, follow the [SDK client setup](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/setup-sdk-client.html) and [wallet funding](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/create-and-fund-a-wallet.html) guides.
@@ -30,12 +30,12 @@ An identity is not a wallet address or a username. The Platform address supplies
 
 ## Register the identity
 
-Create `identity-register.mjs` beside `setupDashClient.mjs` and add the following script:
+Create `identity-register.js` beside `setupDashClient.js` and add the following script:
 
-```js title="identity-register.mjs"
+```js title="identity-register.js"
 import { randomBytes } from 'node:crypto';
 import { Identity, Identifier } from '@dashevo/evo-sdk';
-import { setupDashClient } from './setupDashClient.mjs';
+import { setupDashClient } from './setupDashClient.js';
 
 const { sdk, keyManager, addressKeyManager } = await setupDashClient({
   requireIdentity: false,
@@ -81,7 +81,7 @@ The identity signer proves control of the new identity's keys. The address signe
 ## Run the script
 
 ```bash
-node identity-register.mjs
+node identity-register.js
 ```
 
 Successful output includes the public identity ID:
