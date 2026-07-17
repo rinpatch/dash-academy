@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function Home() {
-  redirect("/learn/create-a-dash-identity");
+  redirect("/learn/what-is-dash-platform");
 }

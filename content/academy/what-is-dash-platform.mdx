@@ -1,0 +1,112 @@
+---
+title: What is Dash Platform?
+description: See how Dash Core and Dash Platform work together, and learn the building blocks developers use to create decentralized applications.
+module: 1
+tier: concepts
+estimatedMinutes: 7
+verification: quiz
+prerequisites: []
+---
+
+Dash is one network with two layers that do different jobs. **Dash Core** is the layer 1 blockchain for digital money. **Dash Platform** is the layer 2 application and data layer built on top of it.
+
+That distinction matters when you build an app. Core moves and secures Dash payments. Platform gives your app decentralized identities, structured data storage, queries, and verifiable access to data.
+
+## The two layers
+
+| | Dash Core (layer 1) | Dash Platform (layer 2) |
+| --- | --- | --- |
+| Primary job | Payments and the Dash asset | Application identities and data |
+| Typical activity | Send or receive Dash | Create identities, register data contracts, and submit or query documents |
+| Developer access | Core RPCs or DAPI | DAPI and Platform SDKs |
+
+Platform can read information from Core, but Core does not depend on Platform. This keeps application activity from changing the payment layer's job.
+
+<Callout type="info" title="One network, not two unrelated products">
+Core and Platform share Dash's masternode infrastructure. DAPI exposes both layers through one decentralized API, and Dash locked on Core can fund Platform credits used to pay Platform fees.
+</Callout>
+
+## What developers build with
+
+Platform replaces the usual combination of a hosted application database, a single API provider, and application-specific account identifiers with network primitives.
+
+- **Identities** are public, cryptographic actors. They sign changes and own Platform data.
+- **Data contracts** are JSON Schema-based definitions that describe the structure and rules for an application's data.
+- **Documents** are the individual records stored under a data contract, similar to records in a document database.
+- **Drive** stores and indexes Platform state across the masternode network.
+- **DAPI** lets clients submit state changes and query both Platform and Core without running their own node.
+
+When a user changes application data, a client creates a signed **state transition**. Platform validates it against the protocol and the app's data contract, orders it on the Platform chain, and applies the resulting state to Drive. A later query can include a cryptographic proof, allowing the client to verify the response instead of simply trusting the server that returned it.
+
+## What Platform is—and is not
+
+Dash Platform is a decentralized application stack, but it is not an environment for deploying arbitrary user-written smart contract code. Developers define schemas and submit structured state transitions. The network handles validation, storage, indexing, consensus, and proofs around those shared rules.
+
+This approach is useful when an application needs structured public data with shared integrity: profiles, social relationships, names, marketplace records, tokens, or other records that multiple clients should be able to read and verify.
+
+The shortest useful mental model is:
+
+> **Core moves value. Platform gives applications identity and verifiable data. DAPI is the way clients reach both.**
+
+## Complete the lesson
+
+Pass the quiz to save this lesson as complete.
+
+<LessonQuiz
+  challengeId="what-is-dash-platform"
+  passingScore={3}
+  questions={[
+    {
+      id: "layers",
+      prompt: "Which description best explains the relationship between Dash Core and Dash Platform?",
+      options: [
+        { id: "a", label: "They are competing blockchains that provide the same features." },
+        { id: "b", label: "Core is the layer 1 payment blockchain; Platform is the layer 2 application and data layer." },
+        { id: "c", label: "Platform is a hosted database that replaces the Dash network." },
+        { id: "d", label: "Core is an API that only forwards requests to Platform." },
+      ],
+      correctOptionId: "b",
+      explanation: "Dash Core secures payments and the Dash asset, while Platform adds application identities and decentralized data on layer 2.",
+    },
+    {
+      id: "dapi",
+      prompt: "Which component gives applications decentralized access to both Core and Platform?",
+      options: [
+        { id: "a", label: "DAPI" },
+        { id: "b", label: "A data contract" },
+        { id: "c", label: "A wallet address" },
+        { id: "d", label: "GroveDB alone" },
+      ],
+      correctOptionId: "a",
+      explanation: "DAPI is the decentralized API through which clients access Core and Platform services.",
+    },
+    {
+      id: "contract",
+      prompt: "What is the role of a data contract?",
+      options: [
+        { id: "a", label: "It stores a user's private keys on the network." },
+        { id: "b", label: "It defines the schema and rules for an application's data." },
+        { id: "c", label: "It converts every Platform document into a Core payment." },
+        { id: "d", label: "It runs arbitrary application code on every request." },
+      ],
+      correctOptionId: "b",
+      explanation: "A data contract uses JSON Schema-based definitions to describe and validate the data an application can store.",
+    },
+    {
+      id: "proofs",
+      prompt: "Why are cryptographic proofs useful when querying Platform data?",
+      options: [
+        { id: "a", label: "They let a client verify a response instead of trusting the node that served it." },
+        { id: "b", label: "They make all application data private by default." },
+        { id: "c", label: "They remove the need for identities and signatures." },
+        { id: "d", label: "They guarantee that a user selected the correct quiz answer." },
+      ],
+      correctOptionId: "a",
+      explanation: "A valid proof shows that the response matches Platform's authenticated state, even when the client does not run a node.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now place the main Platform primitives in context: Core handles value, Platform handles application identity and data, and DAPI connects clients to both.

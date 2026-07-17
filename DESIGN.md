@@ -12,7 +12,7 @@ Dash Academy uses Fumadocs as its interface and reading system. The product shou
 
 Lessons use ordinary MDX headings, paragraphs, lists, links, code blocks, and occasional Fumadocs callouts. Keep explanations concise and place content in a single linear reading flow.
 
-Testnet verification is the only Academy-authored interactive lesson component. It may contain the form and the loading, error, success, and restored states needed to verify public network activity.
+Academy-authored interactive lesson components are limited to focused verification checkpoints: concept quizzes and testnet verification. Quizzes present one question at a time with explicit answer feedback and a final pass/fail state. Testnet verification may contain the form and the loading, error, success, and restored states needed to verify public network activity.
 
 ## Constraints
 
