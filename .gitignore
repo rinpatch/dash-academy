@@ -4,3 +4,7 @@ node_modules/
 .source/
 *.tsbuildinfo
 verify-demo/.identity-wallet.json
+
+# local secrets
+.env.local
+*.local.json
