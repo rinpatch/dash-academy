@@ -68,14 +68,14 @@ export function IdentityVerifier({
   return (
     <section
       id="verify-on-testnet"
-      className="not-prose my-8 rounded-lg border border-border bg-card"
+      className="not-prose my-8 rounded-3xl bg-card"
       aria-labelledby="verification-title"
     >
-      <div className="border-b border-border p-5">
-        <h2 id="verification-title" className="text-xl font-semibold text-card-foreground">
+      <div className="border-b border-foreground/12 p-5">
+        <h2 id="verification-title" className="text-xl font-extrabold text-card-foreground">
           Verify on testnet
         </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-foreground/64">
           Paste the public identity ID printed by your script. Dash Academy will look it up independently on Dash Platform testnet.
         </p>
       </div>
@@ -95,17 +95,17 @@ export function IdentityVerifier({
             disabled={loading}
             aria-describedby={descriptionId}
             aria-invalid={result?.status === "invalid" || result?.status === "not_found"}
-            className="h-10 min-w-0 flex-1 rounded-md border border-input bg-background px-3 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive"
+            className="h-10 min-w-0 flex-1 rounded-xl border border-foreground/24 bg-background px-3 font-mono text-sm text-foreground outline-none placeholder:text-foreground/48 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive"
           />
           <button
             type="submit"
             disabled={loading || identityId.trim().length === 0}
-            className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-10 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Checking testnet…" : "Verify identity"}
           </button>
         </div>
-        <p id={descriptionId} className="mt-2 text-sm text-muted-foreground">
+        <p id={descriptionId} className="mt-2 text-sm text-foreground/48">
           This is public testnet data. Never paste a mnemonic or private key.
         </p>
       </form>
@@ -118,16 +118,16 @@ export function IdentityVerifier({
         aria-atomic="true"
       >
         {loading && (
-          <div role="status" className="rounded-md bg-secondary p-4 text-sm text-secondary-foreground">
+          <div role="status" className="rounded-2xl bg-secondary p-4 text-sm text-secondary-foreground">
             <p className="font-medium">Checking testnet…</p>
-            <p className="mt-1 text-muted-foreground">This can take a few seconds.</p>
+            <p className="mt-1 text-foreground/64">This can take a few seconds.</p>
           </div>
         )}
 
         {verified && (
-          <div className="rounded-md bg-mint/15 p-4 text-card-foreground">
-            <p className="text-sm font-semibold">Verified on testnet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
+          <div className="rounded-2xl bg-mint/15 p-4 text-card-foreground">
+            <p className="text-sm font-extrabold">Verified on testnet</p>
+            <p className="mt-1 text-sm text-foreground/64">
               Dash Platform returned the identity and its public state.
             </p>
             <dl className="mt-4 divide-y divide-mint/35 text-sm">
@@ -148,13 +148,13 @@ export function IdentityVerifier({
         {!loading && result && result.status !== "verified" && (
           <div
             role="alert"
-            className={`rounded-md p-4 text-sm ${
+            className={`rounded-2xl p-4 text-sm ${
               result.status === "unavailable"
                 ? "bg-warning/10 text-foreground"
                 : "bg-destructive/10 text-destructive"
             }`}
           >
-            <p className="font-semibold">
+            <p className="font-extrabold">
               {result.status === "unavailable"
                 ? "Testnet did not answer"
                 : result.status === "invalid"
@@ -173,9 +173,9 @@ export function IdentityVerifier({
         )}
 
         {!loading && !result && restoredId && (
-          <div className="rounded-md bg-mint/15 p-4 text-sm text-card-foreground">
-            <p className="font-semibold">Previously verified</p>
-            <p className="mt-1 text-muted-foreground">
+          <div className="rounded-2xl bg-mint/15 p-4 text-sm text-card-foreground">
+            <p className="font-extrabold">Previously verified</p>
+            <p className="mt-1 text-foreground/64">
               Identity <span className="break-all font-mono text-foreground">{restoredId}</span> is saved in this browser.
             </p>
           </div>
@@ -188,7 +188,7 @@ export function IdentityVerifier({
 function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
-      <dt className="font-medium text-muted-foreground">{label}</dt>
+      <dt className="font-medium text-foreground/48">{label}</dt>
       <dd className="min-w-0 break-all font-mono">{value}</dd>
     </div>
   );

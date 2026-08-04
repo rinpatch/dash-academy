@@ -9,6 +9,7 @@ export const docs = defineDocs({
       module: z.number().int().min(1).max(17),
       tier: z.enum(["concepts", "sdk", "projects"]),
       estimatedMinutes: z.number().int().positive(),
+      exp: z.number().int().positive(),
       verification: z.enum(["quiz", "testnet", "hybrid"]),
       prerequisites: z.array(z.number().int().min(1).max(17)).default([]),
     }),

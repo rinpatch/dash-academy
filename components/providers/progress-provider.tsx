@@ -58,3 +58,16 @@ export function useChallengeProgress<K extends ChallengeId>(challengeId: K) {
     complete,
   };
 }
+
+export function useCompletedChallenges() {
+  const store = useContext(ProgressStoreContext);
+
+  if (!store) {
+    throw new Error("useCompletedChallenges must be used within ProgressProvider");
+  }
+
+  return {
+    completedChallenges: useStore(store, (state) => state.completedChallenges),
+    isHydrated: useStore(store, (state) => state.hasHydrated),
+  };
+}

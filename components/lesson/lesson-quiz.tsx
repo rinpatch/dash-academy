@@ -153,20 +153,20 @@ export function LessonQuiz({
 
   return (
     <section
-      className="not-prose my-8 overflow-hidden rounded-xl border border-border bg-card"
+      className="not-prose my-8 overflow-hidden rounded-3xl bg-card"
       aria-labelledby="quiz-title"
     >
-      <header className="border-b border-border px-5 py-5 sm:px-7">
+      <header className="border-b border-foreground/12 px-5 py-5 sm:px-7">
         <div className="flex items-baseline justify-between gap-4">
           <div>
-            <h2 id="quiz-title" className="text-lg font-semibold text-card-foreground">
+            <h2 id="quiz-title" className="text-lg font-extrabold text-card-foreground">
               {isReview ? "Review your answers" : "Knowledge check"}
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-foreground/48">
               Question {currentIndex + 1} of {questions.length}
             </p>
           </div>
-          <p className="shrink-0 text-sm font-medium text-muted-foreground">
+          <p className="shrink-0 text-sm font-medium text-foreground/48">
             {passingScore} correct to pass
           </p>
         </div>
@@ -191,7 +191,7 @@ export function LessonQuiz({
             <legend
               ref={questionRef}
               tabIndex={-1}
-              className="max-w-2xl text-balance text-xl font-semibold leading-7 text-card-foreground outline-none sm:text-2xl sm:leading-8"
+              className="max-w-2xl text-balance text-xl font-extrabold leading-7 text-card-foreground outline-none sm:text-2xl sm:leading-8"
             >
               {currentQuestion.prompt}
             </legend>
@@ -205,15 +205,15 @@ export function LessonQuiz({
                     ? "border-mint bg-mint/15"
                     : selected
                       ? "border-destructive bg-destructive/10"
-                      : "border-border opacity-65"
+                      : "border-foreground/12 opacity-65"
                   : selected
                     ? "border-primary bg-primary/10"
-                    : "border-border hover:border-input hover:bg-muted/45";
+                    : "border-foreground/12 hover:border-foreground/24 hover:bg-muted/45";
 
                 return (
                   <label
                     key={option.id}
-                    className={`flex min-h-14 items-start gap-3 rounded-lg border px-4 py-3.5 text-sm leading-6 text-card-foreground transition-[border-color,background-color,opacity] duration-200 ${
+                    className={`flex min-h-14 items-start gap-3 rounded-2xl border px-4 py-3.5 text-sm leading-6 text-card-foreground transition-[border-color,background-color,opacity] duration-200 ${
                       isGraded ? "cursor-default" : "cursor-pointer"
                     } ${stateClass}`}
                   >
@@ -227,18 +227,18 @@ export function LessonQuiz({
                       className="mt-1 size-4 shrink-0 accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="mr-2 font-semibold text-muted-foreground" aria-hidden="true">
+                      <span className="mr-2 font-extrabold text-foreground/48" aria-hidden="true">
                         {String.fromCharCode(65 + index)}.
                       </span>
                       {option.label}
                     </span>
                     {isGraded && correct && (
-                      <span className="shrink-0 text-xs font-semibold text-foreground">
+                      <span className="shrink-0 text-xs font-extrabold text-foreground">
                         Correct answer
                       </span>
                     )}
                     {isGraded && selected && !correct && (
-                      <span className="shrink-0 text-xs font-semibold text-destructive">
+                      <span className="shrink-0 text-xs font-extrabold text-destructive">
                         Your answer
                       </span>
                     )}
@@ -257,17 +257,17 @@ export function LessonQuiz({
                 isCorrect ? "border-mint/60" : "border-destructive/45"
               }`}
             >
-              <p className="font-semibold text-card-foreground">
+              <p className="font-extrabold text-card-foreground">
                 {isCorrect ? "That’s right." : "Not quite."}
               </p>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-foreground/64">
                 {currentQuestion.explanation}
               </p>
             </div>
           )}
         </div>
 
-        <footer className="flex items-center justify-between gap-4 border-t border-border bg-muted/30 px-5 py-4 sm:px-7">
+        <footer className="flex items-center justify-between gap-4 border-t border-foreground/12 bg-background px-5 py-4 sm:px-7">
           <button
             type="button"
             onClick={goBack}
@@ -325,17 +325,17 @@ function QuizResults({
 }) {
   return (
     <section
-      className="not-prose my-8 overflow-hidden rounded-xl border border-border bg-card"
+      className="not-prose my-8 overflow-hidden rounded-3xl bg-card"
       aria-labelledby="quiz-result-title"
     >
       <div ref={ref} tabIndex={-1} className="quiz-step-enter px-5 py-7 outline-none sm:px-7 sm:py-8">
-        <p className="text-sm font-semibold text-muted-foreground">
+        <p className="text-sm font-extrabold text-foreground/48">
           {passed ? "Quiz complete" : "Keep going"}
         </p>
-        <h2 id="quiz-result-title" className="mt-2 text-balance text-2xl font-semibold text-card-foreground">
+        <h2 id="quiz-result-title" className="mt-2 text-balance text-2xl font-extrabold text-card-foreground">
           {passed ? "You passed the knowledge check." : "Review the lesson and try once more."}
         </h2>
-        <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+        <p className="mt-3 max-w-2xl text-base leading-7 text-foreground/64">
           {restored
             ? `Your saved score is ${score} of ${total}.`
             : passed
@@ -387,17 +387,17 @@ function QuizSkeleton({
 }) {
   return (
     <section
-      className="not-prose my-8 overflow-hidden rounded-xl border border-border bg-card"
+      className="not-prose my-8 overflow-hidden rounded-3xl bg-card"
       aria-label="Loading quiz progress"
       aria-busy="true"
     >
-      <div className="border-b border-border px-5 py-5 sm:px-7">
+      <div className="border-b border-foreground/12 px-5 py-5 sm:px-7">
         <div className="flex items-baseline justify-between gap-4">
           <div>
-            <p className="text-lg font-semibold text-card-foreground">Knowledge check</p>
-            <p className="mt-1 text-sm text-muted-foreground">Restoring your progress…</p>
+            <p className="text-lg font-extrabold text-card-foreground">Knowledge check</p>
+            <p className="mt-1 text-sm text-foreground/48">Restoring your progress…</p>
           </div>
-          <p className="text-sm font-medium text-muted-foreground">{passingScore} correct to pass</p>
+          <p className="text-sm font-medium text-foreground/48">{passingScore} correct to pass</p>
         </div>
         <div className="mt-4 flex gap-1.5">
           {Array.from({ length: questionCount }, (_, index) => (
