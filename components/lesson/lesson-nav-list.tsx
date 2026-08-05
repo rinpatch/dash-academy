@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Circle, CircleCheckBig, CirclePlay } from "lucide-react";
 import { useActiveAnchor } from "fumadocs-core/toc";
 import type { TableOfContents } from "fumadocs-core/toc";
 import { Card } from "@/components/ui/card";
@@ -103,24 +104,12 @@ function TocList({ toc }: { toc: TableOfContents }) {
 
 function StatusIcon({ completed, current }: { completed: boolean; current: boolean }) {
   if (completed) {
-    return (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true" className="shrink-0">
-        <circle cx="11" cy="11" r="11" className="fill-primary" />
-        <path d="M6.5 11.3l3 3 6-6.2" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
+    return <CircleCheckBig size={22} aria-hidden="true" className="shrink-0 fill-primary text-white" />;
   }
 
-  return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true" className="shrink-0">
-      <circle
-        cx="11"
-        cy="11"
-        r="10.25"
-        className={current ? "fill-primary/12 stroke-primary" : "stroke-foreground/24"}
-        strokeWidth="1.5"
-      />
-      {current && <path d="M9 7.5l5 3.5-5 3.5v-7z" className="fill-primary" />}
-    </svg>
-  );
+  if (current) {
+    return <CirclePlay size={22} aria-hidden="true" className="shrink-0 fill-primary/12 text-primary" />;
+  }
+
+  return <Circle size={22} aria-hidden="true" className="shrink-0 text-foreground/24" />;
 }

@@ -37,6 +37,7 @@ export type NotesStore = {
   notesByLesson: Record<string, Note[]>;
   hasHydrated: boolean;
   addNote(lessonSlug: string, text: string): void;
+  removeNote(lessonSlug: string, noteId: string): void;
   setHasHydrated(hasHydrated: boolean): void;
 };
 
@@ -54,6 +55,13 @@ export function createNotesStore() {
                 { id: crypto.randomUUID(), text, createdAt: new Date().toISOString() },
                 ...(state.notesByLesson[lessonSlug] ?? []),
               ],
+            },
+          })),
+        removeNote: (lessonSlug, noteId) =>
+          set((state) => ({
+            notesByLesson: {
+              ...state.notesByLesson,
+              [lessonSlug]: (state.notesByLesson[lessonSlug] ?? []).filter((note) => note.id !== noteId),
             },
           })),
         setHasHydrated: (hasHydrated) => set({ hasHydrated }),

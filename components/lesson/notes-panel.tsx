@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Bookmark, Trash2 } from "lucide-react";
 import { useStore } from "zustand";
 import { Card } from "@/components/ui/card";
 import { createNotesStore, type Note } from "@/lib/notes-store";
@@ -14,6 +15,7 @@ export function NotesPanel({ lessonSlug, lessonTitle }: { lessonSlug: string; le
   const notes = useStore(store, (state) => state.notesByLesson[lessonSlug] ?? EMPTY_NOTES);
   const isHydrated = useStore(store, (state) => state.hasHydrated);
   const addNote = useStore(store, (state) => state.addNote);
+  const removeNote = useStore(store, (state) => state.removeNote);
   const [draft, setDraft] = useState("");
 
   function saveDraft() {
@@ -46,11 +48,8 @@ export function NotesPanel({ lessonSlug, lessonTitle }: { lessonSlug: string; le
           <div className="h-px w-full rounded-xl bg-foreground/12" />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-medium text-foreground/48">
-              <span
-                className={`size-1.5 rounded-full ${draft.trim() ? "bg-primary" : "bg-foreground/24"}`}
-                aria-hidden="true"
-              />
-              {draft.trim() ? "Draft ready" : "No draft"}
+              <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
+              Draft Saved
             </div>
             <button
               type="button"
@@ -69,8 +68,17 @@ export function NotesPanel({ lessonSlug, lessonTitle }: { lessonSlug: string; le
           <p className="text-xl font-medium text-foreground/64">Your Notes &middot; {notes.length}</p>
           <ul className="flex flex-col gap-4">
             {notes.map((note) => (
-              <li key={note.id} className="text-sm">
-                <p className="text-foreground/64">{note.text}</p>
+              <li key={note.id} className="flex items-start gap-2 text-sm">
+                <Bookmark size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
+                <p className="flex-1 text-foreground/64">{note.text}</p>
+                <button
+                  type="button"
+                  onClick={() => removeNote(lessonSlug, note.id)}
+                  aria-label="Delete note"
+                  className="shrink-0 rounded-md p-1 text-foreground/35 transition-colors hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Trash2 size={14} />
+                </button>
               </li>
             ))}
           </ul>
