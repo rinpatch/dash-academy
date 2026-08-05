@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useChallengeProgress } from "@/components/providers/progress-provider";
 
 type VerifiedResponse = {
@@ -17,13 +17,16 @@ type VerificationResponse = VerifiedResponse | FailureResponse;
 
 export function IdentityVerifier({
   challengeId,
+  initialIdentityId,
 }: {
   challengeId: "create-a-dash-identity";
+  /** Pre-fill and auto-submit, e.g. after a wallet connection hands back an identity ID. */
+  initialIdentityId?: string;
 }) {
   const inputId = useId();
   const descriptionId = `${inputId}-description`;
   const statusRef = useRef<HTMLDivElement>(null);
-  const [identityId, setIdentityId] = useState("");
+  const [identityId, setIdentityId] = useState(initialIdentityId ?? "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<VerificationResponse | null>(null);
   const { completion, isHydrated, complete } = useChallengeProgress(challengeId);
@@ -33,9 +36,7 @@ export function IdentityVerifier({
     if (result && !loading) statusRef.current?.focus();
   }, [loading, result]);
 
-  async function verify(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const value = identityId.trim();
+  async function verify(value: string) {
     if (!value || loading) return;
 
     setLoading(true);
@@ -63,6 +64,15 @@ export function IdentityVerifier({
     }
   }
 
+  // Kicks off a network request in response to the wallet handing us an identity ID — not
+  // derived state, so the set-state-in-effect lint warning doesn't apply here. Deps
+  // intentionally omit `verify` (a new closure each render) to only fire once per ID.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (initialIdentityId) void verify(initialIdentityId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialIdentityId]);
+
   const verified = result?.status === "verified" ? result : null;
 
   return (
@@ -80,7 +90,13 @@ export function IdentityVerifier({
         </p>
       </div>
 
-      <form onSubmit={verify} className="p-5">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          void verify(identityId.trim());
+        }}
+        className="p-5"
+      >
         <label htmlFor={inputId} className="text-sm font-medium text-card-foreground">
           Dash identity ID
         </label>

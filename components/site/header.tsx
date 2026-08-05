@@ -5,6 +5,7 @@ import { Moon, Search, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { DashAcademyLogo } from "@/components/site/dash-academy-logo";
+import { WalletConnect } from "@/components/site/wallet-connect";
 
 const navLinks = [
   { label: "Lessons", href: "/learn/what-is-dash-platform" },
@@ -56,13 +57,7 @@ export function SiteHeader() {
           >
             {resolvedTheme === "dark" ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
           </button>
-          {/* ponytail: static placeholder, no account system exists yet */}
-          <div className="flex h-10 items-center gap-2 rounded-xl border border-foreground/24 px-3 text-sm font-medium">
-            <span className="size-[18px] rounded-full bg-primary/20" aria-hidden="true" />
-            <span className="hidden whitespace-nowrap sm:inline">
-              <span className="text-foreground/48">Hello,</span> DashLearner
-            </span>
-          </div>
+          <WalletConnect />
         </div>
       </div>
     </header>
