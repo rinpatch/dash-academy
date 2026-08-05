@@ -1,11 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { LogOut } from "lucide-react";
 import { useDashPlatformExtension } from "@/lib/dash-platform-extension";
 
 const STORE_URL =
   "https://chromewebstore.google.com/detail/dash-platform-extension/odmphbcnlldggfhcpdjgnlhbehoicdnf";
+
+// Remembers a past successful connect, so we know it's safe to auto-call connect() again on
+// mount: the extension already trusts this site and will resolve instantly with no popup.
+// Sites we've never connected on skip the auto-call entirely, since that popup would get
+// eaten by the browser's popup blocker (it isn't triggered by a click).
+const CONNECTED_BEFORE_KEY = "dash-platform-extension:connected-before";
+
+function hasConnectedBefore(): boolean {
+  try {
+    return localStorage.getItem(CONNECTED_BEFORE_KEY) !== null;
+  } catch {
+    return false;
+  }
+}
+
+function rememberConnected() {
+  try {
+    localStorage.setItem(CONNECTED_BEFORE_KEY, "1");
+  } catch {
+    // Storage unavailable (e.g. private mode) — just means we'll ask for a click again next visit.
+  }
+}
 
 type State =
   | { step: "detecting" }
@@ -18,21 +40,20 @@ type State =
 export function WalletConnect() {
   const extensionAvailable = useDashPlatformExtension();
   const [state, setState] = useState<State>({ step: "detecting" });
-  // Suppresses the auto-reconnect below right after an explicit log-out, so clicking it
-  // doesn't just get silently reconnected on the next render.
-  const loggedOut = useRef(false);
 
   useEffect(() => {
     if (extensionAvailable === null || state.step !== "detecting") return;
     if (!extensionAvailable) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setState({ step: "not-installed" });
-    } else if (loggedOut.current) {
-      setState({ step: "ready" });
-    } else {
-      // Already-approved sites resolve this instantly with no popup; only a site that's
-      // never been connected here before will prompt the extension's permission dialog.
+    } else if (hasConnectedBefore()) {
+      // We've connected here before, so the extension already trusts this site and
+      // connect() resolves without a popup — safe to fire outside a click.
       void connect();
+    } else {
+      // Never connected before: connect() would prompt the extension's permission popup,
+      // which the browser blocks unless triggered by a click. Wait for one.
+      setState({ step: "ready" });
     }
   }, [extensionAvailable, state.step]);
 
@@ -40,6 +61,7 @@ export function WalletConnect() {
     setState({ step: "connecting" });
     try {
       const { currentIdentity } = await window.dashPlatformExtension!.signer.connect();
+      rememberConnected();
       if (!currentIdentity) {
         setState({ step: "ready" });
         return;
@@ -79,10 +101,7 @@ export function WalletConnect() {
         </span>
         <button
           type="button"
-          onClick={() => {
-            loggedOut.current = true;
-            setState({ step: "ready" });
-          }}
+          onClick={() => setState({ step: "ready" })}
           aria-label="Log out"
           title="Log out"
           className="flex size-6 items-center justify-center rounded-md text-foreground/48 transition-colors hover:bg-foreground/5 hover:text-foreground"
