@@ -7,6 +7,7 @@ import { getMDXComponents } from "@/mdx-components";
 import { CourseTrackCard } from "@/components/lesson/course-track-card";
 import { LessonNavList, type LessonSummary } from "@/components/lesson/lesson-nav-list";
 import { LessonTabs } from "@/components/lesson/lesson-tabs";
+import { NotesPanel } from "@/components/lesson/notes-panel";
 
 type PageProps = { params: Promise<{ slug?: string[] }> };
 
@@ -28,10 +29,11 @@ export default async function AcademyLesson({ params }: PageProps) {
     }));
 
   const Content = page.data.body;
+  const lessonSlug = page.slugs.join("/");
 
   return (
     <AnchorProvider toc={page.data.toc}>
-      <div className="mx-auto grid max-w-[1440px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[256px_1fr] lg:gap-16 lg:py-12">
+      <div className="mx-auto grid max-w-[1440px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[256px_1fr_352px] lg:gap-16 lg:py-12">
         <aside className="order-2 flex flex-col gap-4 lg:sticky lg:top-28 lg:order-1 lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
           <CourseTrackCard totalLessons={lessons.length} />
           <LessonNavList lessons={lessons} currentUrl={page.url} toc={page.data.toc} />
@@ -50,18 +52,24 @@ export default async function AcademyLesson({ params }: PageProps) {
           <div className="flex flex-col gap-3">
             <h1 className="text-3xl font-extrabold sm:text-5xl">{page.data.title}</h1>
             {page.data.description && (
-              <p className="text-base font-medium text-foreground/64">{page.data.description}</p>
+              <p className="max-w-2xl text-base font-medium text-foreground/64">
+                {page.data.description}
+              </p>
             )}
           </div>
 
           <LessonTabs
             overview={
-              <DocsBody className="max-w-none">
+              <DocsBody>
                 <Content components={getMDXComponents()} />
               </DocsBody>
             }
           />
         </main>
+
+        <aside className="order-3">
+          <NotesPanel lessonSlug={lessonSlug} lessonTitle={page.data.title} />
+        </aside>
       </div>
     </AnchorProvider>
   );

@@ -1,6 +1,6 @@
 # Dash Academy Design System
 
-Dash Academy is a custom card-based lesson dashboard, not a generic docs site. Every screen is built from a small set of rounded white cards floating on a soft background, with a persistent header and a sticky course-progress sidebar — matching the product's promise of visible, legible progress.
+Dash Academy is a custom card-based lesson dashboard, not a generic docs site. Every screen is built from a small set of rounded white cards floating on a soft background, with a persistent header, a sticky course-progress sidebar, and a lesson notebook — matching the product's promise of visible, legible progress.
 
 ## Foundations
 
@@ -14,7 +14,7 @@ Dash Academy is a custom card-based lesson dashboard, not a generic docs site. E
   - `border-foreground/12` — hairlines, dividers, card borders
   - `border-foreground/24` — input and button outlines
 - **Cards:** the base unit of the UI. Outer cards are `rounded-3xl bg-card p-4`; nested cards/wells are `rounded-2xl`; pills, tags, and small buttons are `rounded-xl` or `rounded-full`. Use the shared `Card` primitive (`components/ui/card.tsx`) instead of re-declaring the card classes. Cards sit on `bg-background`, a soft off-white (or dark surface in dark mode) — never pure white behind a white card.
-- **Layout:** lesson pages are a 2-column grid at desktop (`256px` progress/nav sidebar · flexible, wide content column) that collapses to a single stacked column on mobile, content first, sidebar above it. Max content width is `1440px`, centered. The content column is intentionally wide — don't reintroduce a `max-w-2xl`-style cap on prose or descriptions.
+- **Layout:** lesson pages are a 3-column grid at desktop (`256px` progress/nav sidebar · flexible content · `352px` notes sidebar) that collapses to a single stacked column on mobile, content first, sidebars above/below it. Max content width is `1440px`, centered.
 
 ## Lesson Page Anatomy
 
@@ -22,6 +22,7 @@ Dash Academy is a custom card-based lesson dashboard, not a generic docs site. E
 - **Course track card** (`components/lesson/course-track-card.tsx`): real completion percentage computed from the progress store, not decorative.
 - **Lesson nav list** (`components/lesson/lesson-nav-list.tsx`): one card per lesson in module order, with a completed/current/upcoming status icon. The current lesson's card expands into an "On this page" outline driven by the real table of contents and scroll position (`fumadocs-core/toc`'s `AnchorProvider`/`useActiveAnchor`, the same primitive Fumadocs' own TOC uses). The whole sidebar is `sticky` on desktop (`lg:sticky lg:top-28`, scrolling internally if it's taller than the viewport) so the outline highlight stays visible while reading.
 - **Tabs** (`components/lesson/lesson-tabs.tsx`): Overview renders the lesson's MDX body. Resources/Discussion are placeholders until those content models exist — do not fill them with fabricated content.
+- **Notes** (`components/lesson/notes-panel.tsx`, `lib/notes-store.ts`): a lightweight, per-lesson, local-only notebook (same zustand+localStorage pattern as progress). It is not shared, synced, or exported anywhere.
 - **Callouts** (`components/lesson/callout.tsx`): left-accent card, color keyed to type (`info`/`idea` → primary, `warn`/`warning` → warning, `error` → destructive, `success` → mint).
 
 ## Lesson Content
@@ -36,4 +37,4 @@ Academy-authored interactive lesson components are limited to focused verificati
 - Don't build out Resources, Discussion, or multi-track curriculum data models speculatively — the UI accommodates them, but ship placeholders until the content actually exists.
 - Keep verification and quizzes keyboard accessible, announce status changes in text, preserve learner input on failure, and never request a mnemonic or private key.
 - Use color for meaning, not decoration. Verification states must remain understandable without color.
-- There is no notes/annotation feature. Don't add one speculatively.
+- The notes feature is local-only by design; don't add sync/export without a stated product need.
