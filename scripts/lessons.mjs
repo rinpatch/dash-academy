@@ -91,7 +91,10 @@ async function runCommand(resume) {
   for (const lesson of selected) {
     const item = state.lessons[lesson.module];
     if (!item.worktree) {
+      item.status = "preparing";
+      await saveState(runDir, state, item);
       Object.assign(item, await createWorktree({ runId: state.runId, lesson, baseline }));
+      item.status = "pending";
       await saveState(runDir, state, item);
     }
   }

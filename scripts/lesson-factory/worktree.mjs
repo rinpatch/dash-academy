@@ -1,4 +1,4 @@
-import { lstat, mkdir, readlink, symlink } from "node:fs/promises";
+import { lstat, mkdir, readlink, rm, symlink } from "node:fs/promises";
 import path from "node:path";
 import { command, lessonKey, repoRoot } from "./lib.mjs";
 
@@ -29,10 +29,29 @@ export async function createWorktree({ runId, lesson, baseline }) {
   await mkdir(root, { recursive: true });
   const result = await command("git", ["worktree", "add", "-b", branch, worktree, baseline], { cwd: repoRoot });
   if (result.code !== 0) throw new Error(`Could not create worktree: ${result.stderr}`);
-  const submodules = await command("git", ["submodule", "update", "--init", "--recursive"], { cwd: worktree });
-  if (submodules.code !== 0) throw new Error(`Could not initialize docs submodules: ${submodules.stderr}`);
+  await linkDocs(worktree, baseline);
   await linkNodeModules(worktree);
   return { worktree, branch };
+}
+
+const docsPaths = [
+  ".agents/skills/dash-docs/docs",
+  ".agents/skills/dash-docs/docs-platform",
+  ".agents/skills/dash-docs/platform-book",
+];
+
+async function linkDocs(worktree, baseline) {
+  for (const relative of docsPaths) {
+    const source = path.join(repoRoot, relative);
+    const sourceHead = await command("git", ["rev-parse", "HEAD"], { cwd: source });
+    const expected = await command("git", ["rev-parse", `${baseline}:${relative}`], { cwd: repoRoot });
+    if (sourceHead.code !== 0 || expected.code !== 0 || sourceHead.stdout.trim() !== expected.stdout.trim()) {
+      throw new Error(`Local Dash docs checkout does not match the baseline for ${relative}`);
+    }
+    const target = path.join(worktree, relative);
+    await rm(target, { recursive: true, force: true });
+    await symlink(source, target, "dir");
+  }
 }
 
 async function linkNodeModules(worktree) {
@@ -49,9 +68,19 @@ async function linkNodeModules(worktree) {
 }
 
 export async function changedFiles(worktree) {
-  const result = await command("git", ["status", "--porcelain=v1", "--untracked-files=all", "-z"], { cwd: worktree });
+  await assertDocLinks(worktree);
+  const result = await command("git", ["status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=all", "-z", "--", ".", ":(exclude)node_modules"], { cwd: worktree });
   if (result.code !== 0) throw new Error(result.stderr);
   return result.stdout.split("\0").filter(Boolean).map((line) => line.slice(3));
+}
+
+async function assertDocLinks(worktree) {
+  for (const relative of docsPaths) {
+    const target = path.join(worktree, relative);
+    let linked;
+    try { linked = await readlink(target); } catch { throw new Error(`Dash docs link was altered: ${relative}`); }
+    if (path.resolve(path.dirname(target), linked) !== path.join(repoRoot, relative)) throw new Error(`Dash docs link points outside the approved source: ${relative}`);
+  }
 }
 
 export function assertAllowedChanges(lesson, files) {
