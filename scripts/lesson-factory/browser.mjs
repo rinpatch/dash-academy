@@ -75,8 +75,8 @@ async function waitForPage(url, server) {
   const deadline = Date.now() + 90_000;
   while (Date.now() < deadline) {
     if (server.exitCode !== null) throw new Error("Dev server exited before it became ready");
-    const response = await fetch(url).catch(() => null);
-    if (response?.ok) return;
+    const response = await command("curl", ["--fail", "--silent", "--show-error", "--max-time", "3", url], { env: secretlessEnv() });
+    if (response.code === 0) return;
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   throw new Error(`Timed out waiting for ${url}`);

@@ -146,10 +146,17 @@ async function processLesson({ lesson, state, runDir, baseline }) {
   const item = state.lessons[lesson.module];
   if (item.status === "passed") return;
   if (item.commit) { item.status = lesson.tier === "sdk" ? "local-passed" : "passed"; return; }
+  delete item.error;
   const lessonDir = path.join(runDir, "lessons", lessonKey(lesson));
   await mkdir(lessonDir, { recursive: true });
   if (!item.worktree) Object.assign(item, await createWorktree({ runId: state.runId, lesson, baseline }));
   const worktree = item.worktree;
+  const existingFiles = await changedFiles(worktree);
+  const hasAuthoredLesson = item.research && existingFiles.includes(`content/academy/${lesson.slug}.mdx`) && existingFiles.includes(`lesson-sources/${lesson.slug}.json`);
+  if (hasAuthoredLesson) {
+    await testAndReview({ lesson, item, state, runDir, lessonDir, worktree });
+    return;
+  }
   item.status = "researching";
   await saveState(runDir, state, item);
   if (!item.research) item.research = await runCodex({ role: "research", lesson, cwd: worktree, lessonDir });
