@@ -111,7 +111,7 @@ async function runCommand(resume) {
         item.status = "failed";
         item.error = error instanceof Error ? error.message : String(error);
         item.updatedAt = new Date().toISOString();
-        await writeJson(path.join(runDir, "run.json"), state);
+        await saveState(runDir, state, item);
       }
     }
   });

@@ -14,7 +14,7 @@ export async function runCodex({ role, lesson, cwd, lessonDir, context = {}, att
   await mkdir(path.dirname(stderrFile), { recursive: true });
 
   const prompt = buildPrompt(role, lesson, context);
-  const model = role === "pedagogy-review" ? "gpt-5.6-terra" : "gpt-5.6";
+  const model = role === "pedagogy-review" ? "gpt-5.6-terra" : "gpt-5.6-sol";
   const args = [
     "exec", "--ephemeral", "--json", "-C", cwd,
     "-s", writable ? "workspace-write" : "read-only",
