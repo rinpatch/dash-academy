@@ -67,7 +67,10 @@ async function cloneNodeModules(worktree) {
 
 export async function changedFiles(worktree) {
   await assertDocLinks(worktree);
-  const result = await command("git", ["status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=all", "-z", "--", ".", ":(exclude)node_modules"], { cwd: worktree });
+  const result = await command("git", [
+    "status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=all", "-z", "--", ".",
+    ":(exclude)node_modules", ":(exclude)next-env.d.ts",
+  ], { cwd: worktree });
   if (result.code !== 0) throw new Error(result.stderr);
   return result.stdout.split("\0").filter(Boolean).map((line) => line.slice(3));
 }
