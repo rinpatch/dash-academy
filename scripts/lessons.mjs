@@ -10,6 +10,8 @@ import { liveTest, validateLiveConfiguration } from "./lesson-factory/testnet.mj
 import { deterministicTests, validateLesson } from "./lesson-factory/validate.mjs";
 import { assertAllowedChanges, assertPreparedBaseline, changedFiles, commitLesson, createWorktree } from "./lesson-factory/worktree.mjs";
 
+let stateWrite = Promise.resolve();
+
 const args = parseArgs(process.argv.slice(2));
 const action = args._[0] ?? "status";
 
@@ -322,8 +324,6 @@ async function saveState(runDir, state, item) {
   stateWrite = stateWrite.then(() => writeJson(path.join(runDir, "run.json"), state));
   await stateWrite;
 }
-
-let stateWrite = Promise.resolve();
 
 async function loadCurrentRun() {
   const runId = args.run_id ?? await requireRunId();
