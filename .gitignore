@@ -8,3 +8,7 @@ verify-demo/.identity-wallet.json
 # local secrets
 .env.local
 *.local.json
+.lesson-runs/
+.lesson-worktrees/
+lesson-sources/*.draft.json
+test-results/lesson-factory/

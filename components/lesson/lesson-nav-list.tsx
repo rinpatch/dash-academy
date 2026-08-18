@@ -6,6 +6,7 @@ import { useActiveAnchor } from "fumadocs-core/toc";
 import type { TableOfContents } from "fumadocs-core/toc";
 import { Card } from "@/components/ui/card";
 import { useCompletedChallenges } from "@/components/providers/progress-provider";
+import { getCompletedLessonIds } from "@/lib/progress";
 
 export type LessonSummary = {
   slug: string;
@@ -25,7 +26,7 @@ export function LessonNavList({
   toc: TableOfContents;
 }) {
   const { completedChallenges, isHydrated } = useCompletedChallenges();
-  const completedSlugs = completedChallenges as Record<string, unknown>;
+  const completedSlugs = getCompletedLessonIds(completedChallenges);
 
   return (
     <div className="flex flex-col gap-3">
@@ -34,7 +35,7 @@ export function LessonNavList({
           key={lesson.url}
           lesson={lesson}
           isCurrent={lesson.url === currentUrl}
-          isCompleted={isHydrated && Boolean(completedSlugs[lesson.slug])}
+          isCompleted={isHydrated && completedSlugs.has(lesson.slug)}
           toc={lesson.url === currentUrl ? toc : undefined}
         />
       ))}

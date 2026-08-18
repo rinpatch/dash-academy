@@ -4,12 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:isolated": "portless run --name dash-academy next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lessons": "node scripts/lessons.mjs",
+    "lessons:validate": "node scripts/lessons.mjs validate",
+    "lessons:test": "node --test scripts/lesson-factory/*.test.mjs"
   },
   "dependencies": {
-    "@dashevo/wasm-sdk": "4.0.0",
+    "@dashevo/evo-sdk": "4.1.1",
+    "@dashevo/wasm-sdk": "4.1.1",
     "@types/mdx": "^2.0.14",
     "fumadocs-core": "^16.11.4",
     "fumadocs-mdx": "^15.1.1",
@@ -23,12 +28,14 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "agent-browser": "0.34.0",
     "@tailwindcss/postcss": "4.3.2",
     "@types/node": "^20.19.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.2.10",
+    "portless": "0.15.5",
     "tailwindcss": "4.3.2",
     "typescript": "^5.9.0"
   }

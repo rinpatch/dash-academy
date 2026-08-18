@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "summary", "sources", "claims", "uncertainties", "outline", "examples"],
+  "properties": {
+    "status": { "enum": ["ready", "blocked"] },
+    "summary": { "type": "string" },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+    "claims": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+    "uncertainties": { "type": "array", "items": { "$ref": "#/$defs/uncertainty" } },
+    "outline": { "type": "array", "items": { "type": "string" } },
+    "examples": { "type": "array", "items": { "$ref": "#/$defs/example" } }
+  },
+  "$defs": {
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "kind", "locator", "version"],
+      "properties": { "id": {"type":"string"}, "title":{"type":"string"}, "kind":{"type":"string"}, "locator":{"type":"string"}, "version":{"type":"string"} }
+    },
+    "claim": {
+      "type":"object", "additionalProperties":false, "required":["id","text","sourceIds","support"],
+      "properties":{"id":{"type":"string"},"text":{"type":"string"},"sourceIds":{"type":"array","items":{"type":"string"}},"support":{"enum":["direct","inference"]}}
+    },
+    "uncertainty": {
+      "type":"object", "additionalProperties":false, "required":["id","question","whyItMatters","options","recommendation","blocking"],
+      "properties":{"id":{"type":"string"},"question":{"type":"string"},"whyItMatters":{"type":"string"},"options":{"type":"array","items":{"type":"string"}},"recommendation":{"type":"string"},"blocking":{"type":"boolean"}}
+    },
+    "example": {
+      "type":"object", "additionalProperties":false, "required":["id","purpose","apiSymbols","sourceIds","verification"],
+      "properties":{"id":{"type":"string"},"purpose":{"type":"string"},"apiSymbols":{"type":"array","items":{"type":"string"}},"sourceIds":{"type":"array","items":{"type":"string"}},"verification":{"enum":["compile","fixture","testnet"]}}
+    }
+  }
+}

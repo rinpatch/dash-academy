@@ -2,13 +2,14 @@
 
 import { Card } from "@/components/ui/card";
 import { useCompletedChallenges } from "@/components/providers/progress-provider";
+import { getCompletedLessonIds } from "@/lib/progress";
 
 // ponytail: single hardcoded track name until the content model supports multiple tracks
 const TRACK_NAME = "Dash Platform";
 
 export function CourseTrackCard({ totalLessons }: { totalLessons: number }) {
   const { completedChallenges, isHydrated } = useCompletedChallenges();
-  const completedCount = isHydrated ? Object.keys(completedChallenges).length : 0;
+  const completedCount = isHydrated ? getCompletedLessonIds(completedChallenges).size : 0;
   const percent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   return (

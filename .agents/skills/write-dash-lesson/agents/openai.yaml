@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Dash Lesson"
+  short_description: "Research, author, and verify Dash lessons"
+  default_prompt: "Use $write-dash-lesson to research, author, and validate a Dash Academy lesson."
