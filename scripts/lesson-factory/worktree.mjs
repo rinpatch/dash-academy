@@ -30,7 +30,7 @@ export async function createWorktree({ runId, lesson, baseline }) {
   const result = await command("git", ["worktree", "add", "-b", branch, worktree, baseline], { cwd: repoRoot });
   if (result.code !== 0) throw new Error(`Could not create worktree: ${result.stderr}`);
   await linkDocs(worktree, baseline);
-  await linkNodeModules(worktree);
+  await cloneNodeModules(worktree);
   return { worktree, branch };
 }
 
@@ -54,17 +54,15 @@ async function linkDocs(worktree, baseline) {
   }
 }
 
-async function linkNodeModules(worktree) {
+async function cloneNodeModules(worktree) {
   const source = path.join(repoRoot, "node_modules");
   try { await lstat(source); } catch { return; }
   const target = path.join(worktree, "node_modules");
-  try {
-    const current = await readlink(target);
-    if (current === source) return;
-  } catch {}
   const rootLock = await command("git", ["hash-object", "package-lock.json"], { cwd: repoRoot });
   const treeLock = await command("git", ["hash-object", "package-lock.json"], { cwd: worktree });
-  if (rootLock.stdout.trim() === treeLock.stdout.trim()) await symlink(source, target, "dir");
+  if (rootLock.stdout.trim() !== treeLock.stdout.trim()) return;
+  const clone = await command("cp", ["-cR", source, target], { cwd: worktree });
+  if (clone.code !== 0) throw new Error(`Could not clone node_modules into the worktree: ${clone.stderr}`);
 }
 
 export async function changedFiles(worktree) {
