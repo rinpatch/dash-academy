@@ -23,9 +23,13 @@ export async function runAgent({ role, lesson, cwd, lessonDir, context = {}, att
   const prompt = `${buildPrompt(role, lesson, context)}\n${vocabulary}\nYour final message must be a single JSON object matching this JSON Schema. No prose, no markdown fences, nothing else.\n${schema}`;
   // opencode has no --output-schema and no path-scoped sandbox; permissions are the read-only gate
   // and the final assistant message is the structured result.
+  // The Dash docs are symlinked into each worktree, so following one leaves --dir and opencode
+  // treats it as an external directory. Its default effect is "ask", which a non-interactive run
+  // turns into a reject: agents silently lost every doc read and returned research with no sources.
+  const docs = { [path.join(repoRoot, ".agents/skills/dash-docs/**")]: "allow", "*": "deny" };
   const permission = writable
-    ? { edit: "allow", bash: "allow", webfetch: "allow" }
-    : { edit: "deny", bash: "deny", webfetch: "allow" };
+    ? { edit: "allow", bash: "allow", webfetch: "allow", external_directory: docs }
+    : { edit: "deny", bash: "deny", webfetch: "allow", external_directory: docs };
   const args = [
     "run", "--dir", cwd, "--format", "json", "-m", model,
     ...(role === "research" ? ["--variant", "high"] : []),
