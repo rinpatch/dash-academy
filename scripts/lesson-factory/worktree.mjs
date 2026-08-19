@@ -54,7 +54,7 @@ async function linkDocs(worktree, baseline) {
   }
 }
 
-async function cloneNodeModules(worktree) {
+export async function cloneNodeModules(worktree) {
   const source = path.join(repoRoot, "node_modules");
   try { await lstat(source); } catch { return; }
   const target = path.join(worktree, "node_modules");

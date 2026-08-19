@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { access, mkdir, open, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { access, mkdir, open, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import readline from "node:readline/promises";
 import { stdin, stdout } from "node:process";
@@ -8,7 +8,7 @@ import { runCodex } from "./lesson-factory/codex.mjs";
 import { command, hash, latestRunId, lessonKey, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, writeJson } from "./lesson-factory/lib.mjs";
 import { liveTest, validateLiveConfiguration } from "./lesson-factory/testnet.mjs";
 import { deterministicTests, validateLesson } from "./lesson-factory/validate.mjs";
-import { assertAllowedChanges, assertPreparedBaseline, changedFiles, commitLesson, createWorktree } from "./lesson-factory/worktree.mjs";
+import { assertAllowedChanges, assertPreparedBaseline, changedFiles, cloneNodeModules, commitLesson, createWorktree } from "./lesson-factory/worktree.mjs";
 
 let stateWrite = Promise.resolve();
 
@@ -288,7 +288,7 @@ async function integrateCommand() {
   const worktree = path.resolve(repoRoot, "../.dash-academy-worktrees", state.runId, `integration-tier-${tier}`);
   const add = await command("git", ["worktree", "add", "-b", branch, worktree, state.baseline]);
   if (add.code !== 0) throw new Error(add.stderr);
-  await symlink(path.join(repoRoot, "node_modules"), path.join(worktree, "node_modules"), "dir");
+  await cloneNodeModules(worktree);
   for (const lesson of lessons) {
     const pick = await command("git", ["cherry-pick", state.lessons[lesson.module].commit], { cwd: worktree });
     if (pick.code !== 0) throw new Error(`Cherry-pick failed for module ${lesson.module}: ${pick.stderr}`);
