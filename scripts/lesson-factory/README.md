@@ -1,22 +1,177 @@
-# Lesson factory
+# Lesson factory operator runbook
 
-`npm run lessons -- preflight` checks the local tools and committed baseline. `run --module N` creates a lesson worktree, launches an independent research agent, pauses on blocking questions, then authors, validates, browser-tests, reviews, and commits the lesson branch. `questions`, `answer`, `resume`, `status`, `test`, and `integrate` operate on the latest run unless `--run-id` is provided. Tier 2 runs are secretless by default and stop at `local-passed`; use `resume --tier 2 --live` only in the separate trusted phase.
+This factory researches, authors, tests, independently reviews, and commits the fixed 17-module Dash Academy curriculum. Each lesson runs on its own branch and Git worktree. Git MDX plus its evidence ledger are the source of truth; Notion is reference input only.
+
+Read the repository [`AGENTS.md`](../../AGENTS.md) before operating the factory. Lesson agents are instructed through [`write-dash-lesson`](../../.agents/skills/write-dash-lesson/SKILL.md) and must use the vendored [`dash-docs`](../../.agents/skills/dash-docs/SKILL.md) sources. The fixed scope, ordering, verification type, and challenge IDs live in [`curriculum/lessons.json`](../../curriculum/lessons.json).
+
+## Safety model
+
+- Research, authoring, review, deterministic tests, builds, and browsers are secretless.
+- Never keep `.env.local`, `.issuer-identity.local.json`, a mnemonic, or private signing material in this checkout while Codex agents or browser servers are running.
+- Agents may change only their assigned MDX, evidence ledger, deterministic fixture, and independent verifier. The runner enforces this allowlist and creates the commit only after all local gates pass.
+- Tier 2 live writes are a separate trusted phase. They require all Codex agents and dev servers to be stopped, an external signer outside the repository, explicit spending caps, and a supported OS sandbox.
+- Generated run state, browser artifacts, worktrees, and secret material are never committed.
+
+## One-time setup
+
+The verified development environment uses Node 24, Codex CLI 0.147 or newer, `portless` 0.15.5, and `agent-browser` 0.34.0. The latter two are exactly pinned in `package-lock.json` and are always invoked from `node_modules`, not a potentially older global installation.
+
+```sh
+git submodule update --init --recursive
+npm ci
+codex --version
+node_modules/.bin/agent-browser doctor
+npm run lessons -- preflight
+npm run lessons:test
+```
+
+The three Dash documentation submodules must match the commits recorded by the current Git baseline. The worktree setup checks this before giving an agent access to them.
+
+Browser tests share one loopback-only HTTPS Portless proxy. Trust its local CA once, then start it explicitly on the non-privileged port expected by the runner:
+
+```sh
+node_modules/.bin/portless trust
+node_modules/.bin/portless proxy start -p 1355 --https
+node_modules/.bin/portless doctor
+```
+
+`portless trust` changes the machine trust store and should be run deliberately. Do not probe mutating Portless subcommands with `--help`: releases in the pinned pre-1.0 line may still execute the subcommand. Never enable LAN, tunnel, funnel, or wildcard exposure for lesson servers.
+
+Commit lesson-factory infrastructure before starting a real run. The runner accepts unrelated untracked files, but refuses uncommitted changes to its required infrastructure because newly created worktrees must all start from an exact commit.
+
+## Run the curriculum
+
+Start one tier or one module:
 
 ```sh
 npm run lessons -- run --tier 1 --concurrency 3
 npm run lessons -- run --tier 2 --concurrency 3
-npm run lessons -- resume --tier 2 --live
+npm run lessons -- run --module 10
 ```
 
-Agents never execute live writes. Use `test N --live` only after every Codex and dev-server process has exited, the issuer mnemonic has been moved outside the checkout, and the trusted harness guard variables are present. Live tests are serialized and fail closed when a lesson fixture is absent.
+The safe default concurrency is three lesson workers. Browser suites are independently capped at two, and live testnet writers are serialized to one. A lesson moves through:
 
-## Live signer boundary
+```text
+pending → researching → blocked | authoring → testing → reviewing
+        → revising (at most twice) → passed | local-passed | failed
+```
 
-Set `DASH_TESTNET_LIVE=1`, `DASH_TESTNET_RESERVE_CREDITS`, `DASH_TESTNET_MAX_RUN_CREDITS`, `DASH_TESTNET_MAX_LESSON_CREDITS`, and `DASH_TESTNET_MAX_TRANSITION_FEE_CREDITS`. `DASH_TESTNET_SIGNER_COMMAND` must be an absolute path to a separately reviewed executable. It receives one JSON object on stdin and emits one public JSON object on stdout:
+Tier 1 ends at `passed`. A secretless Tier 2 run ends at `local-passed`, meaning content, fixtures, lint, build, three browsers, and both reviews passed, but no testnet write has been claimed.
+
+### Status and artifacts
+
+```sh
+npm run lessons -- status
+npm run lessons -- status --json
+npm run lessons -- questions
+npm run lessons -- questions --json
+```
+
+Commands use the latest run unless `--run-id <id>` is supplied. Durable, ignored state lives under:
+
+```text
+.lesson-runs/<run-id>/
+├── run.json                         # baseline, worktrees, status, commits, summaries
+└── lessons/<NN-slug>/
+    ├── research.json                # sources, claims, uncertainties, outline
+    ├── author.json / revision.json  # structured author result
+    ├── facts-review.json
+    ├── pedagogy-review.json
+    ├── events/*.jsonl               # complete Codex JSONL transcript after a role exits
+    ├── stderr/*.log                 # redacted agent diagnostics
+    └── tests/
+        ├── browser/                 # server log, screenshots, snapshots/results
+        └── testnet.json             # public-only trusted live report, when run
+```
+
+`run.json` is the live status source. Agent event streams are written after that role exits, so a currently-running role may show only its stage until completion.
+
+### Human questions
+
+Material uncertainty blocks only that lesson. Review the exact source conflict and record a stable answer:
+
+```sh
+npm run lessons -- questions
+npm run lessons -- answer 9 --question <question-id> --text '<decision>'
+npm run lessons -- resume --tier 2 --run-id <run-id>
+```
+
+With no `--text`, `answer` prompts interactively. Answers are stored in the ignored run state and included in later author and reviewer context.
+
+### Resume after interruption or failure
+
+```sh
+npm run lessons -- resume --tier 1 --run-id <run-id>
+npm run lessons -- resume --tier 2 --run-id <run-id>
+```
+
+The runner reuses completed research, authored files, worktrees, and commits instead of starting successful stages again. Failed worktrees are preserved for inspection.
+
+Only one orchestrator may run at a time. If the process was forcibly killed, inspect `.lesson-runs/orchestrator.lock`; remove it only after confirming its recorded PID no longer exists. Never remove a live lock.
+
+Exit status `0` means all selected lessons reached `passed` or `local-passed`, `2` means a human question blocked progress, and `1` means configuration, test, review, or runner failure.
+
+### Re-run checks
+
+```sh
+npm run lessons -- validate --tier 1
+npm run lessons -- validate --module 10
+npm run lessons -- test 10
+npm run lessons -- test 10 --browser
+```
+
+The local lesson gate validates manifest/frontmatter/evidence consistency, executes the lesson fixture, lints the repository, builds the production app, and drives three isolated browser instances: desktop, a fresh-storage isolation check, and a 390px mobile viewport. Each worktree owns its Next.js process and Portless route; named browser sessions prevent cookie and storage leakage between lessons.
+
+## Trusted Tier 2 live phase
+
+Do not start this phase merely because local lessons passed. First stop every Codex process and lesson dev server, confirm secret-bearing files are outside the checkout, review the lesson fixture and its `.verify.mjs` peer, and configure a separately reviewed signer executable.
+
+Required variables:
+
+```sh
+export DASH_TESTNET_LIVE=1
+export DASH_TESTNET_SIGNER_COMMAND=/absolute/path/to/reviewed-signer
+export DASH_TESTNET_RESERVE_CREDITS=<positive-integer>
+export DASH_TESTNET_MAX_RUN_CREDITS=<positive-integer>
+export DASH_TESTNET_MAX_LESSON_CREDITS=<positive-integer>
+export DASH_TESTNET_MAX_TRANSITION_FEE_CREDITS=<positive-integer>
+```
+
+The signer owns the issuer key and must independently enforce the same reserve and spending policy. It receives exactly one JSON request on stdin and emits one public JSON response on stdout:
 
 - `{"action":"status","network":"testnet"}` → `{"balanceCredits":"..."}`
 - `{"action":"fund",...}` → `{"status":"funded","reference":"..."}`
 
-The signer owns the issuer key and must independently enforce the same reserve and spend policy. The runner never sends its path to learner code.
+The runner never loads the issuer mnemonic and never passes the signer path or issuer material to learner code. An SDK fixture started with `--live-protocol` emits one `funding-request`, waits for one `funding-result`, performs the assigned operation with a disposable actor, and emits one public `result`. Its `.verify.mjs` peer receives only that public result and checks it independently with proof-enabled `@dashevo/wasm-sdk`.
 
-An SDK fixture started with `--live-protocol` emits one `funding-request` JSON line, waits for one `funding-result` line, performs the assigned operation with a disposable actor, then emits one public `result` line. Its `.verify.mjs` peer receives only that public result on stdin and verifies it independently with proof-enabled `@dashevo/wasm-sdk`. On macOS both processes run under a filesystem sandbox that denies the user home directory except for their worktree, Node runtime, and pinned dependencies. Other operating systems fail closed until an equivalent sandbox is implemented.
+Run one reviewed lesson first, then the tier:
+
+```sh
+npm run lessons -- test 10 --live --run-id <run-id>
+npm run lessons -- resume --tier 2 --live --run-id <run-id>
+```
+
+All live writes share a lock in the repository’s Git common directory. Funding and observed treasury spend are checked against per-lesson, per-run, fee-headroom, and reserve limits. The current filesystem sandbox is implemented for macOS only; other operating systems fail closed.
+
+## Integrate passing lessons
+
+Integration never mutates the operator’s branch. It creates a local integration branch and worktree from the captured run baseline, cherry-picks lesson commits in module order, regenerates `content/academy/meta.json`, and runs lint plus a production build.
+
+```sh
+npm run lessons -- integrate --tier 1 --run-id <run-id>
+npm run lessons -- integrate --tier 2 --run-id <run-id>
+```
+
+Integration refuses any selected lesson that is not `passed`; `local-passed` is intentionally insufficient for Tier 2. Tier 2 navigation retains validated Tier 1 prerequisites from the baseline and admits no stale or unpassed Tier 2 page. The command prints the created branch and worktree path. Review that branch before merging or cherry-picking it into another branch.
+
+## Handoff checklist
+
+Another coding session can take over without conversational context by doing the following:
+
+1. Read `AGENTS.md`, this runbook, the lesson skill, and the curriculum manifest.
+2. Run `git status`, `npm run lessons -- preflight`, and `npm run lessons -- status --json`.
+3. Confirm the Portless proxy is healthy before resuming any browser stage.
+4. Inspect `questions` and the latest lesson review/test artifacts.
+5. Resume the exact run ID; do not start a replacement run unless the existing run is intentionally abandoned.
+6. Keep the local and trusted live phases separate, and never infer `passed` from `local-passed`.
+7. Integrate only after every selected module is proven passing, then run the repository-wide validation, fixture suite, lint, build, and browser audit appropriate to the final branch.
