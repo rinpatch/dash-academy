@@ -1,0 +1,158 @@
+---
+title: Identities
+description: Understand Platform identities, keys, credits, and their relationship to wallets.
+module: 3
+tier: concepts
+estimatedMinutes: 12
+exp: 100
+verification: quiz
+prerequisites: [2]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- distinguish a Platform identity from a wallet, a Core payment address, and a Platform address;
+- explain how purpose-scoped identity keys authorize different actions; and
+- describe how credits pay Platform storage and processing fees.
+
+## One owner, several different objects
+
+A wallet, an address, and an identity can all belong to the same person, but they are not interchangeable.
+
+| Object | What it is | What it does |
+| --- | --- | --- |
+| **Core wallet** | Software or stored wallet data that manages keys | Controls funds and signs Core transactions |
+| **Core address** | A payment destination derived from a spending condition, commonly a public-key hash | Receives DASH in Core-chain transactions |
+| **Platform address** | A Platform-specific address that can hold credits | Funds and authorizes some Platform operations, including identity creation and top-ups |
+| **Platform identity** | A persistent record on Platform with an ID, public keys, a credit balance, and a revision | Owns Platform data and authorizes state transitions |
+
+An identity is therefore closer to a durable Platform actor than to a payment destination. Its stable, 32-byte identifier tells Platform which actor owns data or authorized a change. It is not a username: a human-readable DPNS name can point to an identity later.
+
+<Callout type="info" title="Shared custody does not mean shared identity">
+A wallet mnemonic can derive keys for both identity keys and Platform addresses. The SDK still treats them as different derivation paths, key managers, signers, and protocol objects. Controlling both from one wallet does not turn an address into an identity.
+</Callout>
+
+## What an identity contains
+
+A Platform identity has four core parts:
+
+- **ID:** the stable, unique 32-byte identifier used to refer to the identity;
+- **public keys:** the registered keys and rules that determine which actions the identity can authorize;
+- **balance:** the Platform credits available to pay fees; and
+- **revision:** a counter that tracks identity updates.
+
+Only public key material and its metadata are registered with the identity. The corresponding private keys stay under the owner's wallet or signer control. A state transition carries a signature made with a private key; Platform checks that signature against an eligible public key on the identity.
+
+## Identity keys divide responsibility
+
+Instead of relying on one all-purpose key, an identity can register multiple keys. Every key has its own numeric ID, cryptographic type, purpose, security level, public data, and lifecycle metadata.
+
+Two fields work together:
+
+- **Purpose** describes the kind of job a key performs.
+- **Security level** describes how sensitive the key is and constrains where it may be used.
+
+| Key purpose | Typical responsibility | Required security level |
+| --- | --- | --- |
+| **Authentication** | Sign general Platform activity | Master, critical, high, or medium, depending on the operation |
+| **Transfer** | Authorize credit transfers and withdrawals | Critical |
+| **Encryption / decryption** | Protect or recover confidential application data | Medium |
+
+Every identity must have exactly one **master-level authentication key**. This key is required for identity updates, such as adding a replacement key or disabling a compromised one, and should normally be protected from routine use. Lower-level authentication keys can handle routine activity without exposing the most sensitive key each time.
+
+Disabling a key does not erase it. Platform retains the key so historical signatures remain verifiable, but the disabled key cannot authorize new data. This lets an owner rotate day-to-day keys without abandoning the identity and everything it owns.
+
+<Callout type="warn" title="Private keys remain private">
+An identity publishes public keys, not the secrets that control them. Never put a mnemonic or private key in a Platform document, identity field, quiz answer, or support message.
+</Callout>
+
+## Credits connect Core value to Platform activity
+
+Platform accounts for fees in **credits**, not directly in DASH:
+
+```text
+1 duff = 1,000 credits
+1 DASH = 100,000,000 duffs = 100,000,000,000 credits
+```
+
+Credits originate from DASH locked on the Core chain. Depending on the funding flow, those credits can fund an identity directly or first reside at a Platform address. Since Protocol Version 11, a funded Platform address can pay to create an identity or top up an existing one.
+
+This newer address-based route is why a Platform address and an identity both may have credit balances while still being different objects. The address is a funding and authorization primitive; the identity is the actor that owns Platform data and signs identity-authorized activity.
+
+## What fees pay for
+
+When an identity-authorized state transition is processed, its fee is deducted from the identity's credit balance. The fee has two main parts:
+
+- **Storage fees** pay for bytes that remain in Platform state.
+- **Processing fees** pay for computation and storage input/output used to validate and apply the transition.
+
+An optional user fee increase applies to the processing portion, for example when a user wants to incentivize inclusion during congestion. Deleting eligible stored data before its prepaid storage period ends can return the undistributed portion as a storage refund.
+
+If an identity cannot cover an operation's fee, Platform rejects the operation. Before retrying, the identity must receive enough additional credits, for example through a top-up or an incoming identity credit transfer. A useful operating model is:
+
+> **Keys decide whether an identity may authorize an action; credits decide whether it can pay for that action.**
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="identities"
+  passingScore={3}
+  questions={[
+    {
+      id: "identity-boundary",
+      prompt: "Which statement correctly distinguishes a Platform identity from an address?",
+      options: [
+        { id: "a", label: "An identity and a Core payment address are two names for the same spending destination." },
+        { id: "b", label: "An identity is a Platform actor with an ID, keys, balance, and revision; an address is a separate payment or funding primitive." },
+        { id: "c", label: "A Platform address owns documents, while an identity can only receive Core payments." },
+        { id: "d", label: "Every address automatically becomes a DPNS username." },
+      ],
+      correctOptionId: "b",
+      explanation: "A Platform identity is the durable actor that owns data and authorizes state transitions. Core and Platform addresses serve separate payment or credit-funding roles.",
+    },
+    {
+      id: "master-key",
+      prompt: "A routine authentication key may be compromised. Which key is required to sign an identity update that disables it and adds a replacement?",
+      options: [
+        { id: "a", label: "The master-level authentication key" },
+        { id: "b", label: "Any Platform address key" },
+        { id: "c", label: "An encryption key" },
+        { id: "d", label: "A Core receiving address" },
+      ],
+      correctOptionId: "a",
+      explanation: "Every identity has exactly one master-level authentication key. This key is required to sign identity updates such as adding and disabling keys and should normally be protected from routine use.",
+    },
+    {
+      id: "transfer-key",
+      prompt: "Which identity key purpose is designed to authorize credit transfers and withdrawals?",
+      options: [
+        { id: "a", label: "Encryption" },
+        { id: "b", label: "Decryption" },
+        { id: "c", label: "Transfer" },
+        { id: "d", label: "DPNS" },
+      ],
+      correctOptionId: "c",
+      explanation: "A critical-level transfer key is scoped to credit transfers and withdrawals rather than general application activity.",
+    },
+    {
+      id: "fee-balance",
+      prompt: "What happens when an identity's credit balance is too low for a state transition fee?",
+      options: [
+        { id: "a", label: "Platform silently converts one of its public keys into DASH." },
+        { id: "b", label: "The operation is rejected until the identity has enough credits, such as after a top-up." },
+        { id: "c", label: "Only the storage part is free; processing is postponed forever." },
+        { id: "d", label: "The identity ID changes to reset the balance." },
+      ],
+      correctOptionId: "b",
+      explanation: "Credits pay both storage and processing costs. An operation cannot proceed when the identity cannot cover its fee.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now separate identities from wallet-managed addresses, match identity keys to their responsibilities, and explain how Core-backed credits pay Platform storage and processing fees.
