@@ -14,12 +14,13 @@
       "slug": "what-is-dash-platform",
       "title": "What is Dash Platform?",
       "tier": "concepts",
-      "description": "Understand how Dash Platform relates to Dash Core and reaches finality.",
+      "description": "Meet Dash, and see what Dash Platform lets you build.",
       "estimatedMinutes": 12,
       "exp": 100,
       "prerequisites": [],
       "verification": { "kind": "quiz", "challengeId": "what-is-dash-platform" },
-      "mustCover": ["Dash Core and Platform", "quorums", "ChainLocks", "InstantSend"]
+      "mustCover": ["what a blockchain network gives an app developer", "Dash Core for money and Dash Platform for app data", "payments confirm in about a second, and what that buys you", "concrete things you can build", "what you will build in this course"],
+      "mustNotCover": ["masternode quorums and LLMQs", "InstantSend versus ChainLock mechanics", "Tenderdash and consensus internals"]
     },
     {
       "module": 2,

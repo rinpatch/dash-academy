@@ -7,23 +7,39 @@ Read the repository [`AGENTS.md`](../../AGENTS.md) before operating the factory.
 ## Safety model
 
 - Research, authoring, review, deterministic tests, builds, and browsers are secretless.
-- Never keep `.env.local`, `.issuer-identity.local.json`, a mnemonic, or private signing material in this checkout while Codex agents or browser servers are running.
+- Never keep `.env.local`, `.issuer-identity.local.json`, a mnemonic, or private signing material in this checkout while agents or browser servers are running.
 - Agents may change only their assigned MDX, evidence ledger, deterministic fixture, and independent verifier. The runner enforces this allowlist and creates the commit only after all local gates pass.
-- Tier 2 live writes are a separate trusted phase. They require all Codex agents and dev servers to be stopped, an external signer outside the repository, explicit spending caps, and a supported OS sandbox.
+- Tier 2 live writes are a separate trusted phase. They require all agents and dev servers to be stopped, an external signer outside the repository, and explicit spending caps.
 - Generated run state, browser artifacts, worktrees, and secret material are never committed.
 
 ## One-time setup
 
-The verified development environment uses Node 24, Codex CLI 0.147 or newer, `portless` 0.15.5, and `agent-browser` 0.34.0. The latter two are exactly pinned in `package-lock.json` and are always invoked from `node_modules`, not a potentially older global installation.
+The verified development environment uses Node 24, opencode 1.17 or newer, `portless` 0.15.5, and `agent-browser` 0.34.0. The latter two are exactly pinned in `package-lock.json` and are always invoked from `node_modules`, not a potentially older global installation.
 
 ```sh
 git submodule update --init --recursive
 npm ci
-codex --version
+opencode --version
+opencode auth list           # needs a provider with credit; see "Model" below
 node_modules/.bin/agent-browser doctor
 npm run lessons -- preflight
 npm run lessons:test
 ```
+
+### Model
+
+Every role runs `opencode run` with `tokenrouter/anthropic/claude-sonnet-5`. Override with
+`LESSON_MODEL=provider/model`. Research runs at `--variant high`; other roles use the default effort.
+
+TokenRouter is a custom provider defined in `~/.config/opencode/opencode.jsonc`. It is wired through
+`@ai-sdk/anthropic` against `https://api.tokenrouter.com/v1`, not `@ai-sdk/openai-compatible`: on
+TokenRouter the Anthropic models are served from the native `/v1/messages` endpoint, and going
+through the chat-completions shim would drop prompt caching and thinking blocks.
+
+Read-only roles (research, facts-review, pedagogy-review) run with `OPENCODE_PERMISSION` denying
+`edit` and `bash`; author and revision run with `--auto` and write access to their worktree.
+opencode has no `--output-schema`, so the schema is embedded in the prompt and the final assistant
+message is parsed and validated by `validateStageOutput`.
 
 The three Dash documentation submodules must match the commits recorded by the current Git baseline. The worktree setup checks this before giving an agent access to them.
 
@@ -77,7 +93,7 @@ Commands use the latest run unless `--run-id <id>` is supplied. Durable, ignored
     ├── author.json / revision.json  # structured author result
     ├── facts-review.json
     ├── pedagogy-review.json
-    ├── events/*.jsonl               # complete Codex JSONL transcript after a role exits
+    ├── events/*.jsonl               # complete opencode JSONL event transcript after a role exits
     ├── stderr/*.log                 # redacted agent diagnostics
     └── tests/
         ├── browser/                 # server log, screenshots, snapshots/results
@@ -124,7 +140,7 @@ The local lesson gate validates manifest/frontmatter/evidence consistency, execu
 
 ## Trusted Tier 2 live phase
 
-Do not start this phase merely because local lessons passed. First stop every Codex process and lesson dev server, confirm secret-bearing files are outside the checkout, review the lesson fixture and its `.verify.mjs` peer, and configure a separately reviewed signer executable.
+Do not start this phase merely because local lessons passed. First stop every agent process and lesson dev server, confirm secret-bearing files are outside the checkout, review the lesson fixture and its `.verify.mjs` peer, and configure a separately reviewed signer executable.
 
 Required variables:
 
@@ -151,7 +167,7 @@ npm run lessons -- test 10 --live --run-id <run-id>
 npm run lessons -- resume --tier 2 --live --run-id <run-id>
 ```
 
-All live writes share a lock in the repository’s Git common directory. Funding and observed treasury spend are checked against per-lesson, per-run, fee-headroom, and reserve limits. The current filesystem sandbox is implemented for macOS only; other operating systems fail closed.
+All live writes share a lock in the repository’s Git common directory. Funding and observed treasury spend are checked against per-lesson, per-run, fee-headroom, and reserve limits. Lesson fixtures and verifiers run unsandboxed, with the privileges of the user running the factory.
 
 ## Integrate passing lessons
 

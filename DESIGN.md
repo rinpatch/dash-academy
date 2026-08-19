@@ -24,10 +24,25 @@ Dash Academy is a custom card-based lesson dashboard, not a generic docs site. E
 - **Tabs** (`components/lesson/lesson-tabs.tsx`): Overview renders the lesson's MDX body. Resources/Discussion are placeholders until those content models exist — do not fill them with fabricated content.
 - **Notes** (`components/lesson/notes-panel.tsx`, `lib/notes-store.ts`): a lightweight, per-lesson, local-only notebook (same zustand+localStorage pattern as progress). It is not shared, synced, or exported anywhere.
 - **Callouts** (`components/lesson/callout.tsx`): left-accent card, color keyed to type (`info`/`idea` → primary, `warn`/`warning` → warning, `error` → destructive, `success` → mint).
+- **Glossary terms** (`components/lesson/term.tsx`, `lib/glossary.ts`): an inline term the reader can click for a short definition, built on the Fumadocs/Radix popover so it is keyboard and screen-reader operable. An unknown id renders as plain text rather than hiding the sentence.
 
 ## Lesson Content
 
 Lessons use ordinary MDX headings, paragraphs, lists, links, code blocks, and callouts. Keep explanations concise and place content in a single linear reading flow inside the Overview tab.
+
+### Terms of art
+
+Learners are new to blockchain but not new to programming, so a lesson has to define jargon without boring the readers who already know it. Mark the term instead of explaining it in the prose:
+
+```mdx
+Dash Platform has no <Term id="smart-contract">smart contracts</Term> to deploy.
+```
+
+- Add the definition to `lib/glossary.ts` once; every lesson reuses it, and the wording stays consistent across the course.
+- Use `<Term>` for jargon that is *incidental* to the lesson — a word the reader must recognise to parse the sentence, but which carries none of the lesson's learning objectives. `ICO`, `gRPC`, and `premine` are the shape of thing that belongs here.
+- Do **not** use it for the lesson's actual subject. If a `mustCover` item names the concept, teach it in the prose; a popover is not a substitute for a lesson.
+- Mark a term on its first meaningful use, not every occurrence. Repeated highlights read as noise.
+- The sentence must still make sense if the popover is never opened. Definitions are a courtesy to the reader, never load-bearing.
 
 Academy-authored interactive lesson components are limited to focused verification checkpoints: concept quizzes and testnet verification, restyled to the card system above but functionally unchanged. Quizzes present one question at a time with explicit answer feedback and a final pass/fail state. Testnet verification may contain the form and the loading, error, success, and restored states needed to verify public network activity.
 

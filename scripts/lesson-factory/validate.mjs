@@ -48,7 +48,12 @@ export async function deterministicTests(lesson, cwd) {
       try { await access(path.join(cwd, "tests/lessons", `${lesson.slug}.mjs`)); }
       catch { continue; }
     }
-    const result = await command(name === "fixture" ? "node" : "npm", args, { cwd });
+    let result = await command(name === "fixture" ? "node" : "npm", args, { cwd });
+    // Same known fumadocs flake the integration gate already retries: a cold .next cache fails the
+    // first build. Without this the harness blames the author for an environment error.
+    if (result.code !== 0 && name === "build" && /fumadocs-mdx:collections\/server/.test(`${result.stdout}\n${result.stderr}`)) {
+      result = await command("npm", args, { cwd });
+    }
     reports.push({ name, passed: result.code === 0, stdout: result.stdout.slice(-8000), stderr: result.stderr.slice(-8000) });
     if (result.code !== 0) break;
   }

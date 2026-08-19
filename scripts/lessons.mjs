@@ -4,11 +4,11 @@ import path from "node:path";
 import readline from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { browserTest } from "./lesson-factory/browser.mjs";
-import { runCodex } from "./lesson-factory/codex.mjs";
+import { runAgent } from "./lesson-factory/agent.mjs";
 import { command, hash, latestRunId, lessonKey, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, selectIntegrationPages, writeJson } from "./lesson-factory/lib.mjs";
 import { liveTest, validateLiveConfiguration } from "./lesson-factory/testnet.mjs";
 import { deterministicTests, validateLesson } from "./lesson-factory/validate.mjs";
-import { assertAllowedChanges, assertPreparedBaseline, changedFiles, cloneNodeModules, commitLesson, createWorktree } from "./lesson-factory/worktree.mjs";
+import { assertAllowedChanges, assertGlossaryOnlyGrew, assertPreparedBaseline, changedFiles, cloneNodeModules, commitLesson, createWorktree } from "./lesson-factory/worktree.mjs";
 
 let stateWrite = Promise.resolve();
 
@@ -34,7 +34,7 @@ async function preflight() {
   const manifest = await loadManifest();
   const checks = [];
   for (const [label, program, programArgs] of [
-    ["git", "git", ["--version"]], ["Codex", "codex", ["--version"]], ["Node", "node", ["--version"]],
+    ["git", "git", ["--version"]], ["opencode", "opencode", ["--version"]], ["Node", "node", ["--version"]],
   ]) {
     const result = await command(program, programArgs);
     checks.push({ label, passed: result.code === 0, detail: (result.stdout || result.stderr).trim() });
@@ -71,7 +71,7 @@ async function runCommand(resume) {
   const manifest = await loadManifest();
   const selected = selectLessons(manifest);
   if (args.dry_run) {
-    for (const lesson of selected) console.log(`${lessonKey(lesson)}: research → question gate → author → static/fixture/build → 3 browsers → 2 reviews → commit${lesson.tier === "sdk" ? " → serialized sandboxed live testnet verification" : ""}`);
+    for (const lesson of selected) console.log(`${lessonKey(lesson)}: research → question gate → author → static/fixture/build → 3 browsers → 2 reviews → commit${lesson.tier === "sdk" ? " → serialized live testnet verification" : ""}`);
     return;
   }
   await mkdir(runRoot, { recursive: true });
@@ -159,7 +159,7 @@ async function processLesson({ lesson, state, runDir, baseline }) {
   }
   item.status = "researching";
   await saveState(runDir, state, item);
-  if (!item.research) item.research = await runCodex({ role: "research", lesson, cwd: worktree, lessonDir });
+  if (!item.research) item.research = await runAgent({ role: "research", lesson, cwd: worktree, lessonDir });
   const blockers = item.research.uncertainties.filter((uncertainty) => uncertainty.blocking && !item.answers?.[uncertainty.id]);
   if (blockers.length || (item.research.status === "blocked" && !(item.research.uncertainties ?? []).length)) {
     item.status = "blocked";
@@ -168,7 +168,7 @@ async function processLesson({ lesson, state, runDir, baseline }) {
   }
   item.status = "authoring";
   await saveState(runDir, state, item);
-  await runCodex({ role: "author", lesson, cwd: worktree, lessonDir, context: { research: item.research, answers: item.answers ?? {} } });
+  await runAgent({ role: "author", lesson, cwd: worktree, lessonDir, context: { research: item.research, answers: item.answers ?? {} } });
   await testAndReview({ lesson, item, state, runDir, lessonDir, worktree });
 }
 
@@ -178,6 +178,7 @@ async function testAndReview({ lesson, item, state, runDir, lessonDir, worktree 
     await saveState(runDir, state, item);
     const files = await changedFiles(worktree);
     assertAllowedChanges(lesson, files);
+    if (files.includes("lib/glossary.ts")) await assertGlossaryOnlyGrew(worktree);
     const validation = await validateLesson(lesson, worktree, { complete: true });
     const deterministic = validation.length ? [] : await deterministicTests(lesson, worktree);
     const deterministicPassed = !validation.length && deterministic.every((test) => test.passed);
@@ -189,14 +190,15 @@ async function testAndReview({ lesson, item, state, runDir, lessonDir, worktree 
     const fileContents = Object.fromEntries(await Promise.all(files.map(async (file) => [file, await readFile(path.join(worktree, file), "utf8")])));
     const context = { research: item.research, answers: item.answers ?? {}, tests: item.tests, diff, fileContents };
     const [facts, pedagogy] = await Promise.all([
-      runCodex({ role: "facts-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 }),
-      runCodex({ role: "pedagogy-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 }),
+      runAgent({ role: "facts-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 }),
+      runAgent({ role: "pedagogy-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 }),
     ]);
     item.reviews = { facts, pedagogy };
     const passed = deterministicPassed && browser.passed && facts.verdict === "pass" && pedagogy.verdict === "pass";
     if (passed) {
       const finalFiles = await changedFiles(worktree);
       assertAllowedChanges(lesson, finalFiles);
+      if (finalFiles.includes("lib/glossary.ts")) await assertGlossaryOnlyGrew(worktree);
       item.commit = await commitLesson(worktree, lesson, finalFiles);
       item.status = lesson.tier === "sdk" ? "local-passed" : "passed";
       await saveState(runDir, state, item);
@@ -208,7 +210,7 @@ async function testAndReview({ lesson, item, state, runDir, lessonDir, worktree 
       return;
     }
     if (revision === 2) throw new Error("Lesson did not pass after two revisions");
-    await runCodex({ role: "revision", lesson, cwd: worktree, lessonDir, context: item.tests ? { tests: item.tests, reviews: item.reviews } : item.reviews, attempt: revision + 1 });
+    await runAgent({ role: "revision", lesson, cwd: worktree, lessonDir, context: item.tests ? { tests: item.tests, reviews: item.reviews } : item.reviews, attempt: revision + 1 });
   }
 }
 

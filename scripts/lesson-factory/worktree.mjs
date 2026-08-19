@@ -1,6 +1,6 @@
-import { lstat, mkdir, readlink, rm, symlink } from "node:fs/promises";
+import { lstat, mkdir, readFile, readlink, rm, symlink } from "node:fs/promises";
 import path from "node:path";
-import { command, lessonKey, repoRoot } from "./lib.mjs";
+import { command, glossaryIds, lessonKey, repoRoot } from "./lib.mjs";
 
 export async function assertPreparedBaseline() {
   const required = [
@@ -8,7 +8,7 @@ export async function assertPreparedBaseline() {
     "lib/progress.ts", "components/lesson/course-track-card.tsx", "components/lesson/lesson-nav-list.tsx",
     ".agents/skills/write-dash-lesson/SKILL.md", ".agents/skills/write-dash-lesson/agents/openai.yaml",
     ".agents/skills/write-dash-lesson/references/workflow.md", "scripts/lessons.mjs",
-    "scripts/lesson-factory/lib.mjs", "scripts/lesson-factory/codex.mjs", "scripts/lesson-factory/worktree.mjs",
+    "scripts/lesson-factory/lib.mjs", "scripts/lesson-factory/agent.mjs", "scripts/lesson-factory/worktree.mjs",
     "scripts/lesson-factory/validate.mjs", "scripts/lesson-factory/browser.mjs", "scripts/lesson-factory/testnet.mjs",
     "scripts/lesson-factory/README.md", "scripts/lesson-factory/factory.test.mjs",
     "scripts/lesson-factory/schemas/research.schema.json", "scripts/lesson-factory/schemas/author.schema.json",
@@ -84,12 +84,26 @@ async function assertDocLinks(worktree) {
   }
 }
 
+// Term ids are string keys, so two lessons adding entries merge cleanly by keeping both blocks.
+// Removing an entry is the only edit that breaks another lesson, so that is what we forbid.
+export async function assertGlossaryOnlyGrew(worktree) {
+  const before = await command("git", ["show", "HEAD:lib/glossary.ts"], { cwd: worktree });
+  if (before.code !== 0) throw new Error("Could not read the baseline glossary");
+  const [baseline, current] = await Promise.all([
+    glossaryIds(before.stdout),
+    glossaryIds(await readFile(path.join(worktree, "lib/glossary.ts"), "utf8")),
+  ]);
+  const removed = baseline.filter((id) => !current.includes(id));
+  if (removed.length) throw new Error(`Agent removed glossary terms other lessons may use: ${removed.join(", ")}`);
+}
+
 export function assertAllowedChanges(lesson, files) {
   const allowed = new Set([
     `content/academy/${lesson.slug}.mdx`,
     `lesson-sources/${lesson.slug}.json`,
     `tests/lessons/${lesson.slug}.mjs`,
     `tests/lessons/${lesson.slug}.verify.mjs`,
+    "lib/glossary.ts",
   ]);
   const unexpected = files.filter((file) => !allowed.has(file));
   if (unexpected.length) throw new Error(`Agent changed files outside its lesson: ${unexpected.join(", ")}`);

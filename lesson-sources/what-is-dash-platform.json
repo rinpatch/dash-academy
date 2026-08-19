@@ -1,179 +1,170 @@
 {
   "schemaVersion": 1,
-  "module": 1,
   "slug": "what-is-dash-platform",
+  "module": 1,
+  "title": "What is Dash Platform?",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
   "sources": [
     {
       "id": "S1",
-      "title": "Dash Academy lesson manifest",
+      "title": "Dash Academy curriculum — module 1 manifest row",
       "kind": "curriculum manifest",
-      "locator": "curriculum/lessons.json:1-22",
+      "locator": "curriculum/lessons.json:12-24",
       "version": "schemaVersion 1"
     },
     {
       "id": "S2",
-      "title": "What is Dash Platform",
-      "kind": "vendored official Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:5-81",
-      "version": "3.1.0"
+      "title": "What is Dash",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S3",
-      "title": "Platform Chain",
-      "kind": "vendored official Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-chain.md:5-29",
-      "version": "3.1.0"
+      "title": "What is Dash Platform",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S4",
-      "title": "Platform Consensus",
-      "kind": "vendored official Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-consensus.md:5-83",
-      "version": "3.1.0"
+      "title": "Glossary",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S5",
-      "title": "Masternode Quorums",
-      "kind": "vendored official Dash Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-masternode-quorums.md:8-105",
-      "version": "23.0.0"
+      "title": "Identity",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S6",
-      "title": "ChainLocks",
-      "kind": "vendored official Dash Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-chainlocks.md:8-18",
-      "version": "23.0.0"
+      "title": "Name Service (DPNS)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S7",
-      "title": "InstantSend",
-      "kind": "vendored official Dash Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md:8-62",
-      "version": "23.0.0"
+      "title": "Tokens",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S8",
-      "title": "Identity",
-      "kind": "vendored official Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md:17-37",
-      "version": "3.1.0"
+      "title": "Non-Fungible Tokens (NFTs)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/nft.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S9",
-      "title": "Dash Academy Proofs lesson manifest",
-      "kind": "curriculum manifest",
-      "locator": "curriculum/lessons.json:85-94",
-      "version": "schemaVersion 1"
+      "title": "Tutorials Introduction — Example apps",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/introduction.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
       "id": "S10",
-      "title": "State Transitions",
-      "kind": "vendored official Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/state-transition.md:22-41",
-      "version": "3.1.0"
+      "title": "Dash Features",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features.md",
+      "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S11",
-      "title": "Query Capabilities",
-      "kind": "vendored official Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md:50-60",
-      "version": "3.1.0"
+      "title": "Dash Academy curriculum — modules 8–17 (hands-on testnet build arc)",
+      "kind": "curriculum manifest",
+      "locator": "curriculum/lessons.json:97-216",
+      "version": "schemaVersion 1"
     }
   ],
   "claims": [
     {
       "id": "C1",
-      "text": "Module 1 is a 12-minute concepts lesson worth 100 EXP, has no prerequisites, covers Dash Core and Platform, quorums, ChainLocks, and InstantSend, and ends with quiz challenge what-is-dash-platform.",
+      "text": "Module 1 is a 12-minute concepts lesson worth 100 EXP with no prerequisites, whose quiz challenge ID is what-is-dash-platform and whose scope is the two-layer split, developer value, about-a-second payments, concrete buildables, and the course arc.",
       "sourceIds": ["S1"],
       "support": "direct"
     },
     {
       "id": "C2",
-      "text": "Dash Platform is a decentralized data-storage and application layer where developers define schemas and submit signed, structured state transitions rather than arbitrary user-written on-chain code.",
-      "sourceIds": ["S2", "S10"],
+      "text": "Dash has two connected layers: Dash Core, the layer-1 blockchain that settles Dash payments, and Dash Platform, a layer-2 application state and structured-data layer.",
+      "sourceIds": ["S2", "S3", "S4"],
       "support": "direct"
     },
     {
       "id": "C3",
-      "text": "Drive stores and validates Platform data, Platform supports indexed querying, and DAPI exposes decentralized access to Platform data and the Dash blockchain.",
-      "sourceIds": ["S2", "S11"],
-      "support": "direct"
-    },
-    {
-      "id": "C4",
-      "text": "The Platform chain supplies layer 2 consensus and can read Core, while Core is not dependent on or aware of the Platform chain.",
-      "sourceIds": ["S3"],
-      "support": "direct"
-    },
-    {
-      "id": "C5",
-      "text": "LLMQs are deterministic masternode subsets formed through distributed key generation and retained so they can produce BLS threshold signatures on consensus messages.",
-      "sourceIds": ["S5"],
-      "support": "direct"
-    },
-    {
-      "id": "C6",
-      "text": "ChainLocks, deterministic InstantSend, and Platform use feature-specific quorum types rather than one universal quorum.",
-      "sourceIds": ["S5"],
-      "support": "direct"
-    },
-    {
-      "id": "C7",
-      "text": "Platform reaches block finality through pBFT-based Tenderdash consensus; acceptance by at least two-thirds plus one of the validator set makes a Platform block final without reorganization.",
+      "text": "On Platform, a developer describes application data with a schema (a data contract) and submits signed state transitions that change it; they do not deploy arbitrary user-written code for the network to run.",
       "sourceIds": ["S3", "S4"],
       "support": "direct"
     },
     {
+      "id": "C4",
+      "text": "Platform's two core components are Drive (consensus-backed decentralized storage) and DAPI (a decentralized API with JSON-RPC and gRPC endpoints that lets a client read and write Platform data and query the Core chain without running a node).",
+      "sourceIds": ["S3", "S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C5",
+      "text": "A blockchain network gives an app developer decentralized storage and shared state that is not owned by one company's server, plus client libraries that hide blockchain complexity.",
+      "sourceIds": ["S3"],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "Dash payments confirm in about a second: Dash reached transaction finality in little more than a second and offers instant transaction confirmation.",
+      "sourceIds": ["S2", "S10"],
+      "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "About-a-second confirmation means a seller can accept a Dash payment immediately without waiting for multiple mined blocks, getting fiat-like speed at low cost.",
+      "sourceIds": ["S2"],
+      "support": "direct"
+    },
+    {
       "id": "C8",
-      "text": "Tenderdash uses rotating validator sets drawn from Platform LLMQs and recovered BLS threshold signatures, with quorum commitments recorded on Core.",
-      "sourceIds": ["S4"],
+      "text": "Concrete things a developer can build on Dash include human-readable .dash usernames via DPNS tied to identities, structured application data (data contracts and documents), configurable fungible tokens, document-based NFTs, and Dash payments—exemplified by DashMint Lab, Dashnote, and DashPay.",
+      "sourceIds": ["S5", "S6", "S7", "S8", "S9", "S4"],
       "support": "direct"
     },
     {
       "id": "C9",
-      "text": "Platform combines rapid BFT finality with validator and quorum membership rooted in Core's Proof-of-Work-secured state.",
-      "sourceIds": ["S4"],
-      "support": "direct"
-    },
-    {
-      "id": "C10",
-      "text": "InstantSend automatically attempts to lock qualifying Core transaction inputs, with quorums conducting locking sessions and broadcasting a verifiable transaction-lock message.",
-      "sourceIds": ["S7"],
-      "support": "direct"
-    },
-    {
-      "id": "C11",
-      "text": "ChainLocks threshold-sign the first Core block observed at a height, causing nodes to reject competing blocks at that height and any descendants of those competing blocks, which prevents reorganizations below the locked block.",
-      "sourceIds": ["S6"],
-      "support": "direct"
-    },
-    {
-      "id": "C12",
-      "text": "ChainLock creation waits until every transaction in the Core block has an InstantSend lock, establishing retroactive locks where needed.",
-      "sourceIds": ["S6"],
-      "support": "direct"
-    },
-    {
-      "id": "C13",
-      "text": "For identity funding, Dash is locked in a Core asset-lock transaction and Platform accepts either an InstantSend proof or proof that the transaction appears in a ChainLocked block.",
-      "sourceIds": ["S8"],
-      "support": "direct"
-    },
-    {
-      "id": "C14",
-      "text": "Platform data is designed to be verifiable, with proof mechanics covered by the later Proofs lesson.",
-      "sourceIds": ["S2", "S9"],
-      "support": "direct"
-    },
-    {
-      "id": "C15",
-      "text": "InstantSend and ChainLocks protect Core transactions and blocks, while Tenderdash quorum consensus finalizes Platform blocks; LLMQs connect the systems without giving both chains the same finality rule.",
-      "sourceIds": ["S3", "S4", "S5", "S6", "S7"],
+      "text": "In this course the learner builds, on testnet, a small end-to-end app: connect to DAPI and make a verified read, derive and fund a Platform address, create an identity, register a DPNS username, publish a data contract, submit and query documents, transfer and purchase documents, create a native token, and charge tokens for document operations.",
+      "sourceIds": ["S11"],
       "support": "inference"
     }
   ],
-  "examples": [],
+  "apiExamples": [],
   "conflicts": [],
-  "uncertainties": []
+  "uncertainties": [
+    {
+      "id": "U1",
+      "topic": "Prior lesson content covered finality mechanics outside the current manifest",
+      "blocking": false,
+      "resolution": "The committed lesson taught InstantSend, ChainLocks, Tenderdash, and LLMQs. The current manifest forbids them, so the lesson was rewritten to cover the two-layer split and its developer-facing effects without naming those mechanisms."
+    },
+    {
+      "id": "U2",
+      "topic": "Payment speed wording",
+      "blocking": false,
+      "resolution": "The manifest phrase 'about a second' is anchored to what-is-dash.md's 'little more than a second'; the lesson names the effect (fast confirmation) rather than any locking or consensus mechanism."
+    },
+    {
+      "id": "U3",
+      "topic": "Course build arc has no separate capstone document",
+      "blocking": false,
+      "resolution": "The 'what you will build' section is derived directly from the fixed curriculum modules 8-17 and is described as the course's shared testnet project rather than an invented named app."
+    }
+  ],
+  "executableExamples": []
 }

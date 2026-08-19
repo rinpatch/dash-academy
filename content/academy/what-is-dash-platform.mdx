@@ -1,6 +1,6 @@
 ---
 title: What is Dash Platform?
-description: Understand how Dash Platform relates to Dash Core and reaches finality.
+description: Meet Dash, and see what Dash Platform lets you build.
 module: 1
 tier: concepts
 estimatedMinutes: 12
@@ -9,96 +9,98 @@ verification: quiz
 prerequisites: []
 ---
 
-Dash has two connected chains with different responsibilities. **Dash Core** is the layer 1 blockchain for Dash transactions. **Dash Platform** is a layer 2 state chain for application data.
-
-Understanding that split is the key to understanding finality on Dash: Core transactions and blocks are protected by InstantSend and ChainLocks, while Platform blocks become final through Tenderdash consensus.
-
 ## Learning objectives
 
 By the end of this lesson, you will be able to:
 
-- identify the distinct roles of Dash Core and Dash Platform;
-- explain how Long-Living Masternode Quorums support both layers;
-- distinguish an InstantSend transaction lock from a ChainLock;
-- explain why Tenderdash—not InstantSend or ChainLocks—finalizes Platform blocks.
+- explain what a blockchain network offers an application developer;
+- separate Dash Core's job—moving money—from Dash Platform's job—storing app data;
+- name concrete kinds of applications you can build on Dash; and
+- outline the application you will build, end to end, later in this course.
 
-## Two connected chains
+Dash splits one network into two connected layers with different jobs. In this lesson you will meet both halves, see what a developer can build with them, and preview the app you will build yourself over the rest of this course.
+
+## What a blockchain network gives you
+
+A blockchain is a network of computers that independently agree on one shared, append-only record. The record is not kept in a single company's database; copies are spread across the network and reconciled through a consensus the network enforces rather than one operator deciding.
+
+From an app developer's point of view, that shared record changes the deal:
+
+- **Decentralized storage.** An application's data lives on many independent computers, so it does not depend on one company's server staying up or staying honest.
+- **Shared state.** Any client that connects sees the same data and can cryptographically check that data is what the network agreed to.
+- **Client libraries.** A software development kit (SDK) hides the low-level networking and cryptography, so you write ordinary application code instead of protocol code.
+
+You do not have to run your own network node or build the cryptography yourself. You use the network the way you would use a backend service—except the backend belongs to no single company.
+
+## One network, two jobs
+
+Dash organizes that shared record into two layers so that one layer can stay focused on money while the other carries application data.
 
 | | Dash Core | Dash Platform |
 | --- | --- | --- |
 | Layer | Layer 1 | Layer 2 |
-| Primary responsibility | Dash transactions, Proof of Work, masternodes, and quorum commitments | Application state and structured data |
-| Unit submitted by a client | Transaction | State transition |
-| Finality path | InstantSend for transaction inputs; ChainLocks for blocks | Tenderdash consensus for Platform blocks |
+| Job | Move value | Store and verify app data |
+| What you submit | A payment transaction | A signed <Term id="state-transition">state transition</Term> |
 
-On Platform, developers define application data with schemas and submit signed **state transitions** that change that data. They do not deploy arbitrary user-written code for the network to execute. **Drive** validates and stores Platform state, which applications query through contract-defined indexes, while **DAPI** gives clients decentralized access to Platform data and the Core blockchain.
+**Dash Core** is the layer-1 blockchain. It is the money layer: it settles Dash payments and carries the Dash currency itself.
 
-Platform can read Core state, but the relationship is one-way: Core does not depend on or need to know about the Platform chain. That lets Platform add application capabilities without making Core responsible for application data.
+**Dash Platform** is the layer-2 application-data layer. It stores structured application data—the records behind usernames, profiles, listings, and other app state—and verifies that only authorized write operations change it.
+
+The relationship runs one way: Platform can read what is on Core, but Core does not depend on Platform. That lets Dash add application capabilities without making the money layer responsible for application data.
 
 <Callout type="info" title="A useful mental model">
-Core secures value and the layer 1 history. Platform reaches its own consensus about application state. The layers share masternode-based infrastructure, but they are not one chain and do not use one finality rule.
+Core is the payment rail. Platform is the database. They share one network, but each stays focused on its own job.
 </Callout>
 
-## Quorums: shared infrastructure
+### How Platform stores data
 
-A **Long-Living Masternode Quorum (LLMQ)** is a deterministic subset of Dash's masternode list. Its members establish shared signing material through distributed key generation. When enough members sign the same consensus message, their signature shares can be combined into one compact BLS threshold signature that other nodes can verify.
+On most blockchains, adding application logic means deploying a <Term id="smart-contract">smart contract</Term>—code the network runs for you. Dash Platform takes a different path: instead of uploading custom code, you **describe** your data.
 
-“Quorum” does not mean one permanent committee handles every decision. Dash defines different quorum types and configurations for different features, including ChainLocks, deterministic InstantSend, and Platform. Platform also rotates its active validator set among Platform quorums.
+- A **data contract** is a schema that declares the records your app may store—their fields, types, and indexes.
+- A **state transition** is a signed operation that changes data, such as creating an identity, registering a name, or writing a record.
+- The network validates every change against the contract and stores the result; there is no contract code of your own for it to execute.
 
-This gives the layers a common foundation:
+Two components do the work behind the scenes:
 
-1. The deterministic masternode list is maintained on Core.
-2. Quorums are selected from that list, and their commitments are recorded on Core.
-3. Feature-specific quorums produce threshold signatures for their assigned work.
+- **Drive** is Platform's decentralized storage. It validates and keeps the network's application state.
+- **DAPI** is the decentralized API. It exposes <Term id="json-rpc">JSON-RPC</Term> and <Term id="grpc">gRPC</Term> endpoints through a network of <Term id="masternode">masternodes</Term>, so your app can read and write Platform data and query the Core chain without running its own node.
 
-Shared quorums connect the systems. They do **not** make InstantSend, ChainLocks, and Tenderdash interchangeable.
+## Payments confirm in about a second
 
-## Core finality: InstantSend and ChainLocks
+Dash is built for payments, and speed is the point. A Dash payment reaches confirmation in **about a second**—the Dash documentation describes a transaction reaching confirmation in "little more than a second."
 
-Core uses two complementary mechanisms at different levels.
+What does that buy a developer? For a seller, it means you can accept a Dash payment and treat it as done almost immediately, the way a card or cash payment feels, instead of waiting through several mined blocks before trusting that the money arrived. That gives a checkout or peer-to-peer payment flow <Term id="fiat">fiat</Term>-like speed at low cost—without a middleman holding the funds.
 
-### InstantSend locks transaction inputs
+This speed comes from how the Dash network reaches agreement. The mechanics live in later lessons; for now, the effect is what matters: **fast, cheap confirmation you can build a payment experience around.**
 
-For a qualifying Core transaction, InstantSend automatically attempts to lock its inputs. Quorums conduct the signing sessions and broadcast a verifiable transaction-lock message. A conflicting transaction cannot validly spend those locked inputs, so a recipient can gain confidence before waiting for several mined blocks.
+## What you can build
 
-The important unit is the **transaction input**. InstantSend does not finalize a Platform block.
+The two layers combine into a toolkit. Here are concrete things developers build on Dash:
 
-### ChainLocks finalize Core blocks
+- **Usernames and identities.** The Dash Platform Name Service (DPNS) ties a human-readable `.dash` name like `alice.dash` to a Platform <Term id="identity">identity</Term>, a persistent account that owns data and signs the actions that change it.
+- **Application data.** Publish a data contract and submit documents — individual data records stored on Platform — so users share verifiable records instead of trusting one app's database.
+- **Fungible tokens** (interchangeable, one-like-another units). Create a configurable token for rewards, memberships, or loyalty points.
+- **Non-fungible tokens.** Build unique, document-based NFTs for collectibles and digital goods.
+- **Payments.** Accept Dash with about-a-second confirmation.
 
-For each Core block height, members of the ChainLocks quorum sign the first block they observe extending the active chain. When the threshold signature is recovered and broadcast, nodes reject competing blocks at that height and any descendants of those competing blocks. This prevents reorganizations below the locked Core block.
+The Dash documentation's own tutorials walk through working examples: **Dashnote** (a small notes app built from contracts and documents), **DashMint Lab** (an NFT marketplace), and **DashPay** (payments addressed by username).
 
-The important unit is the **Core block**. ChainLocks and InstantSend also reinforce each other: a ChainLock is attempted only after every transaction in the block has an InstantSend lock. If necessary, the network establishes those transaction locks retroactively before ChainLock creation.
+Note what is missing from that list: a marketplace for arbitrary user-deployed code. Platform gives you storage, validation, and signed operations—it does not run unrestricted programs on every node. You design the data and the rules around it in your own application code.
 
-| Mechanism | Protects | Result |
-| --- | --- | --- |
-| InstantSend | Inputs of a qualifying Core transaction | Conflicting spends of those inputs are rejected |
-| ChainLocks | A Core block at a particular height | Competing Core blocks at that height and any descendants of those competing blocks are rejected |
+## What you will build in this course
 
-## Platform finality: Tenderdash
+The rest of this course is hands-on. Working entirely on <Term id="testnet">testnet</Term>, you will assemble one small application from end to end:
 
-Platform needs consensus over ordered state transitions and the resulting application state. Its rotating validator sets run **Tenderdash**, Dash's pBFT-based adaptation of Tendermint.
+1. Connect to DAPI and make a verified read.
+2. Derive and fund a Platform address.
+3. Create a Platform identity.
+4. Register a DPNS username.
+5. Publish a data contract for your app's records.
+6. Submit and query documents.
+7. Transfer a document and run a purchase flow.
+8. Create a native token and charge tokens for document operations.
 
-The flow is:
-
-1. A validator proposes a Platform block containing state transitions.
-2. The active validator quorum validates the block and votes through the Tenderdash rounds.
-3. Once at least two-thirds plus one of the validator set accepts the block, it is committed and final.
-
-A final Platform block is not later reorganized. Tenderdash uses the LLMQ system's BLS threshold signatures, so the validators' approval can be represented compactly. The quorums are drawn from Dash's deterministic masternode list and committed on the Proof-of-Work-secured Core chain. Platform therefore combines its own rapid BFT finality with validator membership rooted in Core state.
-
-Platform data is also designed to be verifiable. You will explore how that verification works in the later Proofs lesson.
-
-<Callout type="warn" title="Keep the finality paths separate">
-InstantSend and ChainLocks protect activity on Core. Tenderdash quorum consensus finalizes Platform blocks. LLMQs participate in all three systems, but that shared infrastructure does not mean Core mechanisms directly finalize Platform blocks.
-</Callout>
-
-## How Core evidence crosses into Platform
-
-Platform can consume proof that securely establishes a Core asset lock without borrowing Core's finality rule for its own blocks.
-
-Identity funding is a concrete example. A user first locks Dash in a Core asset-lock transaction. Platform can accept either an InstantSend proof for fast confirmation or proof that the transaction appears in a ChainLocked Core block. The user then references that proof in an identity-creation state transition, and the locked value becomes Platform credits after fees.
-
-InstantSend supplies fast transaction-lock confirmation; a ChainLock establishes Core block finality once the transaction is included in a ChainLocked block. In either case, the proof establishes the asset lock securely. Tenderdash still decides when the Platform state transition enters a final Platform block.
+By the final module, you will have touched every layer introduced here: the Core payment rail, Platform identities, names, data contracts, documents, and tokens—all without running your own node.
 
 ## Checkpoint
 
@@ -113,64 +115,64 @@ Pass the quiz to complete the lesson.
       prompt: "Which description correctly separates Dash Core from Dash Platform?",
       options: [
         { id: "a", label: "Core stores application documents, while Platform mines Dash payments." },
-        { id: "b", label: "Core is the layer 1 transaction chain, while Platform is the layer 2 application-state chain." },
+        { id: "b", label: "Core is the layer-1 money layer, while Platform is the layer-2 application-data layer." },
         { id: "c", label: "They are two names for the same chain and state." },
         { id: "d", label: "Platform is a centralized database used only by Core nodes." },
       ],
       correctOptionId: "b",
-      explanation: "Core secures layer 1 Dash activity. Platform separately orders state transitions and stores structured application state on layer 2.",
+      explanation: "Core settles Dash payments on layer 1. Platform stores and verifies structured application data on layer 2.",
     },
     {
-      id: "quorums",
-      prompt: "What is the main role of a Long-Living Masternode Quorum?",
+      id: "network-value",
+      prompt: "What does a blockchain network give an application developer?",
       options: [
-        { id: "a", label: "To let every masternode independently rewrite finalized blocks" },
-        { id: "b", label: "To replace all feature-specific consensus rules with one universal rule" },
-        { id: "c", label: "To let a deterministic masternode subset produce threshold signatures on consensus messages" },
-        { id: "d", label: "To store private application data outside both chains" },
-      ],
-      correctOptionId: "c",
-      explanation: "LLMQ members use distributed key generation and BLS threshold signing. Different quorum types serve InstantSend, ChainLocks, and Platform.",
-    },
-    {
-      id: "instant-send",
-      prompt: "What does InstantSend lock?",
-      options: [
-        { id: "a", label: "The inputs of a qualifying Core transaction" },
-        { id: "b", label: "Every future Platform block" },
-        { id: "c", label: "The entire masternode list permanently" },
-        { id: "d", label: "A Platform data contract's schema" },
-      ],
-      correctOptionId: "a",
-      explanation: "InstantSend locks Core transaction inputs so conflicting spends can be rejected. It does not finalize Platform blocks.",
-    },
-    {
-      id: "chainlocks",
-      prompt: "What happens after a node receives a valid ChainLock for a Core block?",
-      options: [
-        { id: "a", label: "It waits for Platform to approve the Core block." },
-        { id: "b", label: "It rejects competing blocks at that height and any descendants of those competing blocks." },
-        { id: "c", label: "It converts every transaction in the block into Platform data." },
-        { id: "d", label: "It allows the block to be reorganized more easily." },
+        { id: "a", label: "A dedicated server that one company operates on your behalf." },
+        { id: "b", label: "Shared, verifiable state that no single company owns, plus client libraries that hide the complexity." },
+        { id: "c", label: "A place to host arbitrary private user files for free." },
+        { id: "d", label: "A cloud that automatically keeps every field secret from every node." },
       ],
       correctOptionId: "b",
-      explanation: "A valid ChainLock selects the Core block at that height and prevents reorganizations below it.",
+      explanation: "Your data lives on many independent nodes, clients can verify it, and an SDK hides the low-level cryptography and networking.",
     },
     {
-      id: "platform-finality",
-      prompt: "Which mechanism directly finalizes a Platform block?",
+      id: "schema-not-code",
+      prompt: "How does an application store data on Dash Platform?",
       options: [
-        { id: "a", label: "An InstantSend lock on every Platform document" },
-        { id: "b", label: "A Core miner adding the Platform block to the Core chain" },
-        { id: "c", label: "Tenderdash acceptance by at least two-thirds plus one of the validator set" },
-        { id: "d", label: "A DAPI server marking its response as final" },
+        { id: "a", label: "It deploys custom code that the network runs on every write." },
+        { id: "b", label: "It describes the data with a schema and submits signed state transitions that change it." },
+        { id: "c", label: "It writes directly to a single company's database through DAPI." },
+        { id: "d", label: "It uploads unvalidated JSON that any node may freely edit." },
       ],
-      correctOptionId: "c",
-      explanation: "Platform runs its own pBFT-based Tenderdash consensus. InstantSend and ChainLocks protect Core activity instead.",
+      correctOptionId: "b",
+      explanation: "A data contract declares the shape of the data, and signed state transitions change it. There is no custom contract code for the network to execute.",
+    },
+    {
+      id: "fast-payments",
+      prompt: "What does about-a-second payment confirmation buy a developer?",
+      options: [
+        { id: "a", label: "The ability to accept a Dash payment almost immediately without waiting through several blocks." },
+        { id: "b", label: "Guaranteed secrecy of every payment amount on chain." },
+        { id: "c", label: "A refund window controlled by the sender's bank." },
+        { id: "d", label: "Removal of all network fees forever." },
+      ],
+      correctOptionId: "a",
+      explanation: "Near-instant confirmation lets a seller treat a Dash payment as done, like a card payment, instead of waiting for several mined blocks.",
+    },
+    {
+      id: "course-arc",
+      prompt: "What will you build over the rest of this course?",
+      options: [
+        { id: "a", label: "A single end-to-end app: connect to DAPI, create an identity, register a username, publish a contract, submit and query documents, and create a token." },
+        { id: "b", label: "A new layer-1 blockchain that replaces Dash Core." },
+        { id: "c", label: "Arbitrary smart contracts deployed to run on every node." },
+        { id: "d", label: "Only payment transactions, with no application data involved." },
+      ],
+      correctOptionId: "a",
+      explanation: "Working on testnet, you will assemble identities, names, data contracts, documents, and a token into one small application.",
     },
   ]}
 />
 
 ## What you accomplished
 
-You can now trace Dash's two finality paths. InstantSend protects Core transaction inputs, ChainLocks finalize Core blocks, and Tenderdash finalizes Platform blocks. You also understand how feature-specific LLMQs provide shared threshold-signing infrastructure without collapsing those mechanisms into one rule.
+You can now explain what a blockchain network gives an app developer, separate Dash Core's money job from Dash Platform's data job, and recognize the concrete applications that combination makes possible. You also know the path ahead: a hands-on, testnet build that will take you from your first verified read to a token-charged application.

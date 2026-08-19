@@ -3,6 +3,7 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import { Callout } from "@/components/lesson/callout";
 import { IdentityVerifier } from "@/components/lesson/identity-verifier";
 import { LessonQuiz } from "@/components/lesson/lesson-quiz";
+import { Term } from "@/components/lesson/term";
 import { WalletSetup } from "@/components/lesson/wallet-setup";
 
 export function getMDXComponents(components: MDXComponents = {}): MDXComponents {
@@ -11,6 +12,7 @@ export function getMDXComponents(components: MDXComponents = {}): MDXComponents 
     Callout,
     IdentityVerifier,
     LessonQuiz,
+    Term,
     WalletSetup,
     ...components,
   };

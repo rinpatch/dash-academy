@@ -49,6 +49,16 @@ export function validateManifest(manifest) {
   }
 }
 
+export const glossaryPath = path.join(repoRoot, "lib/glossary.ts");
+
+// Term ids are string keys in a Record, so order is irrelevant and entries merge cleanly. Read them
+// out of the source rather than keeping a second list that would drift.
+export async function glossaryIds(source) {
+  const text = source ?? await readFile(glossaryPath, "utf8");
+  const body = text.slice(text.indexOf("GLOSSARY: Record<string, GlossaryEntry> = {"));
+  return [...body.matchAll(/^ {2}"?([a-z0-9-]+)"?:\s*\{/gm)].map((match) => match[1]);
+}
+
 export function lessonKey(lesson) {
   return `${String(lesson.module).padStart(2, "0")}-${lesson.slug}`;
 }
@@ -75,10 +85,16 @@ export async function command(command, args, options = {}) {
     });
     let stdout = "";
     let stderr = "";
+    // Without this a hung child stalls the whole run: agent-browser's screenshot --full can hang
+    // rather than exit non-zero.
+    const timer = options.timeoutMs ? setTimeout(() => child.kill("SIGKILL"), options.timeoutMs) : null;
     child.stdout?.on("data", (chunk) => { stdout += chunk; options.onStdout?.(chunk.toString()); });
     child.stderr?.on("data", (chunk) => { stderr += chunk; options.onStderr?.(chunk.toString()); });
-    child.once("error", reject);
-    child.once("close", (code, signal) => resolve({ code: code ?? 1, signal, stdout, stderr }));
+    child.once("error", (error) => { if (timer) clearTimeout(timer); reject(error); });
+    child.once("close", (code, signal) => {
+      if (timer) clearTimeout(timer);
+      resolve({ code: code ?? 1, signal, stdout, stderr, timedOut: signal === "SIGKILL" && Boolean(timer) });
+    });
     if (options.input !== undefined) {
       child.stdin?.end(options.input);
     }
@@ -86,7 +102,7 @@ export async function command(command, args, options = {}) {
 }
 
 export function secretlessEnv(extra = {}) {
-  const allowed = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "LANG", "LC_ALL", "TERM", "TMPDIR", "XDG_CONFIG_HOME", "CODEX_HOME"];
+  const allowed = ["PATH", "HOME", "USER", "LOGNAME", "SHELL", "LANG", "LC_ALL", "TERM", "TMPDIR", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "OPENCODE_CONFIG_DIR"];
   const env = Object.fromEntries(allowed.flatMap((key) => process.env[key] ? [[key, process.env[key]]] : []));
   return { ...env, ...extra };
 }

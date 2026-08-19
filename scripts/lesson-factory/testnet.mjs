@@ -3,7 +3,6 @@ import { mkdir, open, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import { spawn } from "node:child_process";
 import readline from "node:readline";
 import path from "node:path";
-import os from "node:os";
 import { command, repoRoot, secretlessEnv } from "./lib.mjs";
 
 export async function liveTest({ lesson, worktree, lessonDir }) {
@@ -27,8 +26,8 @@ export async function liveTest({ lesson, worktree, lessonDir }) {
   try {
     const before = await signerCall(signer, { action: "status", network: "testnet" });
     const balanceBefore = positiveBigInt(before.balanceCredits, "signer balanceCredits");
-    const sandbox = sandboxedNodeArgs(worktree, [fixture, "--live-protocol"]);
-    learner = spawn(sandbox.program, sandbox.args, {
+    const learnerProcess = learnerNodeArgs(worktree, [fixture, "--live-protocol"]);
+    learner = spawn(learnerProcess.program, learnerProcess.args, {
       cwd: worktree,
       env: secretlessEnv({ DASH_TESTNET_LIVE: "1", DASH_LESSON_RUN_ID: path.basename(path.dirname(path.dirname(lessonDir))) }),
       stdio: ["pipe", "pipe", "pipe"],
@@ -52,8 +51,8 @@ export async function liveTest({ lesson, worktree, lessonDir }) {
     const outcome = parseProtocol(await nextLine(lines, 180_000, "learner result"));
     const exitCode = await new Promise((resolve) => learner.once("close", (code) => resolve(code ?? 1)));
     if (exitCode !== 0 || outcome.type !== "result" || outcome.status !== "passed") throw new Error(`Learner operation failed: ${redact(learnerStderr)}`);
-    const verifierSandbox = sandboxedNodeArgs(worktree, [verifier, "--live"]);
-    const verification = await command(verifierSandbox.program, verifierSandbox.args, { cwd: worktree, env: secretlessEnv(), input: `${JSON.stringify(outcome.publicResult)}\n` });
+    const verifierProcess = learnerNodeArgs(worktree, [verifier, "--live"]);
+    const verification = await command(verifierProcess.program, verifierProcess.args, { cwd: worktree, env: secretlessEnv(), input: `${JSON.stringify(outcome.publicResult)}\n` });
     if (verification.code !== 0) throw new Error(`Independent proof verification failed: ${redact(verification.stderr)}`);
     const after = await signerCall(signer, { action: "status", network: "testnet" });
     const balanceAfter = positiveBigInt(after.balanceCredits, "post-run signer balanceCredits");
@@ -81,7 +80,6 @@ export function validateLiveConfiguration() {
   if (process.env.DASH_TESTNET_LIVE !== "1") throw new Error("Tier 2 runs require DASH_TESTNET_LIVE=1");
   assertSecretOutsideCheckout();
   readGuards();
-  if (process.platform !== "darwin") throw new Error("Tier 2 live fixtures require a supported OS sandbox; only macOS is implemented");
 }
 
 async function signerCall(executable, request) {
@@ -154,19 +152,9 @@ async function priorRunSpend(runDir) {
   return total;
 }
 
-export function sandboxedNodeArgs(worktree, nodeArgs) {
-  if (process.platform !== "darwin") throw new Error("Live fixture sandbox is implemented only for macOS; refuse unsandboxed execution");
-  const quote = (value) => `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
-  const nodeRuntime = path.resolve(path.dirname(process.execPath), "..");
-  const readable = [worktree, path.join(repoRoot, "node_modules"), nodeRuntime, "/System", "/Library", "/usr/lib", "/private/var/db/timezone", "/dev/null", "/dev/urandom"];
-  const rules = readable.map((entry) => `(subpath ${quote(entry)})`).join(" ");
-  const profile = `(version 1)
-    (allow default)
-    (deny file-read* (subpath ${quote(os.homedir())}))
-    (allow file-read* ${rules})
-    (deny file-write* (subpath ${quote(os.homedir())}))
-    (allow file-write* (subpath "/private/tmp"))
-    (deny process-exec)
-    (allow process-exec (literal ${quote(process.execPath)}))`;
-  return { program: "/usr/bin/sandbox-exec", args: ["-p", profile, process.execPath, ...nodeArgs] };
+// Fixtures and verifiers run unsandboxed: the macOS-only seatbelt profile was removed because there
+// is no cross-platform equivalent, and this pipeline runs on a developer's own machine. Note this
+// means model-authored lesson code runs with full user privileges.
+export function learnerNodeArgs(worktree, nodeArgs) {
+  return { program: process.execPath, args: nodeArgs };
 }

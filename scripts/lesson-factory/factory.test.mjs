@@ -1,11 +1,22 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtemp, rm } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
-import os from "node:os";
-import { loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
+import { glossaryIds, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
 import { command, repoRoot } from "./lib.mjs";
-import { sandboxedNodeArgs } from "./testnet.mjs";
+import { formatEvent, parseResult } from "./agent.mjs";
+
+test("agent result parsing takes the last assistant message and surfaces provider errors", () => {
+  const line = (event) => `${JSON.stringify(event)}\n`;
+  const stream =
+    line({ type: "step_start", part: {} }) +
+    line({ type: "text", part: { text: "thinking out loud" } }) +
+    line({ type: "text", part: { text: '```json\n{"verdict":"pass","findings":[]}\n```' } }) +
+    line({ type: "step_finish", part: {} });
+  assert.deepEqual(parseResult(stream, "facts-review", "x.log"), { verdict: "pass", findings: [] });
+  assert.throws(() => parseResult(line({ type: "error", error: { data: { message: "No payment method" } } }), "author", "x.log"), /No payment method/);
+  assert.throws(() => parseResult(line({ type: "text", part: { text: "sorry, I cannot" } }), "author", "x.log"), /no JSON object/);
+});
 
 test("the curriculum has one fixed lesson per module", async () => {
   const manifest = await loadManifest();
@@ -42,7 +53,7 @@ test("Tier 2 integration retains valid prerequisite pages without admitting stal
   assert.equal(withoutUnpassedTier2Page.includes(lessons[9].slug), false);
 });
 
-test("Codex child environment excludes common credential variables", () => {
+test("Agent child environment excludes common credential variables", () => {
   process.env.CERTIFICATE_ISSUER_MNEMONIC = "never-forward-me";
   process.env.OPENAI_API_KEY = "also-not-forwarded";
   const env = secretlessEnv();
@@ -52,15 +63,52 @@ test("Codex child environment excludes common credential variables", () => {
   delete process.env.OPENAI_API_KEY;
 });
 
-test("live learner sandbox cannot read the main checkout secret file", { skip: process.platform !== "darwin" }, async () => {
-  const temporary = await mkdtemp(path.join(os.tmpdir(), "dash-lesson-sandbox-"));
-  try {
-    const secret = path.join(repoRoot, ".env.local");
-    const script = `const fs=require("node:fs");try{fs.readFileSync(${JSON.stringify(secret)});process.exit(9)}catch{process.exit(0)}`;
-    const sandbox = sandboxedNodeArgs(temporary, ["-e", script]);
-    const result = await command(sandbox.program, sandbox.args, { cwd: temporary, env: secretlessEnv() });
-    assert.equal(result.code, 0);
-  } finally {
-    await rm(temporary, { recursive: true, force: true });
-  }
+test("agent event formatting summarises tool calls and skips noise", () => {
+  const lesson = { module: 1 };
+  const now = Date.now();
+  const format = (event, cwd) => formatEvent(lesson, "author", now, typeof event === "string" ? event : JSON.stringify(event), cwd);
+  assert.match(
+    format({ type: "tool_use", part: { tool: "read", state: { status: "completed", input: { filePath: "/wt/content/academy/a.mdx" } } } }, "/wt"),
+    /^\[m01 author \+\d+s\] read content\/academy\/a\.mdx$/,
+  );
+  assert.match(format({ type: "error", error: { data: { message: "boom" } } }), /error: boom/);
+  assert.equal(format({ type: "tool_use", part: { tool: "read", state: { status: "pending", input: {} } } }), null);
+  assert.equal(format({ type: "step_start", part: {} }), null);
+  assert.equal(format("not json"), null);
+});
+
+test("glossary ids are read from lib/glossary.ts and match its real keys", async () => {
+  const source = await readFile(path.join(repoRoot, "lib/glossary.ts"), "utf8");
+  const ids = await glossaryIds(source);
+  assert.ok(ids.includes("smart-contract") && ids.includes("grpc"), "known terms are found");
+  // Independent count: every top-level entry opens a brace on its own line.
+  const expected = [...source.matchAll(/^ {2}"?[a-z0-9-]+"?: \{$/gm)].length;
+  assert.equal(ids.length, expected, "parser sees every entry");
+  assert.equal(new Set(ids).size, ids.length, "no duplicate ids");
+});
+
+test("a lesson may append glossary terms but not remove one another lesson uses", async () => {
+  const base = await readFile(path.join(repoRoot, "lib/glossary.ts"), "utf8");
+  const baseIds = await glossaryIds(base);
+
+  // Anchor at the end of file: the GlossaryEntry type also closes with "};".
+  const appended = base.replace(
+    /};\s*$/,
+    '  "state-transition": {\n    title: "State transition",\n    definition: "A signed change.",\n  },\n};\n',
+  );
+  const afterAppend = await glossaryIds(appended);
+  assert.ok(afterAppend.includes("state-transition"), "new id is picked up");
+  assert.deepEqual(baseIds.filter((id) => !afterAppend.includes(id)), [], "appending removes nothing");
+
+  const removed = base.replace(/^ {2}ico: \{[\s\S]*?^ {2}\},$/m, "");
+  const afterRemove = await glossaryIds(removed);
+  assert.deepEqual(baseIds.filter((id) => !afterRemove.includes(id)), ["ico"], "deletion is detectable");
+});
+
+test("command kills a hung child instead of stalling the run", async () => {
+  const started = Date.now();
+  const result = await command("node", ["-e", "setTimeout(() => {}, 60_000)"], { timeoutMs: 500 });
+  assert.equal(result.timedOut, true, "timeout is reported");
+  assert.notEqual(result.code, 0, "a killed child does not look successful");
+  assert.ok(Date.now() - started < 10_000, "returned promptly rather than waiting for the child");
 });

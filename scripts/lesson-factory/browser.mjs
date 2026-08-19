@@ -59,8 +59,8 @@ async function runBrowserTest({ lesson, worktree, runId, lessonDir }) {
         const overflow = await ab(session, ["eval", "document.documentElement.scrollWidth <= window.innerWidth"]);
         if (overflow.stdout.trim() !== "true") throw new Error("Lesson has horizontal overflow at 390px");
       }
-      await ab(session, ["screenshot", "--full", path.join(artifactDir, `${index === 0 ? "desktop" : index === 1 ? "isolated" : "mobile"}.png`)]);
-      results.push({ session, title: title.stdout.trim(), snapshot: parseMaybeJson(snapshot.stdout), errors: parseMaybeJson(errors.stdout), console: parseMaybeJson(consoleOutput.stdout) });
+      const screenshot = await abArtifact(session, ["screenshot", "--full", path.join(artifactDir, `${index === 0 ? "desktop" : index === 1 ? "isolated" : "mobile"}.png`)]);
+      results.push({ session, title: title.stdout.trim(), snapshot: parseMaybeJson(snapshot.stdout), errors: parseMaybeJson(errors.stdout), console: parseMaybeJson(consoleOutput.stdout), screenshot });
     }
     const bad = results.filter((result) => containsErrors(result.errors) || containsErrors(result.console));
     await writeFile(path.join(artifactDir, "results.json"), `${JSON.stringify(results, null, 2)}\n`, { mode: 0o600 });
@@ -87,6 +87,15 @@ async function acquireBrowserSlot() {
 function releaseBrowserSlot() {
   activeBrowserTests -= 1;
   browserWaiters.shift()?.();
+}
+
+// The screenshot is an artifact for humans, not one of the gate's assertions. Capturing it must
+// never fail a lesson that passed every real check, and agent-browser's --full has been observed to
+// hang outright, so it is bounded and best-effort.
+async function abArtifact(session, args) {
+  const result = await command(browser, ["--session", session, ...args], { env: secretlessEnv(), timeoutMs: 60_000 });
+  if (result.code === 0) return { captured: true };
+  return { captured: false, reason: result.timedOut ? "timed out" : result.stderr.trim().slice(0, 200) };
 }
 
 async function ab(session, args) {
