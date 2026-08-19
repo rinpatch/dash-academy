@@ -1,50 +1,125 @@
 ---
 title: Create a Dash Identity
-description: Create a real identity on Dash Platform testnet with the JavaScript SDK and verify it on-chain.
-module: 9
+description: Create and verify a Dash Platform identity on testnet.
+module: 10
 tier: sdk
-estimatedMinutes: 12
-exp: 120
+estimatedMinutes: 20
+exp: 200
 verification: testnet
-prerequisites: [8]
+prerequisites: [9]
 ---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- create a Dash Platform identity on testnet, funded from a Platform address you already control;
+- name what an identity key's purpose and security level each control, and why the standard set has five keys; and
+- read a new identity's credit balance back from the network.
 
 ## Before you start
 
-This lesson continues from the environment setup. You need:
+This lesson picks up where module 9 left off. You should already have:
 
-- Node.js and `@dashevo/evo-sdk` installed locally;
-- the mnemonic-backed `setupDashClient.js` from the previous lesson;
-- at least 5,000,000 testnet credits in `addressKeyManager.primaryAddress`.
+- Node.js with `@dashevo/evo-sdk` installed;
+- the mnemonic-backed `setupDashClient.mjs` helper and a funded <Term id="bech32m">bech32m</Term> Platform address (a `tdash1…` address on testnet) whose balance came from your <Term id="mnemonic">mnemonic</Term>; and
+- enough credits on that address to cover both the identity's starting balance and the creation fee — about 39,500,000 credits for the worked example below.
 
-If you need to rebuild that setup, follow the [SDK client setup](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/setup-sdk-client.html) and [wallet funding](https://docs.dash.org/projects/platform/en/stable/docs/tutorials/create-and-fund-a-wallet.html) guides.
-
-<Callout type="warn" title="Keep private keys private">
-Never paste your mnemonic or private keys into Dash Academy, a chat, or a browser form. The verifier below only accepts a public identity ID.
+<Callout type="warn" title="Keep your mnemonic and keys private">
+Your script signs with the private keys derived from your mnemonic, but it never needs to print them. The verifier at the end of this lesson accepts only the public identity ID. Never paste a mnemonic or private key into Dash Academy, a chat, or a browser form.
 </Callout>
 
 ## What you are creating
 
-A Dash identity is the on-chain actor your application uses to sign changes on Dash Platform. It contains a unique public identifier, public keys, and a balance of Platform credits.
+A Dash Platform identity is the on-chain account your application will use to sign changes to data. It is a record of:
 
-An identity is not a wallet address or a username. The Platform address supplies its credits, while a DPNS username can point to it later.
+- a **stable, unique 32-byte identifier** — the public identity ID you will paste into the verifier;
+- a **set of public keys** with assigned purposes and security levels; and
+- a **credit balance** used to pay for later actions.
 
-## Register the identity
+The signed <Term id="state-transition">state transition</Term> that registers it is called identity creation. When you submit it, the network stores your public keys and future actions can be proven to come from this identity.
 
-Create `identity-register.js` beside `setupDashClient.js` and add the following script:
+The identity is not the same thing as the two objects around it. The Platform address is the account that funded the identity's credits; it is a payment source, not an actor that owns data. A <Term id="dpns">DPNS</Term> name is a human-readable alias that you can point at this identity later; it does not exist yet. The identity itself is the actor: the thing that will own contracts and sign documents in the rest of this course.
 
-```js title="identity-register.js"
+## Key purposes and security levels
+
+Every identity carries at least one public key, and each key has two independent labels.
+
+A key's **purpose** says what the key is permitted to do:
+
+| Purpose | Meaning |
+| --- | --- |
+| `AUTHENTICATION` | Signs ordinary actions and documents on behalf of the identity |
+| `ENCRYPTION` | Encrypts data for the identity |
+| `DECRYPTION` | Decrypts data that was encrypted for the identity |
+| `TRANSFER` | Signs credit transfers and withdrawals |
+
+A key's **security level** says how carefully the key must be protected — how freely it may be used at runtime:
+
+| Level | How it should be handled |
+| --- | --- |
+| `MASTER` | The root of trust; should always require the user to authenticate, and is required to update the identity's keys |
+| `CRITICAL` | Should always require user authentication before signing |
+| `HIGH` | May stay available for use after the user has signed in once this session |
+| `MEDIUM` | Should not require re-authentication, but must stay on a device the user controls |
+
+The level is a hierarchy: `MASTER` is the strongest and most protected, `MEDIUM` the lightest. A lower number means the key is more sensitive.
+
+Purposes are not free to combine with any level — the network enforces fixed pairings:
+
+| Purpose | Allowed security level |
+| --- | --- |
+| `AUTHENTICATION` | Any level |
+| `ENCRYPTION` | `MEDIUM` |
+| `DECRYPTION` | `MEDIUM` |
+| `TRANSFER` | `CRITICAL` |
+
+Every identity must include exactly one `MASTER`-level `AUTHENTICATION` key. It is the identity's root of trust: only it can later add or disable keys, so it should be kept out of day-to-day use.
+
+The SDK's key manager derives a standard set of five keys automatically. Here is what each one is for:
+
+| Key ID | Purpose | Security level | Job |
+| --- | --- | --- | --- |
+| 0 | `AUTHENTICATION` | `MASTER` | Updates the identity's keys |
+| 1 | `AUTHENTICATION` | `HIGH` | Signs documents and names after a sign-in |
+| 2 | `AUTHENTICATION` | `CRITICAL` | Signs contracts and other high-stakes actions |
+| 3 | `TRANSFER` | `CRITICAL` | Moves credits out of the identity |
+| 4 | `ENCRYPTION` | `MEDIUM` | Encrypts data for the identity |
+
+You do not need to design these keys yourself. The key manager derives all five from your mnemonic, and the code below registers them with the identity as it is created.
+
+## Credit balance
+
+Credits are Platform's unit for fees. They convert at a fixed rate: 1,000 credits are created per duff (Dash's smallest unit), and since one DASH is 100,000,000 duffs, one DASH equals 100,000,000,000 credits.
+
+Creating an identity is not free. The fee is a base 2,000,000 credits plus 6,500,000 credits per key:
+
+```text
+2,000,000 + (5 × 6,500,000) = 34,500,000 credits
+```
+
+That fee is deducted from the funding Platform address. The `amount` you list in the script is the identity's own starting balance — the credits it keeps to pay for later work. So the address must hold `amount + fee` before the script runs. The worked example funds the identity 5,000,000 credits, so the address needs at least 39,500,000 credits; if you choose a different `amount`, adjust the address holding to match, plus the 34,500,000-credit fee.
+
+After creation, the identity's credit balance is what pays for everything it does next: registering a name, publishing a contract, and writing documents. You will top it up later when it runs low.
+
+## Build the identity and register it
+
+Create `identity-register.mjs` next to your `setupDashClient.mjs` and add this script:
+
+```js title="identity-register.mjs"
 import { randomBytes } from 'node:crypto';
 import { Identity, Identifier } from '@dashevo/evo-sdk';
-import { setupDashClient } from './setupDashClient.js';
+import { setupDashClient } from './setupDashClient.mjs';
 
 const { sdk, keyManager, addressKeyManager } = await setupDashClient({
   requireIdentity: false,
 });
 
 try {
+  // A disposable id for the shell; the network assigns the real one.
   const identity = new Identity(new Identifier(randomBytes(32)));
 
+  // Attach the five standard public keys (purposes and levels above).
   keyManager.getKeysInCreation().forEach((key) => {
     identity.addPublicKey(key.toIdentityPublicKey());
   });
@@ -54,7 +129,7 @@ try {
     inputs: [
       {
         address: addressKeyManager.primaryAddress.bech32m,
-        amount: 5000000n,
+        amount: 5000000n, // credits for the identity's starting balance
       },
     ],
     identitySigner: keyManager.getFullSigner(),
@@ -66,7 +141,7 @@ try {
     result.identity.id.toString(),
   );
 } catch (error) {
-  // Known SDK issue: proof verification can fail after creation succeeds.
+  // Known SDK issue: proof verification can fail after the identity exists.
   const match = error.message?.match(/proof returned identity (\w+) but/);
 
   if (match) {
@@ -77,27 +152,34 @@ try {
 }
 ```
 
-The identity signer proves control of the new identity's keys. The address signer separately authorizes moving 5,000,000 credits from the funded Platform address.
+Two signers are involved because two different owners must authorize the change:
+
+- the **identity signer** (`keyManager.getFullSigner()`) proves control of the identity's newly registered keys; and
+- the **address signer** (`addressKeyManager.getSigner()`) authorizes spending credits from the funded Platform address.
 
 ## Run the script
 
 ```bash
-node identity-register.js
+node identity-register.mjs
 ```
-
-Successful output includes the public identity ID:
 
 ```text
 Identity registered!
 Identity ID: 5P9p...yourBase58IdentityId
 ```
 
-The catch block handles a known case where proof verification fails after Platform has already created the identity. Other errors still fail normally.
+The `catch` block handles a known SDK quirk: proof verification can report failure even after Dash Platform has actually created the identity. In that case the network's assertion includes the real identity ID, and the script recovers it from the message; any other error still fails normally. Copy the complete identity ID.
 
-Copy the complete identity ID, then verify it below.
+## Verify on-chain
+
+You do not have to trust your own script. The identity is public, and anyone can read it back. The SDK does this with `sdk.identities.fetch(id)`, which returns the identity with its `balance` (a `bigint` of credits) and its `publicKeys`; `sdk.identities.balance(id)` asks for the balance alone. The verifier below performs the same read independently through <Term id="dapi">DAPI</Term> and shows you the resulting credit balance and registered key count.
+
+## Checkpoint
+
+Paste the identity ID your script printed to complete the lesson.
 
 <IdentityVerifier challengeId="create-a-dash-identity" />
 
 ## What you accomplished
 
-You created a real actor on Dash Platform testnet. The same identity ID can later own data contracts, submit documents, and receive a human-readable DPNS name.
+You created a real actor on Dash Platform testnet: an identity with a stable public ID, five standard keys with distinct purposes and security levels, and a credit balance. That identity is what will own your data contracts, submit your documents, and receive a human-readable DPNS name in the lessons ahead.

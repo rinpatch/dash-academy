@@ -79,4 +79,28 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "A signed operation that changes Dash Platform state, such as creating an identity, registering a name, or writing a document.",
     tag: "Dash",
   },
+  bech32m: {
+    title: "Bech32m",
+    definition:
+      "A checksummed address encoding derived from bech32. Dash uses it for Platform addresses, which start with tdash1 on testnet.",
+    tag: "Dash",
+  },
+  mnemonic: {
+    title: "Mnemonic",
+    definition:
+      "A short list of ordinary words a wallet uses to derive every key and address it controls. Anyone who knows it can spend everything it derives, so it must stay private.",
+    tag: "Basics",
+  },
+  dpns: {
+    title: "DPNS",
+    definition:
+      "The Dash Platform Name Service: a Platform contract that registers human-readable .dash names tied to an identity.",
+    tag: "Dash",
+  },
+  dapi: {
+    title: "DAPI",
+    definition:
+      "Dash's decentralized API. Apps and SDKs read and write Platform and Core data through it instead of running their own node.",
+    tag: "Dash",
+  },
 };
