@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "slug": "why-build-on-dash",
+  "module": 2,
+  "title": "Why build on Dash?",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Dash Academy curriculum — module 2 manifest row",
+      "kind": "curriculum manifest",
+      "locator": "curriculum/lessons.json:24-35",
+      "version": "schemaVersion 1"
+    },
+    {
+      "id": "S2",
+      "title": "What is Dash Platform? prerequisite lesson",
+      "kind": "committed lesson MDX",
+      "locator": "content/academy/what-is-dash-platform.mdx:14-50",
+      "version": "repository source of truth"
+    },
+    {
+      "id": "S3",
+      "title": "What is Dash Platform",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:7-14,31-50,62-81",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S4",
+      "title": "InstantSend",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md:8-24",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S5",
+      "title": "ChainLocks",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-chainlocks.md:8-18",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S6",
+      "title": "Tokens",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md:7-19,24-100",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S7",
+      "title": "Identity and Credits",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md:7-21,29-40,65-69",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S8",
+      "title": "Protocol constants — Credit System",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/protocol-constants.md:28-37",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S9",
+      "title": "Name Service (DPNS)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md:5-36",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S10",
+      "title": "Non-Fungible Tokens (NFTs)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/nft.md:5-13,27-40,50-80,86-92",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S11",
+      "title": "CoinJoin",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-coinjoin.md:7-23,51-77,106-136",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S12",
+      "title": "Query Capabilities",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md:5-35,50-64",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S13",
+      "title": "Decentralized API (DAPI) — Security",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md:5-25",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S14",
+      "title": "Data contracts — Key Management",
+      "kind": "vendored authoritative Platform reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/data-contracts.md:45-66",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S15",
+      "title": "What is Dash — Governance and treasury",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md:17-27",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S16",
+      "title": "Fee System Overview",
+      "kind": "vendored authoritative Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/fees/overview.md:1-32",
+      "version": "Dash Platform Book v4.2-dev"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "The lesson must teach a practical fit decision and cover fit/non-fit, payments and tokens, usernames and NFTs, Dash versus Credits, privacy, and the DAO, ending with quiz challenge why-build-on-dash.",
+      "sourceIds": ["S1"],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "Platform is a strong fit for consensus-backed structured state, decentralized access, and proof-verifiable queries, but not arbitrary deployed code or queries that do not follow contract-defined indexes.",
+      "sourceIds": ["S3", "S12"],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "Dash Core is the payment layer; the network attempts to InstantSend-lock qualifying transactions and ChainLocks make the selected chain unambiguous.",
+      "sourceIds": ["S4", "S5"],
+      "support": "direct"
+    },
+    {
+      "id": "C4",
+      "text": "Platform supports configurable fungible tokens with protocol-supported actions including mint, transfer, burn, freeze/thaw, distribution, access control, and direct purchase.",
+      "sourceIds": ["S6"],
+      "support": "direct"
+    },
+    {
+      "id": "C5",
+      "text": "Dash is the Core asset, while Credits are Platform fee-accounting units derived from Dash; the documented conversion is 1 Dash to 100,000,000,000 Credits.",
+      "sourceIds": ["S7", "S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "Application tokens are separate developer-configured assets rather than Dash or Credits, even when a configured direct token sale accepts Credits.",
+      "sourceIds": ["S6", "S7", "S8"],
+      "support": "inference"
+    },
+    {
+      "id": "C7",
+      "text": "DPNS associates human-readable .dash names with Platform identities, whose controller proves control through signed interactions.",
+      "sourceIds": ["S9"],
+      "support": "direct"
+    },
+    {
+      "id": "C8",
+      "text": "Dash Platform NFTs are based on uniquely identified documents and may support ownership transfer, mutability/deletion choices, and integrated purchase behavior.",
+      "sourceIds": ["S10"],
+      "support": "direct"
+    },
+    {
+      "id": "C9",
+      "text": "CoinJoin can improve Core payment privacy through a deliberate non-custodial wallet process; it does not automatically encrypt all Dash transactions or Platform records.",
+      "sourceIds": ["S11"],
+      "support": "inference"
+    },
+    {
+      "id": "C10",
+      "text": "DAPI TLS protects data in transit, while Platform state is replicated and queryable; confidential fields therefore require intentional encryption and key management or off-Platform storage.",
+      "sourceIds": ["S3", "S12", "S13", "S14"],
+      "support": "inference"
+    },
+    {
+      "id": "C11",
+      "text": "The Dash DAO governs the Dash network and treasury through masternode voting on proposal funding; building on Dash does not automatically create application-specific governance.",
+      "sourceIds": ["S6", "S15"],
+      "support": "inference"
+    },
+    {
+      "id": "C12",
+      "text": "A sound architecture uses Dash for native settlement or independently verifiable shared identity, state, and assets while retaining other systems for private data, arbitrary computation, and unsupported query workloads.",
+      "sourceIds": ["S3", "S4", "S6", "S9", "S10", "S12", "S14"],
+      "support": "inference"
+    }
+  ],
+  "apiExamples": [],
+  "conflicts": [
+    {
+      "id": "V1",
+      "topic": "Credits fee model across protocol versions",
+      "status": "resolved",
+      "sources": ["S7", "S16"],
+      "resolution": "The lesson states only the stable invariant that Credits are accounting units derived from Dash and used for Platform costs. It does not present the identity-balance flow as the only fee model or broaden into protocol-version fee eras."
+    }
+  ],
+  "uncertainties": [],
+  "executableExamples": []
+}
