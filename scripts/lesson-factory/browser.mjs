@@ -5,6 +5,9 @@ import { command, repoRoot, secretlessEnv } from "./lib.mjs";
 
 const portless = path.join(repoRoot, "node_modules/.bin/portless");
 const browser = path.join(repoRoot, "node_modules/.bin/agent-browser");
+const maxConcurrentBrowserTests = 2;
+let activeBrowserTests = 0;
+const browserWaiters = [];
 
 export async function browserPreflight() {
   const result = await command(portless, ["doctor"], { env: secretlessEnv() });
@@ -15,6 +18,15 @@ export async function browserPreflight() {
 }
 
 export async function browserTest({ lesson, worktree, runId, lessonDir }) {
+  await acquireBrowserSlot();
+  try {
+    return await runBrowserTest({ lesson, worktree, runId, lessonDir });
+  } finally {
+    releaseBrowserSlot();
+  }
+}
+
+async function runBrowserTest({ lesson, worktree, runId, lessonDir }) {
   await browserPreflight();
   const artifactDir = path.join(lessonDir, "tests", "browser");
   await mkdir(artifactDir, { recursive: true });
@@ -63,6 +75,18 @@ export async function browserTest({ lesson, worktree, runId, lessonDir }) {
     ]);
     if (server.exitCode === null) server.kill("SIGKILL");
   }
+}
+
+async function acquireBrowserSlot() {
+  if (activeBrowserTests >= maxConcurrentBrowserTests) {
+    await new Promise((resolve) => browserWaiters.push(resolve));
+  }
+  activeBrowserTests += 1;
+}
+
+function releaseBrowserSlot() {
+  activeBrowserTests -= 1;
+  browserWaiters.shift()?.();
 }
 
 async function ab(session, args) {
