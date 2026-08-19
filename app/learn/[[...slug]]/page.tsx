@@ -67,7 +67,7 @@ export default async function AcademyLesson({ params }: PageProps) {
           />
         </main>
 
-        <aside className="order-3">
+        <aside className="order-3 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
           <NotesPanel lessonSlug={lessonSlug} lessonTitle={page.data.title} />
         </aside>
       </div>
