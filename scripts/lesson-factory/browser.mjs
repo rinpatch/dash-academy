@@ -47,7 +47,7 @@ export async function browserTest({ lesson, worktree, runId, lessonDir }) {
         const overflow = await ab(session, ["eval", "document.documentElement.scrollWidth <= window.innerWidth"]);
         if (overflow.stdout.trim() !== "true") throw new Error("Lesson has horizontal overflow at 390px");
       }
-      await ab(session, ["screenshot", path.join(artifactDir, `${index === 0 ? "desktop" : index === 1 ? "isolated" : "mobile"}.png`), "--full-page"]);
+      await ab(session, ["screenshot", "--full", path.join(artifactDir, `${index === 0 ? "desktop" : index === 1 ? "isolated" : "mobile"}.png`)]);
       results.push({ session, title: title.stdout.trim(), snapshot: parseMaybeJson(snapshot.stdout), errors: parseMaybeJson(errors.stdout), console: parseMaybeJson(consoleOutput.stdout) });
     }
     const bad = results.filter((result) => containsErrors(result.errors) || containsErrors(result.console));
