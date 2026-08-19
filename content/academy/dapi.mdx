@@ -1,0 +1,135 @@
+---
+title: DAPI
+description: Understand Dash's decentralized API and how clients use it.
+module: 6
+tier: concepts
+estimatedMinutes: 10
+exp: 100
+verification: quiz
+prerequisites: [5]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- explain why DAPI is a decentralized API;
+- choose between Core and Platform access for a request; and
+- describe how a client selects a DAPI node and recovers when one is unavailable.
+
+## One API for the Dash network
+
+Most applications need a way to read network data and submit changes. A traditional blockchain application might run and maintain its own full node or depend on one company's API server. **DAPI**, the Dash decentralized API, provides another path: it exposes Dash network functionality through the masternode infrastructure.
+
+DAPI spans both layers of Dash:
+
+- **Dash Core (layer 1)** provides blockchain and transaction information.
+- **Dash Platform (layer 2)** provides application state such as identities, data contracts, and documents.
+
+This common access layer lets an application work with Dash without operating its own node. DAPI is still an interface to the network—it does not merge Core and Platform into one data model.
+
+## What makes DAPI decentralized
+
+A centralized API makes clients depend on a provider's single service. If that service becomes unavailable, every client relying only on it loses access.
+
+DAPI runs as multiple instances on Dash's masternode network. A client is not required to trust or depend on one permanent provider: it can send a request to another available DAPI node. Decentralization here is therefore about **provider choice and avoiding a mandatory single API instance**.
+
+That does not mean every response is automatically trustworthy just because several nodes exist. TLS protects data while it travels between a client and a DAPI node. For supported Platform queries, cryptographic proofs let a proof-aware client verify that returned data matches Platform state. Availability, transport security, and response verification solve different problems.
+
+<Callout type="info" title="A useful mental model">
+DAPI is a decentralized front door. Core and Platform are the two destinations behind it, and an SDK can choose among available doors.
+</Callout>
+
+## Choose the API surface
+
+“Endpoint selection” starts with the resource or action your application needs. Choose the layer first, then the protocol surface that exposes the operation.
+
+| Need | DAPI surface | Examples |
+| --- | --- | --- |
+| Limited Core blockchain reads | Core JSON-RPC | Get the best block hash or a block hash by height |
+| Richer Core operations or event streams | Core gRPC | Broadcast a transaction, fetch transaction or chain status, subscribe to block or masternode-list updates |
+| Platform application state | Platform gRPC | Query identities, data contracts, or documents; broadcast and confirm state transitions |
+
+Suppose a wallet needs to broadcast a Dash transaction. That is a **Core** operation. If a social app needs documents owned by a Platform identity, that is a **Platform** query. The fact that both requests travel through DAPI does not change which layer owns the data.
+
+DAPI exposes JSON-RPC for a limited set of Core information. Its gRPC interfaces cover Platform, richer Core methods, and event streams. Applications normally use a higher-level SDK instead of calling these low-level endpoints directly because the SDK also handles serialization and connection management. Direct access can be useful for debugging.
+
+## Choose a DAPI node
+
+After choosing the logical API surface, the client still needs a DAPI instance that can serve the request. These are two separate decisions:
+
+1. **What should handle the request?** Select Core or Platform and the appropriate RPC surface.
+2. **Which provider should receive it?** Select one of the available DAPI node addresses.
+
+For normal application development, start with an SDK network preset such as testnet or mainnet. In the pinned SDK, a trusted context can provide a discovered list of masternode addresses. The transport can balance requests, retry failures, and exclude an address that does not respond or returns an error.
+
+An application may instead provide an explicit list of HTTPS DAPI addresses when it needs that control. Those supplied addresses remain authoritative, so the application also owns the consequences of using a narrow or stale list. Pinning every request to one address gives up much of the availability benefit that multiple DAPI instances provide.
+
+Consider this failure:
+
+> A client queries Platform documents through node A, but node A stops responding.
+
+With SDK-managed addresses and retry settings, the client can exclude node A and try another DAPI instance. It still sends a **Platform document query**; only the selected provider changes. Failover changes the route, not the meaning of the request.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="dapi"
+  passingScore={3}
+  questions={[
+    {
+      id: "decentralized",
+      prompt: "What makes DAPI decentralized from an application's point of view?",
+      options: [
+        { id: "a", label: "One permanent DAPI provider routes every request to several masternodes behind the scenes." },
+        { id: "b", label: "Clients can use different DAPI instances on the masternode network instead of depending on one mandatory provider." },
+        { id: "c", label: "Clients must send every request to Core and Platform and accept whichever responds first." },
+        { id: "d", label: "Using TLS with one pinned DAPI address removes the single-provider dependency." },
+      ],
+      correctOptionId: "b",
+      explanation: "Multiple DAPI instances give clients provider choice and a route around an unavailable instance.",
+    },
+    {
+      id: "platform-surface",
+      prompt: "A social app needs documents owned by a Platform identity. Which DAPI surface matches that request?",
+      options: [
+        { id: "a", label: "Platform gRPC" },
+        { id: "b", label: "Core JSON-RPC" },
+        { id: "c", label: "Core gRPC" },
+        { id: "d", label: "A Core block-header subscription" },
+      ],
+      correctOptionId: "a",
+      explanation: "Identities and documents are Platform state, exposed through Platform's gRPC API.",
+    },
+    {
+      id: "core-surface",
+      prompt: "Which request belongs to the Core side of DAPI?",
+      options: [
+        { id: "a", label: "Query documents defined by a data contract." },
+        { id: "b", label: "Read a Platform identity's credit balance." },
+        { id: "c", label: "Broadcast a Dash transaction." },
+        { id: "d", label: "Confirm a Platform state transition." },
+      ],
+      correctOptionId: "c",
+      explanation: "Dash transactions belong to the Core blockchain, while the other choices operate on Platform state.",
+    },
+    {
+      id: "failover",
+      prompt: "A selected DAPI node stops responding during a Platform document query. What should a resilient client do?",
+      options: [
+        { id: "a", label: "Retry the same pinned address indefinitely so the provider never changes." },
+        { id: "b", label: "Switch the request to Core gRPC because Core is a separate layer." },
+        { id: "c", label: "Use any TLS-enabled response as proof that the returned Platform state is correct." },
+        { id: "d", label: "Retry through another available DAPI address while keeping the request on the Platform surface." },
+      ],
+      correctOptionId: "d",
+      explanation: "Node selection can change for availability without changing the layer or operation the application needs.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now explain DAPI's decentralized role, map a request to Core or Platform, and distinguish that logical choice from selecting an available DAPI node. You also know why SDK-managed discovery, load balancing, retries, and failed-address exclusion make applications more resilient.

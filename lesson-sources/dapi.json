@@ -1,0 +1,217 @@
+{
+  "module": 6,
+  "slug": "dapi",
+  "versions": {
+    "dashPlatformDocs": "3.1.0",
+    "dashPlatformBook": "v4.2-dev",
+    "evoSdk": "4.1.1",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Dash Academy curriculum — module 6: DAPI",
+      "kind": "curriculum manifest",
+      "locator": "curriculum/lessons.json:73",
+      "version": "repository source of truth"
+    },
+    {
+      "id": "s2",
+      "title": "Decentralized API (DAPI) — network access",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md:9-11",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s3",
+      "title": "What is Dash Platform — decentralized DAPI instances",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:62-66",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s4",
+      "title": "DAPI Endpoints — protocol overview",
+      "kind": "vendored authoritative Dash Platform endpoint reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md:9-12",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s5",
+      "title": "Connect to a network — SDK connection management",
+      "kind": "vendored authoritative Dash Platform tutorial",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/connecting-to-testnet.md:9-11",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s6",
+      "title": "Evo SDK README — network, address, and transport configuration",
+      "kind": "installed pinned package documentation",
+      "locator": "node_modules/@dashevo/evo-sdk/README.md:42-58",
+      "version": "@dashevo/evo-sdk 4.1.1"
+    },
+    {
+      "id": "s7",
+      "title": "WasmSdkBuilder type declarations — presets and explicit addresses",
+      "kind": "installed pinned package types",
+      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts:10037-10059",
+      "version": "@dashevo/wasm-sdk 4.1.1"
+    },
+    {
+      "id": "s8",
+      "title": "Dash Platform Book — DAPI client retries and load balancing",
+      "kind": "vendored authoritative architecture reference",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/api-reference.md:14-22",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "s9",
+      "title": "DAPI Endpoints — Core JSON-RPC and gRPC operations",
+      "kind": "vendored authoritative Dash Platform endpoint reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md:154-177",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s10",
+      "title": "Connect directly to DAPI",
+      "kind": "vendored authoritative Dash Platform tutorial",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/connecting-to-testnet.md:71-75",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s11",
+      "title": "WasmSdkBuilder type declarations — trusted-context address behavior",
+      "kind": "installed pinned package types",
+      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts:10078-10099",
+      "version": "@dashevo/wasm-sdk 4.1.1"
+    },
+    {
+      "id": "s12",
+      "title": "WasmSdkBuilder type declarations — retries and failed-address exclusion",
+      "kind": "installed pinned package types",
+      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts:10068-10076",
+      "version": "@dashevo/wasm-sdk 4.1.1"
+    },
+    {
+      "id": "s13",
+      "title": "DAPI Endpoints — Platform proofs and data queries",
+      "kind": "vendored authoritative Dash Platform endpoint reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md:14-50",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s14",
+      "title": "DAPI Endpoints — Platform state transitions",
+      "kind": "vendored authoritative Dash Platform endpoint reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md:68-73",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s15",
+      "title": "Decentralized API (DAPI) — transport security and proofs",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md:23-25",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s16",
+      "title": "Decentralized API (DAPI) — endpoint overview",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md:32-34",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s17",
+      "title": "What is Dash Platform — higher-level SDK responsibilities",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:68-71",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s18",
+      "title": "Connect to a network — remote devnet limitation",
+      "kind": "vendored authoritative Dash Platform tutorial",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/connecting-to-testnet.md:67-69",
+      "version": "Dash Platform docs 3.1.0"
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Module 6 is a 10-minute concepts lesson requiring decentralized API, Core and Platform access, and endpoint selection, completed by the dapi quiz.",
+      "sourceIds": ["s1"],
+      "support": "direct"
+    },
+    {
+      "id": "c2",
+      "text": "DAPI uses Dash's masternode infrastructure to expose layer 1 Core and layer 2 Platform functionality through an API.",
+      "sourceIds": ["s2"],
+      "support": "direct"
+    },
+    {
+      "id": "c3",
+      "text": "Clients can use different DAPI instances according to network resource availability rather than depend on one mandatory provider instance.",
+      "sourceIds": ["s3"],
+      "support": "direct"
+    },
+    {
+      "id": "c4",
+      "text": "JSON-RPC exposes limited Core information, while gRPC covers Platform, richer Core operations, and event streams.",
+      "sourceIds": ["s4", "s9", "s16"],
+      "support": "direct"
+    },
+    {
+      "id": "c5",
+      "text": "Core-facing operations include block and chain queries, transaction broadcast and lookup, and subscriptions to Core updates.",
+      "sourceIds": ["s9"],
+      "support": "direct"
+    },
+    {
+      "id": "c6",
+      "text": "Platform-facing operations include identity, contract, and document queries plus state-transition broadcast and confirmation; supported queries can return proofs.",
+      "sourceIds": ["s13", "s14"],
+      "support": "direct"
+    },
+    {
+      "id": "c7",
+      "text": "A higher-level SDK is the normal application path because it handles connection management and data serialization; direct DAPI access can be useful for debugging.",
+      "sourceIds": ["s5", "s10", "s17"],
+      "support": "direct"
+    },
+    {
+      "id": "c8",
+      "text": "Pinned SDK 4.1.1 begins node selection with a network preset or explicit HTTPS addresses; a trusted context can supply discovered addresses, but explicit addresses remain authoritative.",
+      "sourceIds": ["s6", "s7", "s11"],
+      "support": "direct"
+    },
+    {
+      "id": "c9",
+      "text": "Pinned transport settings support retries and failed-address exclusion, and the underlying DAPI client provides retries and load balancing.",
+      "sourceIds": ["s6", "s8", "s12"],
+      "support": "direct"
+    },
+    {
+      "id": "c10",
+      "text": "For this lesson, endpoint selection comprises choosing the Core or Platform API surface and choosing among DAPI node providers.",
+      "sourceIds": ["s3", "s4", "s7", "s8", "s9", "s11", "s13", "s14"],
+      "support": "inference"
+    },
+    {
+      "id": "c11",
+      "text": "TLS, decentralized provider selection, and Platform proof verification address transport security, availability, and response integrity respectively.",
+      "sourceIds": ["s3", "s15"],
+      "support": "inference"
+    }
+  ],
+  "examples": [],
+  "conflicts": [
+    {
+      "id": "x1",
+      "topic": "custom remote-devnet addresses",
+      "description": "The vendored 3.1.0 connection tutorial says custom remote-devnet addresses are unsupported, while pinned SDK 4.1.1 documentation and types support devnet address lists.",
+      "resolution": "Remote-devnet configuration is outside this concepts lesson and is omitted. Pinned 4.1.1 package types remain authoritative for SDK shape.",
+      "sourceIds": ["s6", "s7", "s18"],
+      "status": "resolved"
+    }
+  ]
+}
