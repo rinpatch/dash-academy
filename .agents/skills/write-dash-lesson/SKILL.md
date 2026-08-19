@@ -36,7 +36,7 @@ Do not alter curriculum numbering or scope. Do not access secrets or run live te
 A tier 2 lesson's `## Checkpoint` must contain a registered verification component wired to the
 manifest's `challengeId`; validation rejects the id appearing only in prose. Use
 `<TestnetVerifier challengeId="..." operation="..." />`, copying both values from the manifest row.
-`<IdentityVerifier>` is the identity-only predecessor and is used solely by module 10.
+`<TestnetVerifier>` is the only verification component available.
 
 You cannot add or edit components. Server-side verification exists today for `identity-create` and
 `dpns-register` only; every other operation answers "not verifiable yet". If your lesson's operation

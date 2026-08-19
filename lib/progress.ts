@@ -5,7 +5,6 @@ export type QuizEvidence = {
 };
 
 export type TestnetEvidence = { reference: string };
-export type IdentityEvidence = { identityId: string };
 
 export const challengeSpecs = {
   "what-is-dash-platform": { lessonId: "what-is-dash-platform", evidence: "quiz", completesLesson: true },
@@ -17,7 +16,7 @@ export const challengeSpecs = {
   proofs: { lessonId: "proofs", evidence: "quiz", completesLesson: true },
   "environment-setup": { lessonId: "environment-setup", evidence: "testnet", completesLesson: true },
   "fund-a-platform-address": { lessonId: "fund-a-platform-address", evidence: "testnet", completesLesson: true },
-  "create-a-dash-identity": { lessonId: "create-a-dash-identity", evidence: "identity", completesLesson: true },
+  "create-a-dash-identity": { lessonId: "create-a-dash-identity", evidence: "testnet", completesLesson: true },
   "register-a-username": { lessonId: "register-a-username", evidence: "testnet", completesLesson: true },
   "write-your-first-data-contract:quiz": { lessonId: "write-your-first-data-contract", evidence: "quiz", completesLesson: false },
   "write-your-first-data-contract": { lessonId: "write-your-first-data-contract", evidence: "testnet", completesLesson: true },
@@ -34,11 +33,7 @@ export const challengeSpecs = {
 
 export type ChallengeId = keyof typeof challengeSpecs;
 type EvidenceKind<K extends ChallengeId> = (typeof challengeSpecs)[K]["evidence"];
-type EvidenceFor<K extends ChallengeId> = EvidenceKind<K> extends "quiz"
-  ? QuizEvidence
-  : EvidenceKind<K> extends "identity"
-    ? IdentityEvidence
-    : TestnetEvidence;
+type EvidenceFor<K extends ChallengeId> = EvidenceKind<K> extends "quiz" ? QuizEvidence : TestnetEvidence;
 
 export type ChallengeEvidenceMap = { [K in ChallengeId]: EvidenceFor<K> };
 export type QuizChallengeId = { [K in ChallengeId]: EvidenceKind<K> extends "quiz" ? K : never }[ChallengeId];
@@ -79,7 +74,6 @@ export function parseCompletedChallenges(value: unknown): CompletedChallenges {
     const kind = challengeSpecs[id].evidence;
     const valid =
       (kind === "quiz" && typeof candidate.evidence.score === "number" && typeof candidate.evidence.total === "number" && isStringRecord(candidate.evidence.answers)) ||
-      (kind === "identity" && typeof candidate.evidence.identityId === "string") ||
       (kind === "testnet" && typeof candidate.evidence.reference === "string");
     if (valid) (parsed as Record<string, unknown>)[id] = candidate;
   }

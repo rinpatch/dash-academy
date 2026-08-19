@@ -3,7 +3,7 @@ import path from "node:path";
 import { command } from "./lib.mjs";
 
 // Components that can complete a hands-on checkpoint. Keep in step with mdx-components.tsx.
-export const VERIFICATION_COMPONENTS = ["TestnetVerifier", "IdentityVerifier"];
+export const VERIFICATION_COMPONENTS = ["TestnetVerifier"];
 
 /**
  * True when the MDX opens one of `names` and gives it challengeId="id". Scans from each opening tag

@@ -73,7 +73,7 @@ Developers who are **new to blockchain but not new to programming**. They want t
 
 ## Components
 
-All five are available in any lesson without importing anything.
+All four are available in any lesson without importing anything.
 
 ### `<Term>` — a clickable definition
 
@@ -156,10 +156,7 @@ Verification is implemented per operation on the server. Today that's `identity-
 `dpns-register`; anything else answers "not verifiable yet" rather than passing the reader. If your
 lesson needs an operation that isn't implemented, a developer has to add the check first.
 
-`<IdentityVerifier challengeId="create-a-dash-identity" />` is the older, identity-only version still
-used by that one lesson. Use `TestnetVerifier` for anything new.
-
-`<WalletSetup>` exists but no lesson uses it yet, so treat it as unproven.
+`TestnetVerifier` is the only verification component; there is no other one to reach for.
 
 ## Which lessons appear, and in what order
 
