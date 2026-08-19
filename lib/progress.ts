@@ -42,6 +42,7 @@ type EvidenceFor<K extends ChallengeId> = EvidenceKind<K> extends "quiz"
 
 export type ChallengeEvidenceMap = { [K in ChallengeId]: EvidenceFor<K> };
 export type QuizChallengeId = { [K in ChallengeId]: EvidenceKind<K> extends "quiz" ? K : never }[ChallengeId];
+export type TestnetChallengeId = { [K in ChallengeId]: EvidenceKind<K> extends "testnet" ? K : never }[ChallengeId];
 export type ChallengeCompletion<K extends ChallengeId = ChallengeId> = {
   completedAt: string;
   evidence: ChallengeEvidenceMap[K];

@@ -4,6 +4,7 @@ import { Callout } from "@/components/lesson/callout";
 import { IdentityVerifier } from "@/components/lesson/identity-verifier";
 import { LessonQuiz } from "@/components/lesson/lesson-quiz";
 import { Term } from "@/components/lesson/term";
+import { TestnetVerifier } from "@/components/lesson/testnet-verifier";
 import { WalletSetup } from "@/components/lesson/wallet-setup";
 
 export function getMDXComponents(components: MDXComponents = {}): MDXComponents {
@@ -13,6 +14,7 @@ export function getMDXComponents(components: MDXComponents = {}): MDXComponents 
     IdentityVerifier,
     LessonQuiz,
     Term,
+    TestnetVerifier,
     WalletSetup,
     ...components,
   };

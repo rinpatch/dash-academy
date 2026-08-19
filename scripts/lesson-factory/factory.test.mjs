@@ -5,6 +5,7 @@ import path from "node:path";
 import { glossaryIds, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
 import { command, repoRoot } from "./lib.mjs";
 import { formatEvent, parseResult } from "./agent.mjs";
+import { usesComponent, VERIFICATION_COMPONENTS } from "./validate.mjs";
 
 test("agent result parsing takes the last assistant message and surfaces provider errors", () => {
   const line = (event) => `${JSON.stringify(event)}\n`;
@@ -119,4 +120,18 @@ test("a child that exits without reading stdin does not crash the orchestrator",
   const big = "x".repeat(4 * 1024 * 1024);
   const result = await command("node", ["-e", "process.exit(3)"], { input: big });
   assert.equal(result.code, 3, "the child's exit code is still reported");
+});
+
+test("validation demands a real verification component, not the challenge id in prose", () => {
+  const id = "register-a-username";
+  // The old substring check passed on this; it ships no checkpoint at all.
+  assert.equal(usesComponent(`Your challenge is ${id}, good luck.`, VERIFICATION_COMPONENTS, id), false);
+  assert.equal(usesComponent(`<TestnetVerifier challengeId="${id}" operation="dpns-register" />`, VERIFICATION_COMPONENTS, id), true);
+  // Wired to the wrong lesson's challenge.
+  assert.equal(usesComponent(`<TestnetVerifier challengeId="submit-a-document" />`, VERIFICATION_COMPONENTS, id), false);
+  // A component that merely starts with the same characters must not count.
+  assert.equal(usesComponent(`<TestnetVerifierMock challengeId="${id}" />`, VERIFICATION_COMPONENTS, id), false);
+  // Props spanning lines, and quiz props full of braces and quotes, still parse.
+  assert.equal(usesComponent(`<TestnetVerifier\n  challengeId="${id}"\n  operation="dpns-register"\n/>`, VERIFICATION_COMPONENTS, id), true);
+  assert.equal(usesComponent(`<LessonQuiz challengeId="q" questions={[{ id: "a", label: "x > y" }]} />`, ["LessonQuiz"], "q"), true);
 });

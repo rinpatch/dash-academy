@@ -2,6 +2,33 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { command } from "./lib.mjs";
 
+// Components that can complete a hands-on checkpoint. Keep in step with mdx-components.tsx.
+export const VERIFICATION_COMPONENTS = ["TestnetVerifier", "IdentityVerifier"];
+
+/**
+ * True when the MDX opens one of `names` and gives it challengeId="id". Scans from each opening tag
+ * to its closing ">" rather than using one regex, because quiz props contain braces and quotes that
+ * a naive pattern reads as the end of the tag.
+ */
+export function usesComponent(mdx, names, id) {
+  for (const name of names) {
+    let from = 0;
+    for (;;) {
+      const open = mdx.indexOf(`<${name}`, from);
+      if (open === -1) break;
+      const next = mdx[open + name.length + 1];
+      // Guard against <TestnetVerifierSomethingElse matching <TestnetVerifier.
+      if (next === undefined || /[\s/>]/.test(next)) {
+        const close = mdx.indexOf(">", open);
+        const tag = mdx.slice(open, close === -1 ? mdx.length : close);
+        if (tag.includes(`challengeId="${id}"`) || tag.includes(`challengeId='${id}'`)) return true;
+      }
+      from = open + 1;
+    }
+  }
+  return false;
+}
+
 export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   const errors = [];
   const mdxPath = path.join(cwd, "content/academy", `${lesson.slug}.mdx`);
@@ -20,8 +47,15 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   if (!mdx.includes("## What you accomplished")) errors.push("Missing ## What you accomplished");
   if (/^# /m.test(mdx.replace(/^---[\s\S]*?---/, ""))) errors.push("Lesson body must not contain an H1");
   if (/\b(?:mnemonic|private[_ -]?key)\s*[:=]\s*["'][^"']+/i.test(mdx)) errors.push("Possible secret in MDX");
-  const expectedIds = [lesson.verification.challengeId, lesson.verification.quizChallengeId].filter(Boolean);
-  for (const id of expectedIds) if (!mdx.includes(id)) errors.push(`Missing challenge ID ${id}`);
+  // A substring check used to be enough, so a lesson could name its challenge in prose and pass
+  // while shipping no working checkpoint at all. Require the id to be wired into a component that
+  // is actually registered in mdx-components.tsx.
+  const quizId = lesson.verification.quizChallengeId ?? (lesson.verification.kind === "quiz" ? lesson.verification.challengeId : null);
+  const verifierId = lesson.verification.kind === "quiz" ? null : lesson.verification.challengeId;
+  if (quizId && !usesComponent(mdx, ["LessonQuiz"], quizId)) errors.push(`Missing <LessonQuiz challengeId="${quizId}">`);
+  if (verifierId && !usesComponent(mdx, VERIFICATION_COMPONENTS, verifierId)) {
+    errors.push(`Missing a verification component for ${verifierId} (one of ${VERIFICATION_COMPONENTS.join(", ")})`);
+  }
   if (ledger) {
     if (ledger.slug !== lesson.slug || ledger.module !== lesson.module) errors.push("Evidence ledger identity does not match manifest");
     const sourceIds = new Set((ledger.sources ?? []).map((source) => source.id));

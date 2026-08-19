@@ -30,3 +30,15 @@ Pedagogy review must return `revise` when a lesson leads with mechanism, covers 
 5. Review the result against the manifest, answers, evidence, and test output. Repair only the assigned files.
 
 Do not alter curriculum numbering or scope. Do not access secrets or run live testnet writes. A successful local stage is not proof that the live testnet stage passed.
+
+## Hands-on checkpoints
+
+A tier 2 lesson's `## Checkpoint` must contain a registered verification component wired to the
+manifest's `challengeId`; validation rejects the id appearing only in prose. Use
+`<TestnetVerifier challengeId="..." operation="..." />`, copying both values from the manifest row.
+`<IdentityVerifier>` is the identity-only predecessor and is used solely by module 10.
+
+You cannot add or edit components. Server-side verification exists today for `identity-create` and
+`dpns-register` only; every other operation answers "not verifiable yet". If your lesson's operation
+has no check, say so in your stage output and let the runner block rather than shipping a checkpoint
+that cannot pass.

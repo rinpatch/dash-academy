@@ -136,19 +136,30 @@ happens, so write it properly rather than restating the correct option.
 Write questions that test whether someone could *act*. "Which layer would you use for X" is a good
 question; "what does DAPI stand for" is not.
 
-### `<WalletSetup>` and `<IdentityVerifier>` — hands-on lessons only
+### `<TestnetVerifier>` — the checkpoint for a hands-on lesson
 
-These go in the `## Checkpoint` of a testnet lesson and check the reader's real on-chain work.
-`IdentityVerifier` is the one currently in use, in the identity lesson:
+The reader pastes the public result of their work and Dash Academy looks it up on testnet.
 
 ```mdx
-<IdentityVerifier challengeId="create-a-dash-identity" />
+<TestnetVerifier
+  challengeId="register-a-username"
+  operation="dpns-register"
+  label="Identity that owns the name"
+/>
 ```
 
-`WalletSetup` exists and works but no lesson uses it yet, so treat it as unproven.
+`challengeId` and `operation` both come from the lesson's row in `curriculum/lessons.json` — copy
+them, don't invent them. `label` and `placeholder` are optional and just change the wording around
+the input.
 
-`challengeId` is fixed per lesson — don't invent values. Talk to a developer before adding either of
-these to a lesson that doesn't already have them.
+Verification is implemented per operation on the server. Today that's `identity-create` and
+`dpns-register`; anything else answers "not verifiable yet" rather than passing the reader. If your
+lesson needs an operation that isn't implemented, a developer has to add the check first.
+
+`<IdentityVerifier challengeId="create-a-dash-identity" />` is the older, identity-only version still
+used by that one lesson. Use `TestnetVerifier` for anything new.
+
+`<WalletSetup>` exists but no lesson uses it yet, so treat it as unproven.
 
 ## Which lessons appear, and in what order
 
@@ -163,13 +174,3 @@ these to a lesson that doesn't already have them.
 
 A lesson file that isn't listed here still builds, but nobody can find it. Add the slug (the filename
 without `.mdx`) when a lesson is ready to be seen.
-
-## Common mistakes
-
-| Symptom | Cause |
-|---|---|
-| "Frontmatter … does not match manifest" | Frontmatter drifted from `curriculum/lessons.json` |
-| "Missing ## Learning objectives" | One of the three required headings is absent or misspelled |
-| A `<Term>` renders as plain text | The `id` isn't in `lib/glossary.ts` — check the spelling |
-| The quiz doesn't save progress | `challengeId` isn't registered; ask a developer |
-| A lesson doesn't show in the sidebar | Its slug isn't in `meta.json` |
