@@ -35,33 +35,49 @@ export async function runAgent({ role, lesson, cwd, lessonDir, context = {}, att
     ...(role === "research" ? ["--variant", "high"] : []),
     ...(writable ? ["--auto"] : []),
   ];
-  // Stream events to disk as they arrive so a stuck stage is visible with `tail -f`, and echo a
-  // one-line summary per tool call. Writing only after exit hid all progress for the whole stage.
-  const stream = createWriteStream(events, { mode: 0o600 });
-  let pending = "";
-  const started = Date.now();
-  const result = await command("opencode", args, {
-    cwd,
-    env: secretlessEnv({ OPENCODE_PERMISSION: JSON.stringify(permission) }),
-    input: prompt,
-    onStdout: (chunk) => {
-      stream.write(chunk);
-      pending += chunk;
-      const lines = pending.split("\n");
-      pending = lines.pop() ?? "";
-      for (const line of lines) {
-        const progress = formatEvent(lesson, role, started, line, cwd);
-        if (progress) writeSync(1, `${progress}\n`);
-      }
-    },
-  });
-  await new Promise((resolve) => stream.end(resolve));
+  // opencode keeps every session in one machine-wide SQLite database with busy_timeout=0, so a
+  // parallel worker holding the write lock fails this one instantly, before the first model call.
+  // Nothing has been spent at that point, so retry rather than lose the stage.
+  let result;
+  for (let attemptNumber = 1; ; attemptNumber += 1) {
+    // Stream events to disk as they arrive so a stuck stage is visible with `tail -f`, and echo a
+    // one-line summary per tool call. Writing only after exit hid all progress for the whole stage.
+    const stream = createWriteStream(events, { mode: 0o600 });
+    let pending = "";
+    const started = Date.now();
+    result = await command("opencode", args, {
+      cwd,
+      env: secretlessEnv({ OPENCODE_PERMISSION: JSON.stringify(permission) }),
+      input: prompt,
+      onStdout: (chunk) => {
+        stream.write(chunk);
+        pending += chunk;
+        const lines = pending.split("\n");
+        pending = lines.pop() ?? "";
+        for (const line of lines) {
+          const progress = formatEvent(lesson, role, started, line, cwd);
+          if (progress) writeSync(1, `${progress}\n`);
+        }
+      },
+    });
+    await new Promise((resolve) => stream.end(resolve));
+    if (!shouldRetryAgent(result, attemptNumber)) break;
+    writeSync(1, `[m${String(lesson.module).padStart(2, "0")} ${role}] opencode database was locked, retrying\n`);
+    await new Promise((resolve) => setTimeout(resolve, attemptNumber * 5000));
+  }
   await writeFile(stderrFile, redact(result.stderr), { mode: 0o600 });
   if (result.code !== 0) throw new Error(`${role} agent failed (see ${stderrFile})`);
   const parsed = parseResult(result.stdout, role, stderrFile);
   await writeJson(output, parsed);
   validateStageOutput(schemaName, parsed);
   return parsed;
+}
+
+// Only the shared-database collision is worth another run: it costs nothing and happens before the
+// first model call. A model or content failure would just repeat, and re-running it is not free.
+export function shouldRetryAgent(result, attemptNumber, limit = 4) {
+  if (result.code === 0 || attemptNumber >= limit) return false;
+  return /database is locked/i.test(result.stderr ?? "");
 }
 
 // Returns a progress line, or null for events not worth showing. Pure so it is testable without

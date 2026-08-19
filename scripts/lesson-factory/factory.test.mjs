@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { glossaryIds, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
 import { command, repoRoot } from "./lib.mjs";
-import { formatEvent, parseResult } from "./agent.mjs";
+import { formatEvent, parseResult, shouldRetryAgent } from "./agent.mjs";
 import { usesComponent, VERIFICATION_COMPONENTS } from "./validate.mjs";
 
 test("agent result parsing takes the last assistant message and surfaces provider errors", () => {
@@ -134,4 +134,12 @@ test("validation demands a real verification component, not the challenge id in 
   // Props spanning lines, and quiz props full of braces and quotes, still parse.
   assert.equal(usesComponent(`<TestnetVerifier\n  challengeId="${id}"\n  operation="dpns-register"\n/>`, VERIFICATION_COMPONENTS, id), true);
   assert.equal(usesComponent(`<LessonQuiz challengeId="q" questions={[{ id: "a", label: "x > y" }]} />`, ["LessonQuiz"], "q"), true);
+});
+
+test("only a locked opencode database earns another agent run", () => {
+  const locked = { code: 1, stderr: "Error: Unexpected error\n\ndatabase is locked" };
+  assert.equal(shouldRetryAgent(locked, 1), true);
+  assert.equal(shouldRetryAgent(locked, 4), false, "gives up at the limit");
+  assert.equal(shouldRetryAgent({ code: 0, stderr: "" }, 1), false, "success is not retried");
+  assert.equal(shouldRetryAgent({ code: 1, stderr: "quota exceeded" }, 1), false, "other failures repeat");
 });
