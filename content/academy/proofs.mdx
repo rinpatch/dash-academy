@@ -1,0 +1,136 @@
+---
+title: Proofs
+description: Verify Platform responses instead of trusting a single server.
+module: 7
+tier: concepts
+estimatedMinutes: 12
+exp: 100
+verification: quiz
+prerequisites: [6]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- explain why checking a Platform response yourself is stronger than trusting a single server;
+- distinguish what a state proof establishes (inclusion or non-inclusion against an authenticated root) from what it does not;
+- name what a light client needs — the block's commitment plus independently trusted quorum keys — to accept returned state without replaying the chain; and
+- decide where the verification boundary lies, and treat a failed proof as an unverified response.
+
+When your app reads data through <Term id="dapi">DAPI</Term>, it is talking to one masternode. This lesson is about the tools that let you stop taking that one server's word for the result.
+
+## Trusting one server versus verifying consensus state
+
+A DAPI query returns data from a single node — whichever <Term id="masternode">masternode</Term> the DAPI layer routed you to. If you simply use the bytes that come back, you are trusting that one server: a misbehaving or compromised node could return a wrong value, omit a record, or claim something exists when it does not.
+
+Dash Platform gives you a way out. A query can come with a **state proof** — a compact cryptographic certificate that ties the returned data to what the whole network actually committed to. Rather than believing the server, you check the proof yourself.
+
+<Callout type="info" title="A useful mental model">
+Think of a server's plain answer as a salesperson's claim, and a state proof as a signed receipt. The claim is easy to fake; the receipt can be checked against records the salesperson does not control.
+</Callout>
+
+## How Platform commits to state
+
+Platform's application data — <Term id="identity">identities</Term>, names, documents, and more — lives in a database called <Term id="grove-db">GroveDB</Term>. GroveDB stores that data as an authenticated tree: a structure whose contents can be summarized by a single root hash that changes whenever any part of the state changes.
+
+Every committed Platform block carries that root hash in its header. It is called the <Term id="apphash">AppHash</Term>. Because the block's transactions are executed before the block is committed, the AppHash commits to the state *after* that block's changes are applied. One hash in one block header therefore stands in for the entire Platform state at that moment in time.
+
+## What a state proof proves
+
+A state proof is a path through that authenticated tree. It shows that the data you asked for sits under the AppHash, or that it is not there to be found:
+
+- An **inclusion proof** establishes that the requested data exists in the proved state and was returned unmodified.
+- A **non-inclusion proof** establishes that the requested data does *not* exist in the proved state.
+
+To check a proof you reconstruct the relevant tree path and compare it against the known root hash. A node that returned an altered value would produce a path that no longer matches the root, so the mismatch exposes the lie.
+
+Note what the proof is about: finalized state at a committed block. It does not cover pending changes, and it does not replay the historical sequence of events that produced the state.
+
+## Light-client trust and the authenticated consensus anchor
+
+Checking a proof against the AppHash is only half the job. Where did that AppHash come from? If the same node hands you both "here is the data" and "here is the root to check it against," you have proven nothing — you are still trusting that one server for both halves.
+
+A **light client** is a client that verifies state without running a full node or replaying the chain. It closes the loop in two steps:
+
+1. It verifies the GroveDB proof against the AppHash.
+2. It authenticates that AppHash against the network's validators.
+
+Step 2 works because a committed header's AppHash is signed by the validator quorum — a <Term id="llmq">Long-Living Masternode Quorum</Term> whose members must reach agreement to produce the signature. To check that signature, the light client needs the quorum's public keys, and those keys must come from a source the client already trusts independently. That independently obtained commitment is the **authenticated consensus anchor**. A root, a signature, or a quorum identifier handed over by the same server is not authenticated simply because it arrived in the payload.
+
+In the SDK you will use in the next module, that anchor is the **trusted context**. Connecting with `EvoSDK.testnetTrusted()` pre-fetches the quorum public keys, and the SDK verifies proofs against them for you. Query responses that carry a proof expose it as a `ProofInfo` with the fields `grovedbProof`, `quorumHash`, `signature`, `round`, `blockIdHash`, and `quorumType`. You do not need to verify these fields by hand — you need to know the boundary they sit on.
+
+## Verification boundaries
+
+Knowing where verification stops is as important as knowing where it starts.
+
+**TLS and state proofs solve different problems.** <Term id="tls">TLS</Term> encrypts the connection, protecting it from interception and in-transit tampering. A state proof authenticates the returned *state*, guaranteeing the server has not modified the data. A read can arrive over a secure connection and still carry data a bad server invented; the proof is what catches that.
+
+**Proof delivery is optional.** A client must request a proof to receive one (and the SDK's `proofs` option toggles it). A client that neither requests nor verifies a proof receives no proof-backed guarantee and is back to trusting the response through some other mechanism.
+
+**Failure means unverified.** If a proof does not check out, the response is not valid Platform state. Treat it as unverified — never accept the payload anyway just because it looks plausible.
+
+**Consensus is not real-world truth.** A verified proof establishes membership or absence relative to the authenticated consensus state. It does not tell you that the data is desirable, useful, or true in the real world — only that the network committed to it.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="proofs"
+  passingScore={3}
+  questions={[
+    {
+      id: "proof-chain",
+      prompt: "To accept a Platform response without trusting the responding server, what two checks must a light client perform?",
+      options: [
+        { id: "a", label: "Decrypt the payload with TLS and compare two responses from the same node." },
+        { id: "b", label: "Verify the state proof against the block's AppHash, then authenticate that AppHash against validator-quorum signatures using independently trusted keys." },
+        { id: "c", label: "Confirm the data matches a copy cached in the server's own database." },
+        { id: "d", label: "Ask a second DAPI node and accept whichever answer arrives first." },
+      ],
+      correctOptionId: "b",
+      explanation: "A light client verifies the GroveDB proof against the AppHash, then authenticates that commitment against the quorum using trusted keys — not the responding server's word.",
+    },
+    {
+      id: "non-inclusion",
+      prompt: "What does a non-inclusion proof establish?",
+      options: [
+        { id: "a", label: "The requested data will be added once you pay the credits." },
+        { id: "b", label: "The requested data exists and was returned unmodified." },
+        { id: "c", label: "The requested data does not exist in the proved state." },
+        { id: "d", label: "The requested data existed in an earlier block but was since deleted." },
+      ],
+      correctOptionId: "c",
+      explanation: "An inclusion proof shows data exists unchanged; a non-inclusion proof shows it does not exist in the proved state.",
+    },
+    {
+      id: "trust-boundary",
+      prompt: "Why must the quorum public keys come from an independently trusted source?",
+      options: [
+        { id: "a", label: "Because the AppHash is useless unless the same server supplied it." },
+        { id: "b", label: "Because a root, signature, or quorum identifier delivered by the same server is not authenticated merely by being present in the payload." },
+        { id: "c", label: "Because TLS certificates cannot be read by light clients." },
+        { id: "d", label: "Because the keys rotate on every block and must be refetched per query." },
+      ],
+      correctOptionId: "b",
+      explanation: "If the server supplies both the data and the authority to check it against, you are still trusting that server. The anchor must come from a source you already trust.",
+    },
+    {
+      id: "failed-verification",
+      prompt: "What should your application do when a state proof fails to verify?",
+      options: [
+        { id: "a", label: "Accept the payload but label it low-confidence." },
+        { id: "b", label: "Treat it as valid because it arrived over an encrypted connection." },
+        { id: "c", label: "Retry until the server returns a payload that looks correct." },
+        { id: "d", label: "Treat the response as unverified rather than valid Platform state." },
+      ],
+      correctOptionId: "d",
+      explanation: "A failed verification means the response has not earned consensus trust. The safe behavior is to treat it as unverified, not to accept it anyway.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now explain why a state proof is stronger than a server's word, how a block's AppHash commits to the GroveDB state tree, and how inclusion and non-inclusion proofs establish data presence or absence against that commitment. You know how a light client authenticates the commitment through the validator quorum using an independently trusted anchor, and you can name the boundaries of that trust: TLS versus proofs, optional proof delivery, failed verification as unverified state, and consensus versus real-world truth. When you wire up the SDK in the next module, you will do it in trusted mode so every read you make is proof-backed.

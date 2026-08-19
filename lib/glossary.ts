@@ -127,4 +127,28 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "A masternode that also runs Dash Platform, so beyond Core's extra services it serves the decentralized API (DAPI) and stores Platform state.",
     tag: "Dash",
   },
+  "grove-db": {
+    title: "GroveDB",
+    definition:
+      "Dash Platform's storage engine. It keeps application state in an authenticated tree so that a single root hash can represent the whole state and let clients verify specific data against it.",
+    tag: "Dash",
+  },
+  apphash: {
+    title: "AppHash",
+    definition:
+      "The root hash of Dash Platform's application state, committed in each block header. It is the anchor a state proof is checked against.",
+    tag: "Protocol",
+  },
+  llmq: {
+    title: "Long-Living Masternode Quorum",
+    definition:
+      "A long-lived group of masternodes that jointly sign committed results with a threshold signature, so no single member can produce a valid one alone.",
+    tag: "Dash",
+  },
+  tls: {
+    title: "TLS",
+    definition:
+      "Transport Layer Security: the protocol that encrypts a connection so it cannot be read or tampered with in transit. It protects the pipe, not the truth of the data inside it.",
+    tag: "Protocol",
+  },
 };
