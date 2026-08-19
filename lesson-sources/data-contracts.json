@@ -80,6 +80,13 @@
       "kind": "repository test fixture and installed SDK runtime check",
       "locator": "tests/lessons/data-contracts.mjs; tests/lessons/data-contracts.verify.mjs",
       "version": "current worktree with @dashevo/wasm-sdk 4.1.1"
+    },
+    {
+      "id": "src-register-tutorial",
+      "title": "Dash Platform Register a Data Contract tutorial",
+      "kind": "vendored authoritative documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/contracts-and-documents/register-a-data-contract.md:42-46",
+      "version": "Dash Platform docs 3.1.0"
     }
   ],
   "claims": [
@@ -129,6 +136,12 @@
       "id": "claim-compound-indexes",
       "text": "Compound-index property order matters because usable queries must follow index prefix and ordering rules.",
       "sourceIds": ["src-contract-reference", "src-query-reference", "src-platform-book-indexes"],
+      "support": "direct"
+    },
+    {
+      "id": "claim-index-asc-only",
+      "text": "Dash currently restricts an index's sort direction to ascending ('asc'); Drive only uses ascending storage today even though the direction field is preserved through the contract, so richer sort behaviour is deferred to the module 14 query lesson.",
+      "sourceIds": ["src-register-tutorial", "src-platform-book-indexes"],
       "support": "direct"
     },
     {

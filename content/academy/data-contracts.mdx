@@ -1,0 +1,190 @@
+---
+title: Data Contracts
+description: Model application data with document types and indexes.
+module: 4
+tier: concepts
+estimatedMinutes: 14
+exp: 100
+verification: quiz
+prerequisites: [3]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- choose the document types and fields that describe an application's data;
+- choose indexes so the queries your app will run are actually possible;
+- predict what a published contract commits you to, and what you can still change later; and
+- recognize what a data contract cannot express — custom server code and cross-type joins.
+
+## A schema before any data
+
+Before your app can write a single record to Dash Platform, it must publish a **data contract**: a description of the data it will store. The contract is itself stored on chain, and the network checks every record your app submits against that description, rejecting anything that does not conform.
+
+If you have built a web app, you already know this idea. You did not start inserting rows before you defined the tables; the table's columns said what each row may contain. A data contract plays the same role for Platform, with one difference worth noticing: the schema lives on chain, where every node in the network can validate against it, rather than inside one company's database.
+
+The <Term id="identity">identity</Term> that registers a contract owns it, and only that owner can later update it. That identity is the same kind of actor you created in the previous lesson — the thing that will own your app's records throughout this course.
+
+<Callout type="info" title="A useful mental model">
+A data contract is to documents what a table schema is to rows: it declares what may be stored, and the network enforces it.
+</Callout>
+
+## Document types
+
+A data contract declares one or more **document types**. A document type is the template for one category of record — a table, in the same analogy. A **document** is one instance of that type: one row. Module 5 covers the document lifecycle in depth; for now you only need the relationship between the two words.
+
+Document types are written in JSON Schema, a widely used vocabulary for describing the shape of JSON data. Here is a minimal contract for a small blog, with a single document type called `post`:
+
+```json
+{
+  "post": {
+    "type": "object",
+    "properties": {
+      "authorId": { "type": "string", "position": 0, "maxLength": 44 },
+      "slug": { "type": "string", "position": 1, "maxLength": 63 },
+      "title": { "type": "string", "position": 2, "maxLength": 120 },
+      "publishedAt": { "type": "integer", "position": 3, "minimum": 0 }
+    },
+    "required": ["authorId", "slug", "title", "publishedAt"],
+    "additionalProperties": false,
+    "indices": [
+      {
+        "name": "byAuthorAndPublishedAt",
+        "properties": [
+          { "authorId": "asc" },
+          { "publishedAt": "asc" }
+        ],
+        "unique": false
+      },
+      {
+        "name": "uniqueSlug",
+        "properties": [
+          { "slug": "asc" }
+        ],
+        "unique": true
+      }
+    ]
+  }
+}
+```
+
+Three rules show up in every document type you will write, and each one is a hard requirement:
+
+- Every property declares a JSON Schema `type` (`string`, `integer`, `array`, `object`, and so on) and a `position`: a unique, zero-based number that fixes the field's order for serialization. Positions restart at zero inside a nested object.
+- A `required` array lists the fields every document must include. Any property left out of that array is optional.
+- `additionalProperties` must be `false`, so a document cannot smuggle in a field you never declared. This is not a style choice — the platform rejects any document type that omits it.
+
+On top of the fields you declare, every document carries system fields the platform fills in for you — such as a unique `$id`, the `$dataContractId` of the contract it belongs to, and the `$ownerId` of the identity that owns it. You reference these when you need to order or select on them; you never declare them yourself in `properties`.
+
+## Indexes
+
+The field list alone does not make a query possible. On Dash Platform you can only filter on fields that are **indexed**, and a query's where-clause must use fields that all belong to the same index. A field you never indexed cannot be filtered or sorted, full stop. So an index is not a performance tweak; it is the gate on every read.
+
+An index is a list of fields attached to a document type, each given a sort direction. Today that direction is always `asc` — Dash only supports ascending indexes for now — so the example writes `asc` everywhere; module 14 covers how queries use an index to sort results.
+
+- A **single-field index** on `slug` lets you look a post up by its URL slug.
+- A **compound index** lists more than one field, and the order matters: `byAuthorAndPublishedAt` on `[authorId, publishedAt]` answers "all posts by this author", because a query must walk an index's fields in the order they are declared.
+
+Add `"unique": true` to turn an index into a **unique index**, which rejects a second document that repeats the same indexed value. That is how the example guarantees no two posts share a slug: the `uniqueSlug` index makes a duplicate `slug` invalid rather than merely hard to find.
+
+Choose your indexes against the queries your app actually needs. The example indexes exactly what a blog reader asks for — posts by author, and posts by slug — and nothing else.
+
+## Contract-time decisions
+
+A data contract is not just validation; it is a set of choices you lock in the moment you write it. Once published, a contract can only change in **backwards-compatible, additive** ways:
+
+- you may add a document type;
+- you may add an optional property to an existing document type; and
+- you may add a non-unique index.
+
+You cannot rename or remove a property, change a field's type, or alter an existing unique index. That makes indexing a **contract-time decision**: the fields you might ever query must be indexed from the start, because you cannot gracefully reshape the index later to add the one you left out.
+
+Behaviour is also chosen at contract time, through configuration that comes with defaults. A contract may declare whether its documents are mutable (`documentsMutable`, default `true`), whether changed documents keep their history (`documentsKeepHistory`, default `false`), and whether the contract itself may ever be deleted (`canBeDeleted`, default `false`). Because the defaults apply when you omit them, even the tiny `post` contract above has behaviour baked in — even though you never saw the option.
+
+## No triggers, no joins
+
+A data contract is a description, not a program. Two limits follow directly from that.
+
+**No developer-defined triggers.** Some platforms let you deploy code that runs on the server whenever data changes — a trigger that recalculates a balance, enforces a cross-record rule, or fires a notification. Dash Platform does not offer that. Its only validation logic is a set of **hard-coded triggers** built into the protocol itself, used only by the built-in system contracts such as <Term id="dpns">DPNS</Term>. Whatever your app can express in JSON Schema is validated for you; rules beyond that belong in your own client code, not on the server.
+
+**No server-side joins.** Dash data is **document-oriented**: each document is a self-contained record, stored in <Term id="grovedb">GroveDB</Term>, a document-oriented storage engine. A query names a single contract (its `dataContractId`) and a single document type (its `documentTypeName`), and there is no second source to combine and no `JOIN` clause. When two document types are related — a `post` and its author's profile — you store the author's identity ID on the post and fetch each type separately. That is exactly what the `authorId` field in the example is for: the relationship lives in the data, not in a server-side join.
+
+<Callout type="info" title="Plan your reads before you publish">
+The two halves of this lesson reinforce each other. Because there are no joins, you model relationships by storing an identifier — which means that identifier must be indexed. And because updates are additive-only, you have to make that index decision when you write the contract, not when you first notice a query is slow.
+</Callout>
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="data-contracts"
+  passingScore={4}
+  questions={[
+    {
+      id: "contract-purpose",
+      prompt: "What is a data contract?",
+      options: [
+        { id: "a", label: "A program uploaded to run on every node whenever data changes." },
+        { id: "b", label: "An on-chain description of the data an app will store, registered before the app writes records." },
+        { id: "c", label: "A wallet address that holds the app's fee credits." },
+        { id: "d", label: "A private key the app signs every document with." },
+      ],
+      correctOptionId: "b",
+      explanation: "A data contract is the schema an app registers first: it declares the document types and fields allowed, and the network validates records against it.",
+    },
+    {
+      id: "index-gate",
+      prompt: "When may a field be used to filter a document query?",
+      options: [
+        { id: "a", label: "When it appears in an index on that document type, together with the query's other where-fields." },
+        { id: "b", label: "When it is listed in the document type's required array." },
+        { id: "c", label: "When its name begins with a dollar sign." },
+        { id: "d", label: "When the query also selects every other field in the document." },
+      ],
+      correctOptionId: "a",
+      explanation: "Queries run against indexes, and all the fields in a where-clause must belong to the same index. Any unindexed field cannot be filtered or sorted.",
+    },
+    {
+      id: "additive-update",
+      prompt: "After a contract is published, which change is safe to make?",
+      options: [
+        { id: "a", label: "Renaming an existing property." },
+        { id: "b", label: "Adding an optional property to an existing document type." },
+        { id: "c", label: "Changing a field's type from string to integer." },
+        { id: "d", label: "Removing an existing unique index." },
+      ],
+      correctOptionId: "b",
+      explanation: "Contracts only change in backwards-compatible, additive ways: add a document type, add an optional property, or add a non-unique index.",
+    },
+    {
+      id: "no-triggers",
+      prompt: "Why can't an app run its own validation code on Dash Platform when data changes?",
+      options: [
+        { id: "a", label: "Because Dash has no developer-defined triggers; validation is limited to JSON Schema, and the only server-side logic is hard-coded in system contracts." },
+        { id: "b", label: "Because the SDK does not support JavaScript on the server." },
+        { id: "c", label: "Because every trigger must first be approved by a masternode vote." },
+        { id: "d", label: "Because DAPI is read-only for write operations." },
+      ],
+      correctOptionId: "a",
+      explanation: "There are no developer-defined triggers. The hard-coded triggers are protocol logic used only by system contracts; your rules must be expressible in JSON Schema.",
+    },
+    {
+      id: "no-joins",
+      prompt: "A post needs its author's profile. How do you connect the two document types?",
+      options: [
+        { id: "a", label: "Write a JOIN clause that links the two document types in one query." },
+        { id: "b", label: "Store the author's identity ID on each post and fetch the two types separately." },
+        { id: "c", label: "Ask Drive to merge both types into a single response." },
+        { id: "d", label: "Nest the profile document inside the post document." },
+      ],
+      correctOptionId: "b",
+      explanation: "Dash is document-oriented with no server-side joins. You relate types by storing an identifier field and fetching each type separately.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now model an application's data on Dash Platform as a data contract: choose its document types and fields, declare the indexes that gate your queries, and reason about what those choices lock in. You also know the shape of the contract's limits — validation lives in JSON Schema rather than server-side triggers, and relationships live in stored identifiers rather than joins. In the next lesson you will follow a single document through its lifecycle.

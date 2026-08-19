@@ -22,7 +22,7 @@ const documentedPublicSchemas = {
     indices: [
       {
         name: "byAuthorAndPublishedAt",
-        properties: [{ authorId: "asc" }, { publishedAt: "desc" }],
+        properties: [{ authorId: "asc" }, { publishedAt: "asc" }],
         unique: false,
       },
       {

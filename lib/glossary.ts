@@ -109,4 +109,10 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "Dash's smallest unit: one hundred-millionth of a Dash. Platform credits convert at a fixed rate of 1,000 credits per duff.",
     tag: "Dash",
   },
+  grovedb: {
+    title: "GroveDB",
+    definition:
+      "Dash Platform's document-oriented storage engine. Each contract's documents live in a collection addressed by contract and document type, with no relational joins between them.",
+    tag: "Dash",
+  },
 };
