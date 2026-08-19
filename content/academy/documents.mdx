@@ -1,0 +1,184 @@
+---
+title: Documents
+description: Understand the lifecycle, ownership, and revision of Platform documents.
+module: 5
+tier: concepts
+estimatedMinutes: 14
+exp: 100
+verification: quiz
+prerequisites: [4]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- distinguish a document from the document type that defines it;
+- trace the read and write paths through Platform;
+- explain who can create, replace, and delete a document;
+- use revisions to reason about concurrent updates; and
+- describe what a deletion refund does—and does not—return.
+
+## A contract-shaped record
+
+A **document** is one instance of a document type defined in a data contract. If a contract defines a `note` type, each stored note is a document. The contract supplies the schema and rules; the document supplies the values for one record.
+
+Alongside the application fields, Platform tracks system metadata such as:
+
+- `$id`: the document's unique identifier;
+- `$type`: the document type named in the contract;
+- `$dataContractId`: the contract that defines the type;
+- `$ownerId`: the identity that currently owns the document; and
+- `$revision`: the version of a mutable document.
+
+The contract can also require timestamps or block heights. These metadata fields let Platform locate, validate, authorize, and update the record without mixing those concerns into the application's own properties.
+
+<Callout type="info" title="Type versus instance">
+A document type is the reusable definition. A document is one record that conforms to it. Changing a document does not change the data contract.
+</Callout>
+
+## The read and write lifecycle
+
+Reads and writes take different paths because only one of them changes shared state.
+
+### Reading current state
+
+A client identifies the data contract and document type, then asks Platform for a document by ID or runs a query. A query can include filters, ordering, a limit, and pagination. Reading is non-mutating: it does not need an identity signature or create a state transition.
+
+The result represents the current Platform state. If an app needs many records, it can continue from a pagination cursor rather than treating one response as an unlimited collection.
+
+### Writing new state
+
+Creates, replacements, and deletions are writes. A client places the requested document action in a batch state transition, signs it with an authorized identity key, and submits it through DAPI. Platform then:
+
+1. loads the relevant data contract and, when needed, the existing document;
+2. checks protocol rules, the document type's rules, authorization, and revision;
+3. rejects the entire invalid transition or applies the valid action; and
+4. makes the resulting state available to later reads.
+
+This gives the lifecycle a useful shape:
+
+> **Create through a signed transition → read current state → replace from current state → delete when permitted.**
+
+A successful local object construction is not the same as an accepted write. The network must validate and apply the signed transition.
+
+## Ownership and authorization
+
+`$ownerId` names the identity that currently owns an individual document. That role is separate from two other identities you may encounter:
+
+- the **contract owner** controls the data contract; and
+- the **original creator** is the identity that first created the document.
+
+They may begin as the same identity, but they do not have to remain the same. If a document type permits transfers, the current owner can change while the original creator does not.
+
+Creation rules also belong to the document type. A contract can allow anyone to create that type, restrict creation to the contract owner, or disable creation. This does not make every created document the property of the contract owner. Creation permission answers **who may create**; `$ownerId` answers **who owns this record now**.
+
+For replacement and deletion, Platform resolves the stored document and checks its current state. In particular, only the current document owner can delete it. Possessing the contract or knowing the document ID is not enough.
+
+## Replacements and revisions
+
+Updating a mutable document is a **complete replacement**, not a field-level patch. The safe sequence is:
+
+1. fetch the current document;
+2. keep the same document ID;
+3. build the complete next document body, including unchanged required properties;
+4. set the revision to the current revision plus one; and
+5. sign and submit a replace transition as the owner.
+
+Suppose two devices both read revision `4`. Device A submits revision `5`, which Platform accepts. Device B's replacement also says revision `5`, but current state is now already at `5`; the next expected revision is `6`. Platform rejects Device B's stale write instead of silently overwriting Device A's update.
+
+That is **optimistic concurrency protection**: clients may work in parallel, but each replacement must be based on the latest state.
+
+<Callout type="warn" title="A revision is not automatically a history log">
+Revision numbers track the current mutable document. They do not mean every earlier body is retained. Document history is off by default and must be enabled in the data contract.
+</Callout>
+
+## Deletion and storage refunds
+
+A document can be deleted only if its document type permits deletion. The current owner signs the delete action, and Platform loads existing state to validate ownership and the action before removing the record.
+
+Deleting stored data may produce a **storage refund**. The original storage fee is distributed over many future epochs. If the data is removed before all of that fee has been distributed, the still-undistributed portion attributed to an identity can be returned to that identity.
+
+The refund gets smaller as time passes because more of the storage fee has already been distributed. It is therefore not a fixed percentage and not a reward on top of the original payment.
+
+Most importantly, deletion does **not** reverse the complete cost of the write:
+
+- only refundable, undistributed storage value can come back; and
+- processing work is non-refundable.
+
+At a high level, Platform charges storage and processing costs, then subtracts any available storage refund. A delete can therefore reduce its net fee without making every past cost disappear.
+
+## Checkpoint
+
+Pass the quiz to save this lesson as complete.
+
+<LessonQuiz
+  challengeId="documents"
+  passingScore={4}
+  questions={[
+    {
+      id: "read-write-path",
+      prompt: "Which action uses a signed state transition?",
+      options: [
+        { id: "a", label: "Querying current documents with a filter" },
+        { id: "b", label: "Reading one document by its ID" },
+        { id: "c", label: "Replacing an existing document" },
+        { id: "d", label: "Paginating through query results" },
+      ],
+      correctOptionId: "c",
+      explanation: "A replacement changes shared state, so it is signed and submitted in a batch state transition. Reads do not mutate state.",
+    },
+    {
+      id: "ownership",
+      prompt: "A transferable, deletable document was created by Identity A under a contract owned by Identity B, then transferred to Identity C. Who can delete it?",
+      options: [
+        { id: "a", label: "Identity A, because it is the original creator" },
+        { id: "b", label: "Identity B, because it owns the contract" },
+        { id: "c", label: "Identity C, because it is the current document owner" },
+        { id: "d", label: "Any identity that knows the document ID" },
+      ],
+      correctOptionId: "c",
+      explanation: "Deletion authorization follows the document's current owner, not the contract owner or original creator.",
+    },
+    {
+      id: "replacement",
+      prompt: "What should a client submit to change one property on a mutable document at revision 7?",
+      options: [
+        { id: "a", label: "Only the changed property, marked as revision 7" },
+        { id: "b", label: "The complete replacement body with the same ID and revision 8" },
+        { id: "c", label: "A new document with a new ID and revision 1" },
+        { id: "d", label: "The complete replacement body with no revision" },
+      ],
+      correctOptionId: "b",
+      explanation: "Replace is not a patch. It preserves the ID, includes the complete body, and advances the current revision by exactly one.",
+    },
+    {
+      id: "stale-revision",
+      prompt: "Two clients read revision 3. The first replacement succeeds at revision 4. What happens to the second replacement that also proposes revision 4?",
+      options: [
+        { id: "a", label: "It overwrites the first update because both revisions match" },
+        { id: "b", label: "It is merged field by field with the first update" },
+        { id: "c", label: "It is rejected because current state now expects revision 5" },
+        { id: "d", label: "It succeeds and automatically becomes revision 5" },
+      ],
+      correctOptionId: "c",
+      explanation: "The revision check prevents a replacement built from stale state from silently overwriting a newer one.",
+    },
+    {
+      id: "delete-refund",
+      prompt: "Which statement about deleting a document is accurate?",
+      options: [
+        { id: "a", label: "Deletion always refunds the complete original write cost" },
+        { id: "b", label: "Deletion refunds processing fees but never storage fees" },
+        { id: "c", label: "Deletion may return undistributed storage value, while processing fees remain spent" },
+        { id: "d", label: "The refund grows as more epochs pass" },
+      ],
+      correctOptionId: "c",
+      explanation: "Only the available, undistributed part of attributed storage fees may be refunded. Processing work is not refundable, and the storage refund shrinks over time.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now trace a Platform document from signed creation through reads, revision-controlled replacement, and owner-authorized deletion. You can also distinguish document ownership from contract ownership and explain why a delete refund returns only eligible storage value—not every fee ever paid.

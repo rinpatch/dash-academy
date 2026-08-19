@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "slug": "documents",
+  "module": 5,
+  "targets": {
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "evoSdk": "4.1.1",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Dash Academy curriculum — module 5",
+      "kind": "curriculum manifest",
+      "locator": "curriculum/lessons.json:61-70",
+      "version": "current checkout"
+    },
+    {
+      "id": "S2",
+      "title": "Platform Document explanation",
+      "kind": "vendored authoritative documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-document.md:7-37,85-131",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S3",
+      "title": "Platform State Transition explanation",
+      "kind": "vendored authoritative documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-state-transition.md:7-68",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S4",
+      "title": "Retrieve documents tutorial",
+      "kind": "vendored authoritative documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/contracts-and-documents/retrieve-documents.md:20-46,78-84",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S5",
+      "title": "Update documents tutorial",
+      "kind": "vendored authoritative documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/contracts-and-documents/update-documents.md:37-85",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S6",
+      "title": "Delete documents tutorial",
+      "kind": "vendored authoritative documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/contracts-and-documents/delete-documents.md:33-66",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S7",
+      "title": "Document protocol reference",
+      "kind": "vendored authoritative protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/document.md:7-31,84-188,212-232",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S8",
+      "title": "Data contract document configuration",
+      "kind": "vendored authoritative protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/data-contracts.md:27-43,89-100",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S9",
+      "title": "Platform fee explanation",
+      "kind": "vendored authoritative documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/fees.md:11-16,57-73",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S10",
+      "title": "Platform Book — Documents",
+      "kind": "vendored implementation-level documentation",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/data-model/documents.md:1-55",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "S11",
+      "title": "Platform Book — state transition action transformation",
+      "kind": "vendored implementation-level documentation",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/state-transitions/transform-into-action.md:199-248",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "S12",
+      "title": "Platform Book — fee system and refunds",
+      "kind": "vendored implementation-level documentation",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/fees/overview.md:34-59,181-220",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "S13",
+      "title": "Evo SDK document facade types",
+      "kind": "installed package types",
+      "locator": "node_modules/@dashevo/evo-sdk/dist/documents/facade.d.ts:3-19",
+      "version": "@dashevo/evo-sdk 4.1.1"
+    },
+    {
+      "id": "S14",
+      "title": "WASM SDK document types",
+      "kind": "installed package types",
+      "locator": "node_modules/@dashevo/wasm-sdk/dist/raw/wasm_sdk.d.ts:1131-1220,1345-1378,1832-1861,3332-3371,5442-5505",
+      "version": "@dashevo/wasm-sdk 4.1.1"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "A document is an instance of a contract-defined document type and combines application properties with Platform metadata such as ID, type, contract ID, owner ID, and revision.",
+      "sourceIds": ["S2", "S7", "S10"],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "Reads identify a contract and document type and may add filters, ordering, limits, or pagination; they query current state without a signer.",
+      "sourceIds": ["S4", "S13", "S14"],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "Create, replace, and delete writes use signed batch state transitions that Platform validates against protocol and contract rules before changing state.",
+      "sourceIds": ["S2", "S3", "S7", "S11"],
+      "support": "direct"
+    },
+    {
+      "id": "C4",
+      "text": "The current document owner, contract owner, and original creator are distinct roles; transfer can make the current owner differ from the creator.",
+      "sourceIds": ["S7", "S10"],
+      "support": "direct"
+    },
+    {
+      "id": "C5",
+      "text": "A document type can allow unrestricted creation, contract-owner-only creation, or no creation, independently of individual document ownership.",
+      "sourceIds": ["S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "Platform loads existing state to authorize replacement and deletion, and only the current document owner can delete a document.",
+      "sourceIds": ["S6", "S11"],
+      "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "Updating a mutable document is a complete replacement that preserves the ID and advances the current revision by one.",
+      "sourceIds": ["S5", "S14"],
+      "support": "direct"
+    },
+    {
+      "id": "C8",
+      "text": "The next-revision check provides optimistic concurrency protection by rejecting a replacement built from stale state.",
+      "sourceIds": ["S5", "S11", "S14"],
+      "support": "inference"
+    },
+    {
+      "id": "C9",
+      "text": "Revision tracking does not imply retained prior bodies; document history is disabled by default and must be configured by the contract.",
+      "sourceIds": ["S8", "S10", "S14"],
+      "support": "direct"
+    },
+    {
+      "id": "C10",
+      "text": "Deletion is available only when allowed by the document type, and Platform resolves the existing document during validation.",
+      "sourceIds": ["S6", "S8", "S11", "S14"],
+      "support": "direct"
+    },
+    {
+      "id": "C11",
+      "text": "Deleting stored data may return the still-undistributed portion of its attributed storage fee, and the amount decreases as epochs elapse.",
+      "sourceIds": ["S9", "S12"],
+      "support": "direct"
+    },
+    {
+      "id": "C12",
+      "text": "A deletion refund is not the complete original write cost because processing fees are non-refundable and only available storage value is subtracted.",
+      "sourceIds": ["S9", "S12"],
+      "support": "direct"
+    },
+    {
+      "id": "C13",
+      "text": "The pinned SDK exposes document query, get, create, replace, and delete operations, and represents document revisions as bigint values.",
+      "sourceIds": ["S13", "S14"],
+      "support": "direct"
+    }
+  ],
+  "examples": [],
+  "conflicts": [],
+  "uncertainties": []
+}
