@@ -115,4 +115,10 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "Dash Platform's document-oriented storage engine. Each contract's documents live in a collection addressed by contract and document type, with no relational joins between them.",
     tag: "Dash",
   },
+  "data-contract": {
+    title: "Data contract",
+    definition:
+      "A published schema that declares the document types an application may store, with their fields, types, and indexes. Every document write is validated against it.",
+    tag: "Dash",
+  },
 };

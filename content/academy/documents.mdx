@@ -1,0 +1,221 @@
+---
+title: Documents
+description: Understand the lifecycle, ownership, and revision of Platform documents.
+module: 5
+tier: concepts
+estimatedMinutes: 14
+exp: 100
+verification: quiz
+prerequisites: [4]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- read a document with a query and add, update, or remove one with a signed write;
+- read the base fields on any document and pick out the one that records its owner;
+- say who is allowed to change or delete a document, and how ownership moves;
+- update a document safely by advancing its revision; and
+- explain what deleting stored data returns, and why it is only part of the original cost.
+
+A data contract declares the *shape* of your records; a document is one of those records, actually stored on the network. This lesson covers what a document is, how it is read and written, who owns it, how revisions work, and what happens to the storage fee when you delete it.
+
+## What a Platform document is
+
+A **document** is the atomic unit of application data on Dash Platform. It behaves like a JSON document in a document-oriented database: a single record with named fields. The set of documents of one kind are what you declared as a *document type* when you published your <Term id="data-contract">data contract</Term>.
+
+Every document carries two kinds of fields:
+
+- **Base fields** (prefixed with `$`) are added by the protocol. Every document has them, regardless of the app.
+- **Application fields** are the ones you declared in the document type's schema in your data contract, such as a `message` on a note.
+
+The base fields answer the questions the network needs answered for every record:
+
+| Field | What it records |
+| --- | --- |
+| `$id` | The document's unique ID (32 bytes) |
+| `$type` | The document type in the referenced contract |
+| `$revision` | The document's revision, `1` or higher, on mutable documents |
+| `$dataContractId` | The data contract this document belongs to |
+| `$ownerId` | The <Term id="identity">identity</Term> that owns the document |
+
+The document also has optional `$createdAt`, `$updatedAt`, `$transferredAt`, and their block-height companions, but those appear only when the document type's schema lists them as required properties.
+
+Here is a `note` document the way a query returns it:
+
+```json
+{
+  "$id": "6NsbpUBZUnyArsmWozxhuGdXTBNVE5BMyRh6hsowg8HY",
+  "$type": "note",
+  "$dataContractId": "2cJrFFWZNB1QBP2U9pzAwxLqbdnD2ZiA4j9ByyaVQPmB",
+  "$ownerId": "6YfP6tT9AK8HPVXMK7CQrhpc8VMg7frjEnXinSPvUmZC",
+  "$revision": 1,
+  "message": "Ship the first draft"
+}
+```
+
+The `$` fields are Platform's; `message` is the app's, declared in the contract.
+
+### Where a document ID comes from
+
+You do not choose the `$id` by hand. The protocol derives it by double-SHA256 hashing the document's `dataContractId`, `ownerId`, type name, and a 32-byte random value called **entropy**. Entropy makes two otherwise-identical documents unique; the same owner creating two copies of the same type gets two different IDs for free.
+
+## Read and write lifecycle
+
+A document's life splits into two paths that work differently.
+
+### Reading
+
+Reading is a **query against committed state**. You ask <Term id="dapi">DAPI</Term> for documents of a given contract and type, and you get back the documents the network has already validated and stored. The SDK reads with something like:
+
+```js
+const results = await sdk.documents.query({
+  dataContractId: CONTRACT_ID,
+  documentTypeName: "note",
+  where: [["$id", "==", DOCUMENT_ID]],
+  limit: 2,
+});
+```
+
+The result is a map keyed by each document's `$id`. A read does not sign anything and does not change state; you are looking at what already exists.
+
+### Writing
+
+Writing changes state, so it works through signed operations that the network validates. The core actions are the three you already know from any data store:
+
+- **Create** adds a new document. It carries the entropy that seeds its `$id`.
+- **Replace** overwrites an existing document's data, keeping the same `$id` but advancing its revision.
+- **Delete** removes an existing document.
+
+Two more actions change who owns a document rather than its data: **transfer** moves ownership to another identity, and **purchase** lets a buyer buy a document the owner has listed for sale. A final action, **update price**, lets the owner set or change the listing price. Transfer and purchase are the subject of their own later module, so here it is enough to know they are how ownership moves.
+
+Every one of these writes is wrapped in a signed <Term id="state-transition">state transition</Term> — specifically a **Batch** transition that can bundle one or more document actions — and submitted through DAPI by the owning identity. Before anything changes, Platform validates the transition against both the protocol and your data contract. Only a validated write becomes part of the state that later reads see.
+
+<Callout type="info" title="A useful mental model">
+Reads are lookups of what the network already agreed to. Writes are proposals the network checks before committing. That check — not a database administrator — is what enforces every rule in this lesson.
+</Callout>
+
+## Ownership
+
+Ownership is recorded in the `$ownerId` base field: the identity that submitted a document owns it. That single field drives what you are allowed to do with a record.
+
+- **Replace** and **delete** are permitted only on a document the submitting identity owns. The write is signed with a key bound to that identity, so no one else can mutate or remove the record.
+- **Transfer** changes ownership directly by naming a recipient identity. Only a document whose type the contract marks *transferable* can be transferred.
+- **Purchase** changes ownership when a buyer matches a price the current owner listed. Only types whose *trade mode* permits sale can be bought.
+- **Update price** can be set only by the current owner.
+
+A contract can also tighten who may *create* a document type in the first place, independently of who owns each document once it exists.
+
+The pattern to remember: the owner — the identity in `$ownerId` — holds the write permissions, and ownership moves only through the transfer or purchase actions, never through an ordinary edit.
+
+## Revisions
+
+`$revision` is how Dash Platform stops two writers from silently overwriting each other. It is a 64-bit number that starts at `1` when a document is created and must sit on your mind every time you update.
+
+Here is the rule: a **replace** must submit a `$revision` strictly greater than the one currently stored. The network rejects any replace built from a stale revision — a guard called **optimistic concurrency**. If you and another client both fetched revision `3`, the first replace to land accepts `4`; the second one fails because its `3` is no longer current, telling that client to re-fetch instead of clobbering the winner.
+
+The SDK makes the safe path the obvious one: fetch the current document, add one, then replace.
+
+```js
+const current = await fetchCurrentNote();            // e.g. $revision 3
+const replacement = new Document({
+  properties: { message: "Revised draft" },
+  documentTypeName: "note",
+  dataContractId: CONTRACT_ID,
+  ownerId: current.ownerId,
+  id: current.id,
+  revision: current.revision + 1n,                   // 4
+});
+await sdk.documents.replace({ document: replacement, identityKey, signer });
+```
+
+Revision also marks mutability. A document type whose contract sets `documentsMutable: false` produces documents with no `$revision` at all — they are immutable, created once and only ever read. The default is `documentsMutable: true`.
+
+## Delete refunds
+
+Deleting a document is not just cleanup — it can return money, which is why Dash Platform nudges apps to remove data they no longer need.
+
+When you write data, you pay a **storage fee**. That fee is not handed out all at once: it is paid to <Term id="masternode">masternodes</Term> gradually, over the storage's 50-year lifetime. If you delete the data before those 50 years are up, the portion that has not been distributed yet comes back to you as a **storage refund**.
+
+Two limits keep that honest:
+
+- You are refunded only the *undistributed* storage fee, not the full amount you originally paid — the longer the data has lived, the less remains to refund.
+- **Processing fees are never refunded.** The network already did the work of validating and applying your write, and that cost is not returned.
+
+So deleting early recovers the storage value that would otherwise keep trickling out to masternodes, but it is a partial return, not a full one.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="documents"
+  passingScore={4}
+  questions={[
+    {
+      id: "read-vs-write",
+      prompt: "You want to show a user their saved note without changing it. Which action reads it?",
+      options: [
+        { id: "a", label: "Submit a signed replace transition with the same revision." },
+        { id: "b", label: "Query the committed state through DAPI and read the returned document." },
+        { id: "c", label: "Delete the note, then recreate it from a copy." },
+        { id: "d", label: "Sign a state transition so the network will hand the value over." },
+      ],
+      correctOptionId: "b",
+      explanation: "Reads are queries against committed state and sign nothing. Create, replace, and delete are signed writes that change state.",
+    },
+    {
+      id: "owns-edit",
+      prompt: "A document is owned by Alice. Who may replace or delete it?",
+      options: [
+        { id: "a", label: "The identity that registered the data contract." },
+        { id: "b", label: "Any identity that can read it." },
+        { id: "c", label: "Alice, the identity recorded in $ownerId." },
+        { id: "d", label: "Whichever identity queried it most recently." },
+      ],
+      correctOptionId: "c",
+      explanation: "Ownership lives in the $ownerId base field, and replace and delete are signed with the owner's key. Only the current owner can mutate or remove the document.",
+    },
+    {
+      id: "revision-bump",
+      prompt: "You fetched a document at $revision 3 and want to update it. Which $revision must your replace submit?",
+      options: [
+        { id: "a", label: "3, to match what you read." },
+        { id: "b", label: "4, one more than what is stored." },
+        { id: "c", label: "1, because every write starts a fresh count." },
+        { id: "d", label: "Any number greater than zero." },
+      ],
+      correctOptionId: "b",
+      explanation: "A replace must carry a revision strictly greater than the stored one; the SDK pattern is fetch the current document, add one, then replace. A non-increasing revision is rejected.",
+    },
+    {
+      id: "immutable-type",
+      prompt: "A contract sets documentsMutable: false for a document type. What can your app do with those documents?",
+      options: [
+        { id: "a", label: "Create and read them, but never replace them." },
+        { id: "b", label: "Replace them as often as they change." },
+        { id: "c", label: "Delete them but never read them." },
+        { id: "d", label: "Change their $id whenever they move." },
+      ],
+      correctOptionId: "a",
+      explanation: "Immutable documents have no $revision and cannot be replaced — they are created once and only ever read.",
+    },
+    {
+      id: "delete-refund",
+      prompt: "A year after creating a document, you delete it. What does the platform return to you?",
+      options: [
+        { id: "a", label: "The full storage fee and the processing fee, since the data is gone." },
+        { id: "b", label: "Nothing — fees are always spent the moment you pay them." },
+        { id: "c", label: "The storage fee still owed to masternodes that has not yet been paid out." },
+        { id: "d", label: "A new identity to hold the reclaimed credits." },
+      ],
+      correctOptionId: "c",
+      explanation: "Storage fees are distributed to masternodes over about 50 years; deleting early refunds only the not-yet-distributed remainder. Processing fees are never refunded.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now read a document with a query and write one with a signed, validated action; parse a document's base fields and identify its owner; explain who may change or delete a document and how transfer and purchase move ownership; update a document safely by advancing its revision; and say what an early delete refunds, and why it is partial rather than full. These are the rules every later hands-on module — submitting, querying, transferring, and deleting documents for real — will ask you to apply.
