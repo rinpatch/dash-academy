@@ -28,13 +28,20 @@ npm run lessons:test
 
 ### Model
 
-Every role runs `opencode run` with `tokenrouter/anthropic/claude-sonnet-5`. Override with
+Every role runs `opencode run` with `tokenrouter-oai/deepseek/deepseek-v4-pro-0813`. Override with
 `LESSON_MODEL=provider/model`. Research runs at `--variant high`; other roles use the default effort.
 
-TokenRouter is a custom provider defined in `~/.config/opencode/opencode.jsonc`. It is wired through
-`@ai-sdk/anthropic` against `https://api.tokenrouter.com/v1`, not `@ai-sdk/openai-compatible`: on
-TokenRouter the Anthropic models are served from the native `/v1/messages` endpoint, and going
-through the chat-completions shim would drop prompt caching and thinking blocks.
+TokenRouter is a custom provider defined in `~/.config/opencode/opencode.jsonc`, declared twice
+because the two model families need different transports. The `tokenrouter` provider is wired
+through `@ai-sdk/anthropic`: on TokenRouter the Anthropic models are served from the native
+`/v1/messages` endpoint, and the chat-completions shim would drop prompt caching and thinking
+blocks. DeepSeek is served only over chat-completions, so it lives under `tokenrouter-oai` on
+`@ai-sdk/openai-compatible`. The `-free` DeepSeek route is deliberately not configured; it returns
+degenerate output on both transports.
+
+A whole tier is many long agent runs. Check the TokenRouter balance before starting one: a mid-run
+`token quota is not enough` failure kills every in-flight lesson at once and the research already
+paid for is lost.
 
 Read-only roles (research, facts-review, pedagogy-review) run with `OPENCODE_PERMISSION` denying
 `edit` and `bash`; author and revision run with `--auto` and write access to their worktree.
@@ -93,14 +100,15 @@ Commands use the latest run unless `--run-id <id>` is supplied. Durable, ignored
     ├── author.json / revision.json  # structured author result
     ├── facts-review.json
     ├── pedagogy-review.json
-    ├── events/*.jsonl               # complete opencode JSONL event transcript after a role exits
+    ├── events/*.jsonl               # opencode JSONL event transcript, streamed live
     ├── stderr/*.log                 # redacted agent diagnostics
     └── tests/
         ├── browser/                 # server log, screenshots, snapshots/results
         └── testnet.json             # public-only trusted live report, when run
 ```
 
-`run.json` is the live status source. Agent event streams are written after that role exits, so a currently-running role may show only its stage until completion.
+`run.json` is the live status source. Agent event streams are written as the events arrive, so
+`tail -f` on a lesson's `events/*.jsonl` shows what a running role is doing right now.
 
 ### Human questions
 
