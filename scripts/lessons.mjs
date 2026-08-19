@@ -5,7 +5,7 @@ import readline from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { browserTest } from "./lesson-factory/browser.mjs";
 import { runCodex } from "./lesson-factory/codex.mjs";
-import { command, hash, latestRunId, lessonKey, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, writeJson } from "./lesson-factory/lib.mjs";
+import { command, hash, latestRunId, lessonKey, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, selectIntegrationPages, writeJson } from "./lesson-factory/lib.mjs";
 import { liveTest, validateLiveConfiguration } from "./lesson-factory/testnet.mjs";
 import { deterministicTests, validateLesson } from "./lesson-factory/validate.mjs";
 import { assertAllowedChanges, assertPreparedBaseline, changedFiles, cloneNodeModules, commitLesson, createWorktree } from "./lesson-factory/worktree.mjs";
@@ -293,11 +293,17 @@ async function integrateCommand() {
     const pick = await command("git", ["cherry-pick", state.lessons[lesson.module].commit], { cwd: worktree });
     if (pick.code !== 0) throw new Error(`Cherry-pick failed for module ${lesson.module}: ${pick.stderr}`);
   }
-  const pages = [];
-  for (const lesson of manifest.lessons) {
-    if (state.lessons[lesson.module]?.status !== "passed") continue;
-    try { await access(path.join(worktree, "content/academy", `${lesson.slug}.mdx`)); pages.push(lesson.slug); } catch {}
+  const validPrerequisiteModules = new Set();
+  if (tier === 2) {
+    for (const lesson of manifest.lessons.filter((candidate) => candidate.module <= 7)) {
+      try {
+        await access(path.join(worktree, "content/academy", `${lesson.slug}.mdx`));
+        const errors = await validateLesson(lesson, worktree, { complete: false });
+        if (!errors.length) validPrerequisiteModules.add(lesson.module);
+      } catch {}
+    }
   }
+  const pages = selectIntegrationPages({ lessons: manifest.lessons, tier, runLessons: state.lessons, validPrerequisiteModules });
   await writeFile(path.join(worktree, "content/academy/meta.json"), `${JSON.stringify({ title: "Dash Academy", pages }, null, 2)}\n`);
   await command("git", ["add", "content/academy/meta.json"], { cwd: worktree });
   await command("git", ["commit", "-m", `content(academy): integrate tier ${tier}`], { cwd: worktree });

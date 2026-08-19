@@ -53,6 +53,15 @@ export function lessonKey(lesson) {
   return `${String(lesson.module).padStart(2, "0")}-${lesson.slug}`;
 }
 
+export function selectIntegrationPages({ lessons, tier, runLessons, validPrerequisiteModules = new Set() }) {
+  return lessons
+    .filter((lesson) => {
+      if (runLessons[lesson.module]?.status === "passed") return true;
+      return tier === 2 && lesson.module <= 7 && validPrerequisiteModules.has(lesson.module);
+    })
+    .map((lesson) => lesson.slug);
+}
+
 export function hash(value) {
   return createHash("sha256").update(typeof value === "string" ? value : JSON.stringify(value)).digest("hex");
 }
