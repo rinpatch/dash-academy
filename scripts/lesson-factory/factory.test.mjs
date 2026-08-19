@@ -112,3 +112,11 @@ test("command kills a hung child instead of stalling the run", async () => {
   assert.notEqual(result.code, 0, "a killed child does not look successful");
   assert.ok(Date.now() - started < 10_000, "returned promptly rather than waiting for the child");
 });
+
+test("a child that exits without reading stdin does not crash the orchestrator", async () => {
+  // Reproduces the EPIPE that killed a run mid-flight: child.once("error") covers the ChildProcess,
+  // not the stdin socket, so an unhandled error event took down the whole process.
+  const big = "x".repeat(4 * 1024 * 1024);
+  const result = await command("node", ["-e", "process.exit(3)"], { input: big });
+  assert.equal(result.code, 3, "the child's exit code is still reported");
+});

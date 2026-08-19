@@ -26,7 +26,7 @@ export async function liveTest({ lesson, worktree, lessonDir }) {
   try {
     const before = await signerCall(signer, { action: "status", network: "testnet" });
     const balanceBefore = positiveBigInt(before.balanceCredits, "signer balanceCredits");
-    const learnerProcess = learnerNodeArgs(worktree, [fixture, "--live-protocol"]);
+    const learnerProcess = learnerNodeArgs([fixture, "--live-protocol"]);
     learner = spawn(learnerProcess.program, learnerProcess.args, {
       cwd: worktree,
       env: secretlessEnv({ DASH_TESTNET_LIVE: "1", DASH_LESSON_RUN_ID: path.basename(path.dirname(path.dirname(lessonDir))) }),
@@ -46,12 +46,14 @@ export async function liveTest({ lesson, worktree, lessonDir }) {
       action: "fund", network: "testnet", recipient: request.address, amountCredits: amount.toString(), maxFeeCredits: guards.fee.toString(), namespace: `da-${lesson.module}-${Date.now()}`,
     });
     if (funding.status !== "funded") throw new Error("External signer did not confirm funding; write was not retried");
+    // Same EPIPE hazard as command(): a fixture that exits early must not crash the orchestrator.
+    learner.stdin.on("error", () => {});
     learner.stdin.write(`${JSON.stringify({ type: "funding-result", ...funding })}\n`);
     learner.stdin.end();
     const outcome = parseProtocol(await nextLine(lines, 180_000, "learner result"));
     const exitCode = await new Promise((resolve) => learner.once("close", (code) => resolve(code ?? 1)));
     if (exitCode !== 0 || outcome.type !== "result" || outcome.status !== "passed") throw new Error(`Learner operation failed: ${redact(learnerStderr)}`);
-    const verifierProcess = learnerNodeArgs(worktree, [verifier, "--live"]);
+    const verifierProcess = learnerNodeArgs([verifier, "--live"]);
     const verification = await command(verifierProcess.program, verifierProcess.args, { cwd: worktree, env: secretlessEnv(), input: `${JSON.stringify(outcome.publicResult)}\n` });
     if (verification.code !== 0) throw new Error(`Independent proof verification failed: ${redact(verification.stderr)}`);
     const after = await signerCall(signer, { action: "status", network: "testnet" });
@@ -155,6 +157,6 @@ async function priorRunSpend(runDir) {
 // Fixtures and verifiers run unsandboxed: the macOS-only seatbelt profile was removed because there
 // is no cross-platform equivalent, and this pipeline runs on a developer's own machine. Note this
 // means model-authored lesson code runs with full user privileges.
-export function learnerNodeArgs(worktree, nodeArgs) {
+export function learnerNodeArgs(nodeArgs) {
   return { program: process.execPath, args: nodeArgs };
 }

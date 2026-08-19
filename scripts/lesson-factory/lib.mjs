@@ -96,6 +96,11 @@ export async function command(command, args, options = {}) {
       resolve({ code: code ?? 1, signal, stdout, stderr, timedOut: signal === "SIGKILL" && Boolean(timer) });
     });
     if (options.input !== undefined) {
+      // A child that exits before draining stdin makes this write fail with EPIPE. child.once
+      // ("error") does not cover it — that is the ChildProcess, this is the stdin socket — so an
+      // unhandled error here killed the whole orchestrator mid-run. The child's exit code is the
+      // real signal; a refused prompt is not worth crashing for.
+      child.stdin?.on("error", () => {});
       child.stdin?.end(options.input);
     }
   });
