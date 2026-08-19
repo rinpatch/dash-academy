@@ -1,0 +1,183 @@
+---
+title: Why build on Dash?
+description: Decide when Dash is a good fit for an application.
+module: 2
+tier: concepts
+estimatedMinutes: 12
+exp: 100
+verification: quiz
+prerequisites: [1]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- decide whether Dash is the right fit for a given application;
+- tell Dash the money apart from credits the fee unit;
+- name what payments, tokens, usernames, NFTs, privacy, and the DAO each give your app; and
+- explain when to build on Dash and when a general smart-contract platform is the better call.
+
+The previous lesson introduced Dash's two layers. This one is a fit screen: a short checklist for deciding, before you write any code, whether Dash will carry your app well.
+
+## A fit screen, not a tour
+
+No platform is the right tool for every job. Dash is a strong choice when your app needs things a shared, independently verified network is good at — and a poor choice when you need what Dash deliberately does not do.
+
+Recall the split you already met. **Dash Core** is the layer-1 money layer that settles Dash payments. **Dash Platform** is the layer-2 application-data layer: it stores structured data against a schema you declare, and only signed operations can change it. Keep both in mind as we walk the checklist, because each half answers a different half of the "is this a fit?" question.
+
+## Payments and tokens
+
+**Payments.** Dash is built around money, so settlements are fast and cheap. A Dash payment reaches confirmation in **about a second**, with no extra cost — a seller can treat it the way a cashier treats a card payment, without waiting for several blocks. That makes checkout and peer-to-peer payment flows feel like <Term id="fiat">fiat</Term>, without a middleman holding the funds.
+
+**Tokens.** On many networks an application's own token means writing and deploying a <Term id="smart-contract">smart contract</Term>. On Dash, fungible tokens are first-class protocol objects: you declare one inside your data contract — its name, supply, and permissions — and the network enforces it. You get minting, a maximum supply, freeze and pause, burning, and scheduled or ongoing distribution as configuration, not code. This is a pattern worth remembering: on Dash, "issuing an asset" is usually a declaration, not a deployment.
+
+## Usernames and NFTs
+
+**Usernames.** The Dash Platform Name Service (DPNS) registers human-readable `.dash` names like `alice.dash` and ties each one to a Platform <Term id="identity">identity</Term> — a persistent account that owns data and signs the changes to it. Ordinary names register immediately; premium names go to a masternode vote. That gives your users a name to send to, rather than a bare address.
+
+**NFTs.** Dash does not ship a separate NFT token standard. An NFT is just a document — a uniquely identified record — that happens to represent one distinct thing. Each document has a unique ID (the equivalent of a token ID on other chains), and the protocol gives you transfer, purchase at a set price, mutation, deletion, and creation-restriction options. Because the "asset" is ordinary application data, an NFT, a username, and a profile can all be records in the same data model.
+
+<Callout type="info" title="One data model for all of it">
+On Dash the word *document* covers a lot of ground: a collectible, a listing, a profile field, a name. The same rules — owned by an identity, changed by signed operations, verified against a schema — apply to every one of them.
+</Callout>
+
+## Dash versus Credits
+
+Two different units are easy to confuse, so split them early.
+
+| | Dash | Credits |
+| --- | --- | --- |
+| What it is | The layer-1 currency — the money itself | The layer-2 fee unit |
+| Where it lives | Dash Core | Dash Platform |
+| What you do with it | Pay someone; hold value | Pay for Platform operations (creating an identity, writing data, registering a name) |
+
+Dash is money. Credits are the metered fee unit Platform uses to charge for work. Credits are created by **locking Dash**, at a fixed rate of **1,000 credits per duff** — that is **1 DASH = 100,000,000,000 credits** — so they are backed by real Dash rather than invented out of thin air. When you delete stored data, the storage fees are refunded; and credits can be converted back to Dash through a withdrawal operation, subject to a network-wide daily limit.
+
+One consequence matters to app design: because anyone can top up any identity's credit balance, an application can pay its users' fees for them. That is how a product can feel free to the end user while the network still gets paid.
+
+<Callout type="idea" title="Who pays the fees?">
+You can design the economics either way: pass fee costs to your users, or fund a pool of credits your app spends on their behalf. The choice is an application decision, not a protocol constraint.
+</Callout>
+
+## Privacy
+
+Privacy on Dash comes in layers, and it is worth being precise about what exists today.
+
+On **layer 1**, Dash payments get optional privacy from **CoinJoin** (formerly PrivateSend): a non-custodial mixing process coordinated by <Term id="masternode">masternodes</Term> that shuffles your Dash together with other users' so a sender and recipient cannot be linked by the coins alone. You opt in; it does not automatically hide every transaction, and it does not touch Platform data.
+
+On **layer 2**, Dash Platform defines a **zero-knowledge shielded pool** for credits and tokens — using cryptographic proofs (Orchard/Halo2) that let you move value while revealing as little as possible, with shield, unshield, and shielded-transfer operations. The important caveat: this shielding is defined in the protocol and rolling out, but its DAPI endpoints are **not yet available on public nodes**. Applications shipping today should not promise fully private Platform balances; they should treat Platform data as public and encrypt anything confidential themselves, or keep it off-network.
+
+That asymmetry is the honest headline: Dash gives you practical, opt-in payment privacy today, and a stronger privacy mechanism on the roadmap.
+
+## The DAO
+
+Dash is the world's first and longest-running **DAO** (decentralized autonomous organization). A treasury, funded by a portion of every block's reward, pays for approved proposals, and the <Term id="masternode">masternodes</Term> — servers that must hold 1,000 DASH as collateral — vote on what gets funded. That means the network's development budget is held and directed by the network itself, not by a single company's balance sheet.
+
+For a developer this is a quiet but real signal: the platform you are building on has a sustainable, community-directed way to fund its own roadmap.
+
+## When Dash fits — and when it doesn't
+
+Bring it together as a checklist.
+
+**Dash is a strong fit when your app needs:**
+
+- **Payments** — about-a-second Dash settlements in a checkout or payout flow.
+- **Verifiable shared data** — records many parties can check cryptographically, where a client can verify a query's answer instead of trusting the node that served it.
+- **Identity and usernames** — persistent identities and human-readable `.dash` names.
+- **Digital assets** — configurable fungible tokens and document-based NFTs.
+
+**Dash is a poor fit — reach for something else — when your app needs:**
+
+- **Arbitrary on-chain code** — Dash has no general-purpose smart-contract virtual machine today; you declare data with a JSON-Schema data contract instead of deploying programs. A Turing-complete VM is planned for Platform v4.0, but it is not here now.
+- **A private database** — Platform data is replicated and verifiable, which is the opposite of confidential. Encrypt client-side or keep secrets off-network.
+- **Heavy per-node computation** — anything that needs the whole network to run your custom logic on every write.
+
+The rule of thumb: **Dash gives you money, verifiable data, identity, and assets out of the box. It gives you none of the "run any code anywhere" freedom of a general-purpose chain — and that is the trade it makes.** Instead of a marketplace of user-deployed programs, you get a schema you declare and a network that stores and validates it, which removes whole classes of smart-contract vulnerabilities.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="why-build-on-dash"
+  passingScore={5}
+  questions={[
+    {
+      id: "fit-decision",
+      prompt: "Which application is Dash the strongest fit for?",
+      options: [
+        { id: "a", label: "A marketplace of arbitrary user-deployed smart-contract code." },
+        { id: "b", label: "An app that accepts about-a-second Dash payments, stores verifiable shared records, and issues its own digital assets." },
+        { id: "c", label: "A database where no field may ever become visible to any network node." },
+        { id: "d", label: "Heavy custom computation that every node must run identically on each write." },
+      ],
+      correctOptionId: "b",
+      explanation: "Dash's sweet spot is payments, verifiable shared data, identities, and assets. It deliberately does not run arbitrary code or hide data from the nodes that verify it.",
+    },
+    {
+      id: "payments-tokens",
+      prompt: "Your app needs near-instant settlement and its own reward token. What does Dash actually offer you?",
+      options: [
+        { id: "a", label: "About-a-second Dash payments plus a configurable token you declare in a data contract — no contract to deploy." },
+        { id: "b", label: "Only Dash payments; tokens must be issued on a different network." },
+        { id: "c", label: "Tokens, but payments take several mined blocks to confirm." },
+        { id: "d", label: "A general-purpose VM where you write and deploy your token's code." },
+      ],
+      correctOptionId: "a",
+      explanation: "Payments confirm in about a second, and fungible tokens are first-class protocol objects declared in a data contract — configuration, not deployed code.",
+    },
+    {
+      id: "usernames-nfts",
+      prompt: "How do usernames and NFTs work on Dash Platform?",
+      options: [
+        { id: "a", label: "Usernames are separate .dash smart contracts, and NFTs follow an ERC-721 token standard." },
+        { id: "b", label: "DPNS ties a .dash name to a Platform identity, and an NFT is a unique document with built-in transfer and purchase options." },
+        { id: "c", label: "Usernames live in each app's private database; NFTs live on a separate sidechain." },
+        { id: "d", label: "Both require deploying custom code for every name and every asset." },
+      ],
+      correctOptionId: "b",
+      explanation: "DPNS registers human-readable .dash names against identities, and NFTs are documents — uniquely identified records — rather than a separate token standard.",
+    },
+    {
+      id: "dash-vs-credits",
+      prompt: "What is the difference between Dash and Credits?",
+      options: [
+        { id: "a", label: "Dash is layer-1 money you spend or hold; Credits are the layer-2 fee unit, created by locking Dash into the network." },
+        { id: "b", label: "Credits are a second currency you can spend with any Dash merchant." },
+        { id: "c", label: "Dash exists only on testnet, while Credits are the mainnet currency." },
+        { id: "d", label: "They are the same unit of value under two different names." },
+      ],
+      correctOptionId: "a",
+      explanation: "Dash is the money. Credits meter Platform work and are minted from locked Dash at 1,000 credits per duff (1 DASH = 100,000,000,000 credits).",
+    },
+    {
+      id: "privacy",
+      prompt: "Which statement about privacy on Dash is accurate for an app shipping today?",
+      options: [
+        { id: "a", label: "CoinJoin offers opt-in layer-1 mixing, while Platform's zero-knowledge shielded pool is protocol-defined but not yet open on public nodes." },
+        { id: "b", label: "Every Dash payment and every Platform record is automatically and fully private." },
+        { id: "c", label: "Platform data is hidden from all nodes by default, so you can store secrets in it." },
+        { id: "d", label: "Dash provides no privacy feature of any kind." },
+      ],
+      correctOptionId: "a",
+      explanation: "CoinJoin gives practical opt-in payment privacy today. The ZK shielded pool is on the roadmap, not yet public — so treat Platform data as public and encrypt anything confidential.",
+    },
+    {
+      id: "dao",
+      prompt: "How does Dash fund and govern its own development?",
+      options: [
+        { id: "a", label: "A treasury funded by part of the block reward pays proposals that masternodes vote on." },
+        { id: "b", label: "A single foundation decides all spending unilaterally." },
+        { id: "c", label: "Funding comes only from an ICO held after launch." },
+        { id: "d", label: "There is no governance; spending is fixed permanently in code." },
+      ],
+      correctOptionId: "a",
+      explanation: "Dash's DAO holds a treasury funded from each block and lets masternodes — which stake 1,000 DASH — vote on how those funds are spent.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now run a fit screen against a new application and decide, before writing code, whether Dash will carry it or push against it. You can separate Dash the money from credits the fee unit, name what payments, tokens, usernames, NFTs, privacy, and the DAO each give your app, and articulate where Dash deliberately does not compete. That judgment will guide everything you build in the hands-on lessons to come.
