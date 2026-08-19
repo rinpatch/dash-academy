@@ -284,7 +284,14 @@ async function integrateCommand() {
   const state = await loadCurrentRun();
   const manifest = await loadManifest();
   const lessons = manifest.lessons.filter((lesson) => tier === 1 ? lesson.module <= 7 : lesson.module >= 8);
-  const missing = lessons.filter((lesson) => state.lessons[lesson.module]?.status !== "passed");
+  // ponytail: a lesson already shipped in the baseline needs no commit from this run
+  const inBaseline = async (lesson) =>
+    (await command("git", ["cat-file", "-e", `${state.baseline}:content/academy/${lesson.slug}.mdx`])).code === 0;
+  const missing = [];
+  for (const lesson of lessons) {
+    if (state.lessons[lesson.module]?.status === "passed") continue;
+    if (!(await inBaseline(lesson))) missing.push(lesson);
+  }
   if (missing.length) throw new Error(`Cannot integrate; non-passing modules: ${missing.map((lesson) => lesson.module).join(", ")}`);
   const branch = `academy-tier-${tier}-${state.runId}`;
   const worktree = path.resolve(repoRoot, "../.dash-academy-worktrees", state.runId, `integration-tier-${tier}`);
@@ -292,20 +299,20 @@ async function integrateCommand() {
   if (add.code !== 0) throw new Error(add.stderr);
   await cloneNodeModules(worktree);
   for (const lesson of lessons) {
-    const pick = await command("git", ["cherry-pick", state.lessons[lesson.module].commit], { cwd: worktree });
+    const commit = state.lessons[lesson.module]?.commit;
+    if (!commit) continue;
+    const pick = await command("git", ["cherry-pick", commit], { cwd: worktree });
     if (pick.code !== 0) throw new Error(`Cherry-pick failed for module ${lesson.module}: ${pick.stderr}`);
   }
   const validPrerequisiteModules = new Set();
-  if (tier === 2) {
-    for (const lesson of manifest.lessons.filter((candidate) => candidate.module <= 7)) {
-      try {
-        await access(path.join(worktree, "content/academy", `${lesson.slug}.mdx`));
-        const errors = await validateLesson(lesson, worktree, { complete: false });
-        if (!errors.length) validPrerequisiteModules.add(lesson.module);
-      } catch {}
-    }
+  for (const lesson of manifest.lessons.filter((candidate) => candidate.module <= 7)) {
+    try {
+      await access(path.join(worktree, "content/academy", `${lesson.slug}.mdx`));
+      const errors = await validateLesson(lesson, worktree, { complete: false });
+      if (!errors.length) validPrerequisiteModules.add(lesson.module);
+    } catch {}
   }
-  const pages = selectIntegrationPages({ lessons: manifest.lessons, tier, runLessons: state.lessons, validPrerequisiteModules });
+  const pages = selectIntegrationPages({ lessons: manifest.lessons, runLessons: state.lessons, validPrerequisiteModules });
   await writeFile(path.join(worktree, "content/academy/meta.json"), `${JSON.stringify({ title: "Dash Academy", pages }, null, 2)}\n`);
   await command("git", ["add", "content/academy/meta.json"], { cwd: worktree });
   await command("git", ["commit", "-m", `content(academy): integrate tier ${tier}`], { cwd: worktree });
@@ -321,9 +328,12 @@ async function integrateCommand() {
 
 function selectLessons(manifest) {
   if (args.module) {
-    const lesson = manifest.lessons.find((candidate) => candidate.module === Number(args.module));
-    if (!lesson) throw new Error(`Unknown module ${args.module}`);
-    return [lesson];
+    const numbers = String(args.module).split(",").map(Number);
+    return numbers.map((number) => {
+      const lesson = manifest.lessons.find((candidate) => candidate.module === number);
+      if (!lesson) throw new Error(`Unknown module ${number}`);
+      return lesson;
+    });
   }
   if (args.tier) return manifest.lessons.filter((lesson) => Number(args.tier) === 1 ? lesson.module <= 7 : lesson.module >= 8);
   if (args.all) return manifest.lessons;

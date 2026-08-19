@@ -63,11 +63,11 @@ export function lessonKey(lesson) {
   return `${String(lesson.module).padStart(2, "0")}-${lesson.slug}`;
 }
 
-export function selectIntegrationPages({ lessons, tier, runLessons, validPrerequisiteModules = new Set() }) {
+export function selectIntegrationPages({ lessons, runLessons, validPrerequisiteModules = new Set() }) {
   return lessons
     .filter((lesson) => {
       if (runLessons[lesson.module]?.status === "passed") return true;
-      return tier === 2 && lesson.module <= 7 && validPrerequisiteModules.has(lesson.module);
+      return lesson.module <= 7 && validPrerequisiteModules.has(lesson.module);
     })
     .map((lesson) => lesson.slug);
 }
