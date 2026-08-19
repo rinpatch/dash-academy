@@ -1,202 +1,188 @@
 {
   "schemaVersion": 1,
-  "module": 3,
   "slug": "identities",
+  "module": 3,
   "title": "Identities",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
   "sources": [
     {
-      "id": "s1",
-      "title": "Dash Academy curriculum: module 3, Identities",
-      "kind": "repository manifest",
-      "locator": "curriculum/lessons.json, module 3",
-      "version": "worktree snapshot 2026-08-18"
+      "id": "S1",
+      "title": "Identity (explanation)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s2",
-      "title": "Dash Platform Identity explanation",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md — Overview; Identity Management; Identity Update Process; Credits",
-      "version": "Dash Platform docs 3.1.0"
+      "id": "S2",
+      "title": "Fees (explanation)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/fees.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s3",
-      "title": "Dash Platform Identity protocol reference",
-      "kind": "vendored authoritative protocol reference",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/identity.md — Identity Overview; Identity id; Identity publicKeys; Identity balance; Identity Credit Transfer",
-      "version": "Dash Platform docs 3.1.0"
+      "id": "S3",
+      "title": "Identity (protocol reference)",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/identity.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s4",
-      "title": "Dash Platform Address System",
-      "kind": "vendored authoritative protocol reference",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/address-system.md — Overview; Platform Address; Identity Create from Addresses; Identity Top-Up from Addresses",
-      "version": "Dash Platform docs 3.1.0, Protocol Version 11"
+      "id": "S4",
+      "title": "Protocol constants",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/protocol-constants.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s5",
-      "title": "Dash Platform Fees explanation",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/fees.md — Overview; Costs; Storage Refund; User Fee Increase; Formula",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "s6",
-      "title": "Dash Core Wallets guide",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets.md — Wallets",
-      "version": "Dash Core docs 23.0.0"
-    },
-    {
-      "id": "s7",
-      "title": "Dash Core Transactions guide",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/transactions.md — P2PKH address and UTXO explanation",
-      "version": "Dash Core docs 23.0.0"
-    },
-    {
-      "id": "s8",
-      "title": "Dash Platform Book: Identities",
-      "kind": "vendored authoritative architecture documentation",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/data-model/identities.md — Identity fields; Credit System; Public Keys and Key Types",
+      "id": "S5",
+      "title": "Platform Addresses (platform book)",
+      "kind": "vendored authoritative Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/addresses/platform-addresses.md",
       "version": "Dash Platform Book v4.2-dev"
     },
     {
-      "id": "s9",
-      "title": "Dash Platform SDK client setup tutorial",
-      "kind": "vendored authoritative tutorial",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/setup-sdk-client.md — DIP-13 key path; IdentityKeyManager; AddressKeyManager; setupDashClient",
-      "version": "Dash Platform docs 3.1.0; repository SDK pin 4.1.1"
+      "id": "S6",
+      "title": "Setup SDK Client (tutorial)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/setup-sdk-client.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s10",
-      "title": "Dash Platform protocol constants",
-      "kind": "vendored authoritative protocol reference",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/protocol-constants.md — Credits and Conversion; Fee Constants",
-      "version": "Dash Platform docs 3.1.0"
+      "id": "S7",
+      "title": "Register an Identity (tutorial)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/identities-and-names/register-an-identity.md",
+      "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s11",
-      "title": "Dash Platform Book: Identity Keys",
-      "kind": "vendored authoritative architecture documentation",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/sdk/identity-keys.md — Key Purpose; Security Level",
-      "version": "Dash Platform Book v4.2-dev"
+      "id": "S8",
+      "title": "Glossary",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md",
+      "version": "Dash Platform Docs 3.1.0"
     }
   ],
   "claims": [
     {
-      "id": "c1",
-      "text": "Module 3 is a concepts-tier, 12-minute lesson covering identity versus wallet address, identity keys, and credits and fees; completion uses quiz challenge identities.",
-      "sourceIds": ["s1"],
+      "id": "C1",
+      "text": "An identity is a low-level Platform construct: one or more public keys recorded on the platform chain plus a credit balance, used to own data and sign state transitions, and kept separate from DPNS usernames.",
+      "sourceIds": ["S1", "S3"],
       "support": "direct"
     },
     {
-      "id": "c2",
-      "text": "A Platform identity is a Platform record with a 32-byte identifier, registered public keys, a credit balance, and a revision; it anchors ownership and authorization for Platform activity.",
-      "sourceIds": ["s3", "s8"],
+      "id": "C2",
+      "text": "A Core (layer-1) wallet address is a legacy Base58Check address used on the money layer to hold and move Dash, and is distinct from Platform's independent bech32m address system (DIP-18).",
+      "sourceIds": ["S5"],
       "support": "direct"
     },
     {
-      "id": "c3",
-      "text": "A Core wallet manages keys, while a typical Core address is a payment destination and spending condition for Core-chain UTXOs; neither is a Platform identity.",
-      "sourceIds": ["s6", "s7", "s3"],
+      "id": "C3",
+      "text": "A Platform address is a bech32m-encoded layer-2 address (dash1.../tdash1...) that holds credits directly and is used for address-based operations such as funding identity creation, independent of any identity.",
+      "sourceIds": ["S5", "S6"],
       "support": "inference"
     },
     {
-      "id": "c4",
-      "text": "Protocol Version 11 Platform addresses can hold credits and authorize some operations without a pre-existing identity, including funding identity creation and top-ups.",
-      "sourceIds": ["s4"],
+      "id": "C4",
+      "text": "An identity balances the Core address / Platform address contrast: it is not an address at all, but a key set plus a credit balance; its 32-byte id is produced from a double SHA-256 of the funding outpoint rather than from a public key hash.",
+      "sourceIds": ["S3", "S1"],
       "support": "direct"
     },
     {
-      "id": "c5",
-      "text": "A wallet mnemonic may derive identity-key material and Platform-address keys, but the SDK treats them as distinct derivation paths, key managers, signers, and protocol objects.",
-      "sourceIds": ["s4", "s9"],
-      "support": "inference"
-    },
-    {
-      "id": "c6",
-      "text": "Only public key material and metadata are registered with an identity; private keys remain with the wallet or signer and create authorization signatures.",
-      "sourceIds": ["s2", "s3", "s6"],
-      "support": "inference"
-    },
-    {
-      "id": "c7",
-      "text": "Identity keys have individual IDs, purposes, security levels, cryptographic types, key data, and lifecycle metadata, allowing responsibilities to be separated.",
-      "sourceIds": ["s3", "s8"],
+      "id": "C5",
+      "text": "Creating an identity locks Dash on Core in an asset lock transaction; that lock is proven in an identity create state transition, and the locked value (minus fees) becomes the identity's initial credit balance.",
+      "sourceIds": ["S1"],
       "support": "direct"
     },
     {
-      "id": "c8",
-      "text": "Authentication keys sign general Platform activity, transfer keys authorize credit transfers and withdrawals, and encryption and decryption keys serve data-confidentiality roles; purpose and security-level combinations constrain use.",
-      "sourceIds": ["s3", "s11"],
+      "id": "C6",
+      "text": "An identity's credit balance can be topped up by locking more Dash; anyone may top up any identity, which lets developers subsidize their users' usage.",
+      "sourceIds": ["S1"],
       "support": "direct"
     },
     {
-      "id": "c9",
-      "text": "An identity must have exactly one master-level authentication key. The master authentication key is required for identity updates and should normally be protected from routine use; lower security levels support routine operations according to authorization requirements.",
-      "sourceIds": ["s3", "s11"],
+      "id": "C7",
+      "text": "Each identity holds one or more public keys; every key carries a purpose (authentication, encryption, decryption, transfer) describing what it may be used for.",
+      "sourceIds": ["S3", "S6"],
       "support": "direct"
     },
     {
-      "id": "c10",
-      "text": "Identity updates can add and disable keys; disabled keys remain available for historical signature verification but cannot authorize new data.",
-      "sourceIds": ["s2", "s3"],
+      "id": "C8",
+      "text": "Every key also carries a security level (master, critical, high, medium) describing how carefully it should be stored; the master key is required and can only be used to update the identity.",
+      "sourceIds": ["S3"],
       "support": "direct"
     },
     {
-      "id": "c11",
-      "text": "Credits are Platform's fee unit: one duff produces 1,000 credits, so one DASH corresponds to 100,000,000,000 credits.",
-      "sourceIds": ["s10"],
+      "id": "C9",
+      "text": "Every identity must have exactly one master-level authentication key used for updating the identity; additional authentication and transfer keys are strongly recommended.",
+      "sourceIds": ["S3", "S6"],
       "support": "direct"
     },
     {
-      "id": "c12",
-      "text": "Credits originate from DASH locked on Core and may fund an identity directly or first reside at a Platform address; identity-authorized actions use the identity's resulting credit balance.",
-      "sourceIds": ["s2", "s4", "s10"],
-      "support": "inference"
-    },
-    {
-      "id": "c13",
-      "text": "Platform fees include storage and processing components; an optional user fee increase applies to processing, and deletion of eligible stored data can produce a storage refund.",
-      "sourceIds": ["s5"],
+      "id": "C10",
+      "text": "Wallets conventionally derive five standard identity keys (DIP-9): master, high authentication, critical authentication, transfer, and encryption (medium).",
+      "sourceIds": ["S6", "S7"],
       "support": "direct"
     },
     {
-      "id": "c14",
-      "text": "Fees are deducted from an identity's credit balance, and an insufficient balance causes an operation to be rejected until the identity receives enough additional credits, for example through a top-up or an incoming identity credit transfer.",
-      "sourceIds": ["s2", "s3", "s8"],
+      "id": "C11",
+      "text": "Identity keys are derived from the wallet mnemonic via DIP-13 feature path m/9'/coin'/5'/0'/0'/{identityIndex}'/{keyIndex}', while addresses use BIP44 — so one wallet seed derives both addresses and identity keys.",
+      "sourceIds": ["S6"],
       "support": "direct"
     },
     {
-      "id": "c15",
-      "text": "An identity ID should be described as a stable unique Platform identifier because asset-lock-funded and address-funded creation use different derivation inputs.",
-      "sourceIds": ["s3", "s8"],
-      "support": "inference"
+      "id": "C12",
+      "text": "Credits are the layer-2 unit of account for fees; the conversion is 1 duff = 1,000 credits (CREDITS_PER_DUFF), so 1 Dash = 100,000,000 duffs = 100,000,000,000 credits.",
+      "sourceIds": ["S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C13",
+      "text": "Platform fees are divided into storage fees (cost of keeping data across the network) and processing fees (cost of validating state transitions); they are paid by deducting credits from the identity's balance.",
+      "sourceIds": ["S2"],
+      "support": "direct"
+    },
+    {
+      "id": "C14",
+      "text": "For everyday use processing fees are minuscule compared to storage fees, but they become prohibitively expensive in attack conditions.",
+      "sourceIds": ["S2"],
+      "support": "direct"
+    },
+    {
+      "id": "C15",
+      "text": "Credits can be converted back to Dash via an identity credit withdrawal state transition, subject to a daily network-wide limit.",
+      "sourceIds": ["S1"],
+      "support": "direct"
     }
   ],
+  "apiExamples": [],
   "conflicts": [
     {
-      "id": "master-key-authority",
+      "id": "V1",
+      "topic": "Fee constants disagree across vendored docs",
       "status": "resolved",
-      "description": "The 3.1 protocol reference says a master key can only be used to update an identity, while the Platform Book says the master key can manage keys and perform any operation.",
-      "resolution": "The lesson uses only the uncontested points: every identity requires one master-level authentication key, that key is required for identity updates, and it should normally be protected from routine use. It does not claim that identity updates are the key's exclusive capability.",
-      "sourceIds": ["s3", "s11"]
+      "sources": ["S2", "S4"],
+      "resolution": "Keep module 3 conceptual: state only 1 duff = 1,000 credits and the storage-vs-processing split; quote no per-byte or per-key fee constants, which belong to later hands-on lessons."
     },
     {
-      "id": "identity-id-derivation",
+      "id": "V2",
+      "topic": "mustCover names two objects but the acceptance test names four",
       "status": "resolved",
-      "description": "The 3.1 protocol reference describes the legacy asset-lock outpoint derivation as though it were universal, while the newer Platform Book accounts for address-funded identity creation using address inputs and nonces.",
-      "resolution": "The lesson states only that an identity has a stable, unique 32-byte Platform identifier and does not present either creation-specific derivation route as universal.",
-      "sourceIds": ["s3", "s8"]
+      "sources": ["S5"],
+      "resolution": "Distinguish Core wallet/address, Platform address, and Platform identity in prose and a comparison table, naming each without the DIP-18 derivation mechanics reserved for module 9."
     },
     {
-      "id": "identity-funding-flow",
+      "id": "V3",
+      "topic": "How deep identity keys should go relative to module 10",
       "status": "resolved",
-      "description": "The identity explanation focuses on direct asset-lock creation and top-up, while the Protocol Version 11 address system also supports funding identities from Platform address balances.",
-      "resolution": "The lesson identifies locked Core DASH as the origin of credits and explains both direct identity funding and the current Platform-address-to-identity route.",
-      "sourceIds": ["s2", "s4"]
+      "sources": ["S3"],
+      "resolution": "Name the purposes (authentication, encryption, decryption, transfer) and security levels (master/critical/high/medium) and the mandatory master-level authentication key, without the full purpose/security-level allowlist or signing-behavior details."
     }
   ],
-  "examples": [],
-  "uncertainties": []
+  "uncertainties": [],
+  "executableExamples": []
 }

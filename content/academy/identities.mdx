@@ -1,0 +1,186 @@
+---
+title: Identities
+description: Understand Platform identities, keys, credits, and their relationship to wallets.
+module: 3
+tier: concepts
+estimatedMinutes: 12
+exp: 100
+verification: quiz
+prerequisites: [2]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- tell a Platform identity apart from a Core address and a Platform address, and name which one owns your app's data;
+- read the purpose and security level on an identity key, and explain why every identity needs a master-level authentication key; and
+- convert Dash to credits and separate the two kinds of fees Platform charges.
+
+## One wallet, then several things
+
+A wallet is software that holds your keys and signs things on your behalf. It is tempting to assume a wallet is your identity — but a single wallet quietly juggles several distinct objects, and only one of them actually owns data.
+
+These are the four objects you will keep meeting in this course:
+
+| Object | Layer | What it is | What it holds | What you do with it |
+| --- | --- | --- | --- | --- |
+| **Core wallet** | Layer 1 | Your money keys | Your Dash | Sign and authorize payments |
+| **Core address** | Layer 1 | A payment destination | Dash | Receive and send Dash |
+| **Platform address** | Layer 2 | A funding account | Credits | Fund the creation of an identity |
+| **Platform identity** | Layer 2 | An account that owns data | Public keys and a credit balance | Own data and sign every change to it |
+
+The two Core objects belong to Dash's money layer; the two Platform objects belong to the application-data layer you met in module 1.
+
+### Core wallet and Core address
+
+Your **Core wallet** is the money side of Dash: it holds the keys that control your Dash and signs the payments that move it. Its job is holding and spending Dash on layer 1.
+
+A **Core address** is a layer-1 payment destination — a Base58Check string someone sends Dash to. Where the wallet manages keys, the address is simply where the money lands. Sending a payment moves Dash to someone's Core address on the Core chain.
+
+### Platform address
+
+Dash Platform added its own, separate address system so the application layer never has to spend Dash directly. A **Platform address** is a layer-2 account encoded with <Term id="bech32m">bech32m</Term> — a string that starts with `dash1` on mainnet and `tdash1` on <Term id="testnet">testnet</Term>. It holds **credits**, not Dash.
+
+You will meet the Platform address again in module 9, when you derive and fund one. Its one job here is to hold the credits that pay for creating an identity.
+
+### Platform identity
+
+A **Platform identity** is not an address at all. It is a layer-2 record made of three parts: a stable 32-byte identifier, a set of public keys, and a credit balance. The identity is the actor of the application layer — the thing that owns a data contract, a document, or a <Term id="dpns">DPNS</Term> name, and the thing that signs every change to that data.
+
+<Callout type="info" title="A mental model">
+Core address — where Dash lives. Platform address — where credits live before they become an identity. Platform identity — the account that owns and signs app data.
+</Callout>
+
+## What an identity is
+
+Think of a Platform identity as a signing account: a permanent record on Dash Platform that says "these public keys are allowed to act on my behalf." That record has three parts:
+
+- **A stable 32-byte identifier.** A public value that never changes, and the way every other record refers back to the identity.
+- **Public keys.** The keys that prove an action was authorized by this identity.
+- **A credit balance.** The credits the identity spends on its own work.
+
+The private keys that match those public keys are never stored on the network. They stay with whoever controls the identity — usually a wallet — and are used to sign.
+
+An identity is separate from everything else around it:
+
+- It is not a username. A DPNS name like `alice.dash` is a separate, human-readable record that can point at an identity; the identity exists before any name.
+- It is not a wallet. The wallet holds private keys; the identity records public keys and a balance on the network.
+
+Everything you will build from module 4 onward — data contracts, documents, names, tokens — is owned by some identity and authorized by one of its keys.
+
+## Identity keys
+
+An identity records at least one public key, and usually several. Each key carries two labels:
+
+- Its **purpose** says what the key is allowed to do.
+- Its **security level** says how carefully it must be guarded.
+
+The four purposes you will see are:
+
+- **Authentication** — signs the ordinary actions an identity takes, from writing a document to updating the identity itself.
+- **Encryption** — protects data meant for the identity.
+- **Decryption** — unlocks data that was encrypted for the identity.
+- **Transfer** — moves credits out of the identity.
+
+The four security levels, from most to least sensitive, are **Master**, **Critical**, **High**, and **Medium**.
+
+The one key you can never omit is the **master-level authentication key**. Every identity must have exactly one of them. It is the root of trust: the key required to update the identity's own keys, so it should be kept out of everyday use while lower-level keys do the routine signing.
+
+All of these keys come from the same <Term id="mnemonic">mnemonic</Term> as your addresses — one wallet seed produces both your addresses and your identity keys, through a scheme the Dash SDK derives for you. You will see the exact derivation path and the standard five-key set in module 10.
+
+## Credits
+
+Dash Platform is not free to use. Where Core fees use Dash, Platform measures its fees in a purpose-built unit called **credits**, which exist only on layer 2.
+
+Credits are created by locking Dash on the Core chain. The conversion is fixed: 1 duff = 1,000 credits. A <Term id="duff">duff</Term> is Dash's smallest unit — one hundred-millionth of a Dash — so one Dash, at 100,000,000 duffs, becomes 100,000,000,000 credits.
+
+Creating an identity works through that same lock: you lock Dash on Core, the network recognizes the lock, and the locked value (minus fees) becomes the identity's starting credit balance. Every identity therefore begins with the credits it needs to get to work.
+
+A balance is not a one-way door. When your credits run low, you can **top up** an identity by locking more Dash. Anyone may top up any identity — which lets a developer keep adding credits to their users' identities so the users never have to think about fees.
+
+## Fees
+
+Every signed change an identity makes — a <Term id="state-transition">state transition</Term> — costs credits, taken straight from the identity's balance. There are two kinds of fee:
+
+- **Storage fees** — pay for keeping data across the network. The more you store, and the longer it stays, the more you pay.
+- **Processing fees** — pay for the work of validating each change, computed as the network checks that a submitted change is legal.
+
+For everyday use, processing fees are minuscule next to storage fees — storing data is what costs. But processing fees are designed to climb if someone tries to abuse the network, so an attack quickly becomes too expensive to be worth it.
+
+If an identity runs out of credits, its next change is rejected until it is topped up. That is why this course spends a whole lesson on funding an identity before you build anything real.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="identities"
+  passingScore={4}
+  questions={[
+    {
+      id: "owns-data",
+      prompt: "On Dash Platform, which object actually owns data and signs the changes to it?",
+      options: [
+        { id: "a", label: "The Core wallet, because it holds the keys." },
+        { id: "b", label: "The Core address, because Dash is sent to it." },
+        { id: "c", label: "The Platform address, because it is funded with credits." },
+        { id: "d", label: "The Platform identity, because it records the keys that authorize changes." },
+      ],
+      correctOptionId: "d",
+      explanation: "An identity is the actor: it owns contracts, documents, and names, and its keys sign every change to that data. A wallet holds private keys, and addresses are payment or funding destinations.",
+    },
+    {
+      id: "platform-address",
+      prompt: "What is a Platform address for?",
+      options: [
+        { id: "a", label: "Holding credits so they can fund the creation of an identity." },
+        { id: "b", label: "Receiving Dash payments on the Core chain." },
+        { id: "c", label: "Standing in for a human-readable DPNS username." },
+        { id: "d", label: "Signing documents on behalf of an identity." },
+      ],
+      correctOptionId: "a",
+      explanation: "A Platform address is a separate layer-2 account that holds credits, not Dash. Its job in this course is to fund identity creation.",
+    },
+    {
+      id: "master-key",
+      prompt: "Which key must every identity include?",
+      options: [
+        { id: "a", label: "Exactly one master-level authentication key." },
+        { id: "b", label: "At least one Transfer key, so credits can leave the identity." },
+        { id: "c", label: "A decryption key for private data." },
+        { id: "d", label: "Two authentication keys at different levels." },
+      ],
+      correctOptionId: "a",
+      explanation: "Every identity requires exactly one master-level authentication key. It is the root of trust needed to update the identity's keys, so it should stay out of everyday use.",
+    },
+    {
+      id: "credit-conversion",
+      prompt: "Locking one duff on Core creates how many credits?",
+      options: [
+        { id: "a", label: "1,000" },
+        { id: "b", label: "100" },
+        { id: "c", label: "1" },
+        { id: "d", label: "100,000,000" },
+      ],
+      correctOptionId: "a",
+      explanation: "The conversion is fixed at 1 duff = 1,000 credits, so one Dash (100,000,000 duffs) becomes 100,000,000,000 credits.",
+    },
+    {
+      id: "fees-split",
+      prompt: "What distinguishes storage fees from processing fees?",
+      options: [
+        { id: "a", label: "Storage fees pay to keep data across the network; processing fees pay to validate each change." },
+        { id: "b", label: "Storage fees are paid in Dash; processing fees are paid in credits." },
+        { id: "c", label: "Storage fees apply only to DPNS names; processing fees apply only to documents." },
+        { id: "d", label: "Storage fees are optional; processing fees are always zero." },
+      ],
+      correctOptionId: "a",
+      explanation: "Both fees are paid in credits from the identity's balance. Storage fees cover keeping data; processing fees cover the work of validating each signed change.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now tell the four objects apart — a Core wallet and Core address on the money layer, and a Platform address and Platform identity on the application-data layer — and explain that the identity is the one that owns and signs data. You know what an identity key's purpose and security level mean, why the master-level authentication key is mandatory, and how locking Dash becomes credits that pay storage and processing fees.

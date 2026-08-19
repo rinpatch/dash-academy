@@ -103,4 +103,10 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "Dash's decentralized API. Apps and SDKs read and write Platform and Core data through it instead of running their own node.",
     tag: "Dash",
   },
+  duff: {
+    title: "Duff",
+    definition:
+      "Dash's smallest unit: one hundred-millionth of a Dash. Platform credits convert at a fixed rate of 1,000 credits per duff.",
+    tag: "Dash",
+  },
 };
