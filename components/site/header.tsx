@@ -21,7 +21,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 rounded-b-3xl border-b border-foreground/12 bg-card">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-4 sm:px-8">
+      <div className="mx-auto flex max-w-[1360px] items-center justify-between gap-4 px-4 py-4 sm:px-8">
         <Link href="/learn/what-is-dash-platform" className="shrink-0">
           <DashAcademyLogo />
         </Link>

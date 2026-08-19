@@ -4,7 +4,7 @@ Dash Academy is a custom card-based lesson dashboard, not a generic docs site. E
 
 ## Foundations
 
-- **Typography:** Manrope is the interface and prose font. Geist Mono is reserved for code and identifiers. Headings and emphasis use `font-extrabold`; body and secondary text use `font-medium`. Lesson prose (headings, paragraphs, lists, code blocks, tables) is styled by Fumadocs' typography preset via `DocsBody`/`prose` — do not hand-roll prose typography.
+- **Typography:** Manrope is the interface and prose font. Geist Mono is reserved for code and identifiers. Headings and emphasis use `font-extrabold`; body and secondary text use `font-medium`. Lesson prose (headings, paragraphs, lists, code blocks, tables) is styled by Fumadocs' typography preset via `DocsBody`/`prose` — do not hand-roll prose typography. `DocsBody` justifies the lesson body with automatic hyphenation (ragged-right below `sm`, where the measure is too short to justify cleanly); this inherits, so any interactive lesson component must keep marking itself `not-prose`, which resets it back to ragged-right.
 - **Color:** Hyperwave Blue (`--primary`, `#4C7EFF`) marks primary actions, current navigation, and progress. Midnight Circuit (`--foreground`, `#0C1C33`) anchors text. Mint Current (`--mint`) communicates successful verification. Warning orange (`--warning`) marks safety callouts. Never introduce new hardcoded colors — express hierarchy with opacity on the existing tokens instead (see below).
 - **Opacity scale for text/borders:** built directly on `--foreground` so light and dark mode stay correct automatically.
   - `text-foreground` — headings, high-emphasis values
@@ -14,7 +14,7 @@ Dash Academy is a custom card-based lesson dashboard, not a generic docs site. E
   - `border-foreground/12` — hairlines, dividers, card borders
   - `border-foreground/24` — input and button outlines
 - **Cards:** the base unit of the UI. Outer cards are `rounded-3xl bg-card p-4`; nested cards/wells are `rounded-2xl`; pills, tags, and small buttons are `rounded-xl` or `rounded-full`. Use the shared `Card` primitive (`components/ui/card.tsx`) instead of re-declaring the card classes. Cards sit on `bg-background`, a soft off-white (or dark surface in dark mode) — never pure white behind a white card.
-- **Layout:** lesson pages are a 3-column grid at desktop (`256px` progress/nav sidebar · flexible content · `352px` notes sidebar) that collapses to a single stacked column on mobile, content first, sidebars above/below it. Max content width is `1440px`, centered.
+- **Layout:** lesson pages are a 3-column grid at desktop (`224px` progress/nav sidebar · flexible content · `288px` notes sidebar) that collapses to a single stacked column on mobile, content first, sidebars above/below it. Max content width is `1360px`, centered — shared with the header (`components/site/header.tsx`), so the two must change together or the header falls out of alignment with the grid. The sidebars are fixed pixels and only the middle column flexes, so every pixel the viewport lacks comes out of the reading column: budget `viewport − 656` for it on desktop, and keep the sidebars narrow enough that mid-size laptops (~1280–1400) still clear ~640px. Lesson prose stays at the preset's 16px, which puts the measure near 80 characters across that range.
 
 ## Lesson Page Anatomy
 

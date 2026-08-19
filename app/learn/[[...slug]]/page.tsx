@@ -33,7 +33,7 @@ export default async function AcademyLesson({ params }: PageProps) {
 
   return (
     <AnchorProvider toc={page.data.toc}>
-      <div className="mx-auto grid max-w-[1440px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[256px_1fr_352px] lg:gap-16 lg:py-12">
+      <div className="mx-auto grid max-w-[1360px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[224px_1fr_288px] lg:gap-10 lg:py-12">
         <aside className="order-2 flex flex-col gap-4 lg:sticky lg:top-28 lg:order-1 lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
           <CourseTrackCard totalLessons={lessons.length} />
           <LessonNavList lessons={lessons} currentUrl={page.url} toc={page.data.toc} />
@@ -60,7 +60,7 @@ export default async function AcademyLesson({ params }: PageProps) {
 
           <LessonTabs
             overview={
-              <DocsBody>
+              <DocsBody className="text-justify hyphens-auto [&_.not-prose]:text-left [&_.not-prose]:hyphens-manual max-sm:text-left max-sm:hyphens-manual">
                 <Content components={getMDXComponents()} />
               </DocsBody>
             }
