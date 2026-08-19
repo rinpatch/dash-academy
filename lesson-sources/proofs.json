@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "module": 7,
+  "slug": "proofs",
+  "title": "Proofs",
+  "targets": {
+    "platformDocs": "3.1.0",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Dash Academy fixed curriculum — module 7",
+      "kind": "repository manifest",
+      "locator": "curriculum/lessons.json:84-95",
+      "version": "repository commit 0f2224a4196b2effeadeebd6f76238e5845bf904"
+    },
+    {
+      "id": "S2",
+      "title": "Platform Proofs",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/platform-proofs.md:5-22,42-67",
+      "version": "Dash Platform docs 3.1.0; git 4cb4104a656027e3bbd5fd52c7a193cb84c5ea28"
+    },
+    {
+      "id": "S3",
+      "title": "Platform State",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-state.md:5-29",
+      "version": "Dash Platform docs 3.1.0; git 4cb4104a656027e3bbd5fd52c7a193cb84c5ea28"
+    },
+    {
+      "id": "S4",
+      "title": "Query Capabilities",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md:5-48",
+      "version": "Dash Platform docs 3.1.0; git 4cb4104a656027e3bbd5fd52c7a193cb84c5ea28"
+    },
+    {
+      "id": "S5",
+      "title": "Decentralized API — Security",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md:23-29",
+      "version": "Dash Platform docs 3.1.0; git 4cb4104a656027e3bbd5fd52c7a193cb84c5ea28"
+    },
+    {
+      "id": "S6",
+      "title": "Platform Consensus",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-consensus.md:22-60",
+      "version": "Dash Platform docs 3.1.0; git 4cb4104a656027e3bbd5fd52c7a193cb84c5ea28"
+    },
+    {
+      "id": "S7",
+      "title": "Pinned WASM SDK ProofInfo type",
+      "kind": "installed package type declaration",
+      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts:6891-6913",
+      "version": "@dashevo/wasm-sdk 4.1.1"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Module 7 must remain a concepts-tier lesson covering state proofs, light-client trust, and verification boundaries, with one completing quiz using challenge ID `proofs`.",
+      "sourceIds": ["S1"],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "Each committed Platform block header contains an AppHash committing to the post-execution GroveDB state-tree root.",
+      "sourceIds": ["S3", "S6"],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "A Platform state proof lets a verifier reconstruct the relevant authenticated tree path and check the requested data against a known root hash.",
+      "sourceIds": ["S2", "S3"],
+      "support": "direct"
+    },
+    {
+      "id": "C4",
+      "text": "In pinned @dashevo/wasm-sdk 4.1.1, ProofInfo exposes grovedbProof, quorumHash, signature, round, blockIdHash, and quorumType; this differs from the four-part legacy payload in Platform docs 3.1.0.",
+      "sourceIds": ["S2", "S7"],
+      "support": "direct"
+    },
+    {
+      "id": "C5",
+      "text": "Inclusion proofs establish that requested data exists without modification; non-inclusion proofs establish that requested data does not exist in the proved state.",
+      "sourceIds": ["S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "A light client can verify the GroveDB proof against the block header's AppHash and authenticate the commitment with valid validator-quorum context; this permits confirmation of returned state without trusting the responding DAPI node or replaying the chain.",
+      "sourceIds": ["S2", "S3", "S4", "S6"],
+      "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "Proof verification shifts the trust boundary away from one DAPI server only when the tree result is checked against an authenticated consensus commitment; a root, signature bytes, or quorum identifier supplied by that same server is not independently authenticated merely because it is present in the payload.",
+      "sourceIds": ["S2", "S3", "S6", "S7"],
+      "support": "inference"
+    },
+    {
+      "id": "C8",
+      "text": "A successfully verified proof establishes that the returned value or absence matches consensus state and was not modified by the server.",
+      "sourceIds": ["S2", "S4", "S5"],
+      "support": "direct"
+    },
+    {
+      "id": "C9",
+      "text": "Query proofs concern finalized state at a committed block; they do not provide pending changes or the historical event sequence that produced that state.",
+      "sourceIds": ["S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C10",
+      "text": "Transport security and state verification are separate boundaries: TLS protects the connection, while the cryptographic proof authenticates the returned Platform state.",
+      "sourceIds": ["S5"],
+      "support": "direct"
+    },
+    {
+      "id": "C11",
+      "text": "Because proof delivery is optional, a client that neither requests nor verifies a proof does not receive the proof-backed guarantee and must trust the response through some other mechanism.",
+      "sourceIds": ["S2", "S5"],
+      "support": "inference"
+    },
+    {
+      "id": "C12",
+      "text": "A proof does not establish that application data is desirable, truthful in the real world, or semantically useful; it establishes membership or absence relative to the authenticated consensus state.",
+      "sourceIds": ["S3", "S4", "S5"],
+      "support": "inference"
+    },
+    {
+      "id": "C13",
+      "text": "A proof-verification failure must be presented as an unverified response, not as valid Platform state; accepting the payload anyway would cross the lesson's verification boundary.",
+      "sourceIds": ["S2", "S3", "S5"],
+      "support": "inference"
+    }
+  ],
+  "examples": [],
+  "conflicts": [
+    {
+      "id": "X1",
+      "description": "Platform docs 3.1.0 describe a legacy four-part payload with rootTreeProof, storeTreeProof, signatureLlmqHash, and a signature said to cover the rootTreeProof Merkle root, while pinned @dashevo/wasm-sdk 4.1.1 exposes ProofInfo with grovedbProof, quorumHash, signature, round, blockIdHash, and quorumType. The docs also defer root-tree verification details and do not establish the exact signed message for the current SDK shape.",
+      "resolution": "Resolved by source authority and scope: the installed @dashevo/wasm-sdk 4.1.1 declaration is authoritative for the current ProofInfo payload fields (grovedbProof, quorumHash, signature, round, blockIdHash, and quorumType), while the older Platform docs 3.1.0 support only the conceptual proof semantics and verification model. The lesson therefore uses the current SDK field shape, does not present the legacy four-part documentation shape as current, and retains U1 because neither source documents the exact signature procedure well enough to teach a manual implementation.",
+      "sourceIds": ["S2", "S3", "S6", "S7"],
+      "status": "resolved"
+    }
+  ],
+  "uncertainties": [
+    {
+      "id": "U1",
+      "question": "What exact message does the signature field in @dashevo/wasm-sdk 4.1.1 ProofInfo authenticate, and how are round and blockIdHash incorporated into verification?",
+      "impact": "This prevents teaching a manual field-level signature algorithm, but it does not block the concepts-tier lesson because the lesson can accurately explain the verification boundary and require a documented, version-matched verification implementation.",
+      "blocking": false,
+      "sourceIds": ["S2", "S7"]
+    }
+  ]
+}
