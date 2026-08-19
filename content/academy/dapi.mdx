@@ -1,0 +1,144 @@
+---
+title: DAPI
+description: Understand Dash's decentralized API and how clients use it.
+module: 6
+tier: concepts
+estimatedMinutes: 10
+exp: 100
+verification: quiz
+prerequisites: [5]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- describe what DAPI is and why its being decentralized matters for an application that depends on it;
+- choose the right part of DAPI for a Dash Core need versus a Dash Platform need; and
+- select the DAPI instance your client talks to, and explain why falling back to a different instance is safe.
+
+So far you have met the two layers of Dash, identities, data contracts, and documents. This lesson is about the front door your application uses to reach all of it.
+
+## What DAPI is
+
+DAPI is Dash's decentralized API — the acronym is where the name comes from. It is a decentralized HTTP API that exposes <Term id="json-rpc">JSON-RPC</Term> and <Term id="grpc">gRPC</Term> endpoints, which your application calls the way it would call any backend service.
+
+Two properties set it apart from a typical web API:
+
+- **It is decentralized.** Instead of one company running one server, DAPI is served by Dash's <Term id="masternode">masternode</Term> network — specifically the <Term id="evonode">evonodes</Term>, the masternodes that run Dash Platform. Many nodes across the network operate the same API, so there is no single point of failure and no single operator you have to trust.
+- **It gives you node-level access without hosting a node.** DAPI provides the same access and security you would get from running your own Dash node, but without the cost and maintenance of hosting one.
+
+DAPI encrypts its connections with TLS, so your traffic is protected in transit.
+
+<Callout type="info" title="A useful mental model">
+DAPI is to Dash what a hosted JSON API is to a traditional database — except no single company runs it, and it spans both halves of the network.
+</Callout>
+
+## One access point for Core and Platform
+
+DAPI presents a single interface that gives you access to both of Dash's layers. That mirrors the two jobs from the first lesson: Dash Core moves money on layer 1, and Dash Platform stores and verifies application data on layer 2.
+
+DAPI exposes those two layers through two kinds of endpoints:
+
+- **<Term id="json-rpc">JSON-RPC</Term>** exposes some layer-1 information about Dash Core. Think of it as a read-only window onto the Core chain — for example, `getBestBlockHash` and `getBlockHash`.
+- **<Term id="grpc">gRPC</Term>** is the workhorse. It serves Dash Platform — the layer-2 data layer — and also Dash Core, including streaming: DAPI can push you live events about new blocks and masternode-list updates as they happen.
+
+The Platform half of gRPC lets your app read and change Platform state — for example, `getIdentity`, `getDataContract`, and `getDocuments` for reads, and `broadcastStateTransition` with `waitForStateTransitionResult` for writes. The Core half covers operations such as broadcasting a transaction or subscribing to a live stream of updates.
+
+| Your app needs to… | Use |
+| --- | --- |
+| Read some Dash Core chain information | <Term id="json-rpc">JSON-RPC</Term> |
+| Query identities, contracts, or documents | <Term id="grpc">gRPC</Term> (Platform) |
+| Broadcast a transaction or subscribe to Core updates | <Term id="grpc">gRPC</Term> (Core) |
+
+Platform gRPC responses can also return cryptographic proofs that let you check the returned data was not tampered with — that is the topic of the next lesson.
+
+## Choosing a DAPI endpoint
+
+There are two separate choices wrapped up in endpoint selection, and it helps to keep them apart.
+
+First, the **endpoint family** — the choice you just made above. Is this a JSON-RPC or a gRPC call, and within gRPC, is it a Core operation or a Platform operation? That decision follows from *what operation* you are performing.
+
+Second, **which DAPI instance** to talk to. Because many masternodes serve the same API, your client has a choice here too. A client selects an instance by:
+
+- a **network name** — `testnet`, `mainnet`, or `local`; or
+- an explicit **seed list or URL**, such as the public testnet seed `seed-1.testnet.networks.dash.org` on port `1443`.
+
+Because the same API is served by many nodes, if one instance becomes unavailable your client can fall back to a different one. That is what "no single point of failure" means in practice: a node going offline does not stop your application.
+
+This lesson stays conceptual on purpose. The actual SDK calls for connecting — constructing a client, pointing it at <Term id="testnet">testnet</Term>, and making a read — come in module 8. For now, the takeaway is that choosing an endpoint means both picking the right endpoint family for the operation and letting your client choose among the many DAPI instances that serve it.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="dapi"
+  passingScore={4}
+  questions={[
+    {
+      id: "why-decentralized",
+      prompt: "Why is DAPI described as decentralized?",
+      options: [
+        { id: "a", label: "Because it is a single server that runs inside your wallet." },
+        { id: "b", label: "Because many masternodes across the network serve the same API, so no single server or operator is a point of failure." },
+        { id: "c", label: "Because it runs only on your own machine and never touches the network." },
+        { id: "d", label: "Because it has no connection to Dash Core." },
+      ],
+      correctOptionId: "b",
+      explanation: "DAPI is served by the masternode network (the evonodes running Dash Platform). Many nodes expose the same API, so there is no single server to fail and no single operator in charge.",
+    },
+    {
+      id: "two-layers",
+      prompt: "How does DAPI relate to the two Dash layers?",
+      options: [
+        { id: "a", label: "It reads only Dash Core and cannot touch Platform data." },
+        { id: "b", label: "It is one interface that serves both layer 1 (Dash Core) and layer 2 (Dash Platform)." },
+        { id: "c", label: "It replaces Dash Core with its own blockchain." },
+        { id: "d", label: "It is a separate chain that sits beside Core and Platform." },
+      ],
+      correctOptionId: "b",
+      explanation: "A single DAPI interface covers both jobs: it can read Core chain information and read and change Platform state, so your app needs only the one access point.",
+    },
+    {
+      id: "jsonrpc-vs-grpc",
+      prompt: "Your app needs to read Platform documents and also stream new Core blocks as they arrive. Which endpoint family should you use?",
+      options: [
+        { id: "a", label: "JSON-RPC only — it covers all Core and Platform calls." },
+        { id: "b", label: "gRPC, because it serves Platform and Core and supports streaming; JSON-RPC exposes only some layer-1 Core information." },
+        { id: "c", label: "Neither — the only path is running your own node." },
+        { id: "d", label: "Both, chosen at random for each call." },
+      ],
+      correctOptionId: "b",
+      explanation: "gRPC is the fuller surface: it serves Platform reads and writes, plus Core operations and live streaming. JSON-RPC is the narrower, read-only Core window.",
+    },
+    {
+      id: "which-instance",
+      prompt: "How does a client choose which DAPI instance to talk to?",
+      options: [
+        { id: "a", label: "It is hard-coded to one IP address that never changes." },
+        { id: "b", label: "By network name (testnet, mainnet, or local) or an explicit seed URL such as seed-1.testnet.networks.dash.org on port 1443." },
+        { id: "c", label: "By registering an account with the DAPI provider first." },
+        { id: "d", label: "By asking Dash's central support service." },
+      ],
+      correctOptionId: "b",
+      explanation: "A client selects an instance by network name or by a seed list/URL, which is enough because many nodes serve the same API.",
+    },
+    {
+      id: "fallback",
+      prompt: "The DAPI instance your client is using goes offline. What happens?",
+      options: [
+        { id: "a", label: "Your app is down until that exact instance returns." },
+        { id: "b", label: "Your client can connect to a different DAPI instance, since many masternodes serve the same API." },
+        { id: "c", label: "You must migrate your application to a different blockchain." },
+        { id: "d", label: "All Platform data is lost." },
+      ],
+      correctOptionId: "b",
+      explanation: "Availability does not depend on any one node. If an instance fails, the client falls back to another instance serving the same API.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now describe DAPI as Dash's decentralized API, explain how one access point serves both Dash Core and Dash Platform through JSON-RPC and gRPC, and choose which DAPI instance a client talks to — by network name or seed URL — with fallback when one node is unavailable. Next, you will learn how the cryptographic proofs DAPI returns let you verify responses without trusting a single server.

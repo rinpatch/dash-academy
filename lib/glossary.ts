@@ -121,4 +121,10 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "A published schema that declares the document types an application may store, with their fields, types, and indexes. Every document write is validated against it.",
     tag: "Dash",
   },
+  evonode: {
+    title: "Evonode",
+    definition:
+      "A masternode that also runs Dash Platform, so beyond Core's extra services it serves the decentralized API (DAPI) and stores Platform state.",
+    tag: "Dash",
+  },
 };
