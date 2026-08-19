@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "module": 1,
+  "slug": "what-is-dash-platform",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Dash Academy lesson manifest",
+      "kind": "curriculum manifest",
+      "locator": "curriculum/lessons.json:1-22",
+      "version": "schemaVersion 1"
+    },
+    {
+      "id": "S2",
+      "title": "What is Dash Platform",
+      "kind": "vendored official Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:5-81",
+      "version": "3.1.0"
+    },
+    {
+      "id": "S3",
+      "title": "Platform Chain",
+      "kind": "vendored official Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-chain.md:5-29",
+      "version": "3.1.0"
+    },
+    {
+      "id": "S4",
+      "title": "Platform Consensus",
+      "kind": "vendored official Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-consensus.md:5-83",
+      "version": "3.1.0"
+    },
+    {
+      "id": "S5",
+      "title": "Masternode Quorums",
+      "kind": "vendored official Dash Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-masternode-quorums.md:8-105",
+      "version": "23.0.0"
+    },
+    {
+      "id": "S6",
+      "title": "ChainLocks",
+      "kind": "vendored official Dash Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-chainlocks.md:8-18",
+      "version": "23.0.0"
+    },
+    {
+      "id": "S7",
+      "title": "InstantSend",
+      "kind": "vendored official Dash Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md:8-62",
+      "version": "23.0.0"
+    },
+    {
+      "id": "S8",
+      "title": "Identity",
+      "kind": "vendored official Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md:17-37",
+      "version": "3.1.0"
+    },
+    {
+      "id": "S9",
+      "title": "Dash Academy Proofs lesson manifest",
+      "kind": "curriculum manifest",
+      "locator": "curriculum/lessons.json:85-94",
+      "version": "schemaVersion 1"
+    },
+    {
+      "id": "S10",
+      "title": "State Transitions",
+      "kind": "vendored official Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/state-transition.md:22-41",
+      "version": "3.1.0"
+    },
+    {
+      "id": "S11",
+      "title": "Query Capabilities",
+      "kind": "vendored official Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md:50-60",
+      "version": "3.1.0"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Module 1 is a 12-minute concepts lesson worth 100 EXP, has no prerequisites, covers Dash Core and Platform, quorums, ChainLocks, and InstantSend, and ends with quiz challenge what-is-dash-platform.",
+      "sourceIds": ["S1"],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "Dash Platform is a decentralized data-storage and application layer where developers define schemas and submit signed, structured state transitions rather than arbitrary user-written on-chain code.",
+      "sourceIds": ["S2", "S10"],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "Drive stores and validates Platform data, Platform supports indexed querying, and DAPI exposes decentralized access to Platform data and the Dash blockchain.",
+      "sourceIds": ["S2", "S11"],
+      "support": "direct"
+    },
+    {
+      "id": "C4",
+      "text": "The Platform chain supplies layer 2 consensus and can read Core, while Core is not dependent on or aware of the Platform chain.",
+      "sourceIds": ["S3"],
+      "support": "direct"
+    },
+    {
+      "id": "C5",
+      "text": "LLMQs are deterministic masternode subsets formed through distributed key generation and retained so they can produce BLS threshold signatures on consensus messages.",
+      "sourceIds": ["S5"],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "ChainLocks, deterministic InstantSend, and Platform use feature-specific quorum types rather than one universal quorum.",
+      "sourceIds": ["S5"],
+      "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "Platform reaches block finality through pBFT-based Tenderdash consensus; acceptance by at least two-thirds plus one of the validator set makes a Platform block final without reorganization.",
+      "sourceIds": ["S3", "S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C8",
+      "text": "Tenderdash uses rotating validator sets drawn from Platform LLMQs and recovered BLS threshold signatures, with quorum commitments recorded on Core.",
+      "sourceIds": ["S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C9",
+      "text": "Platform combines rapid BFT finality with validator and quorum membership rooted in Core's Proof-of-Work-secured state.",
+      "sourceIds": ["S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C10",
+      "text": "InstantSend automatically attempts to lock qualifying Core transaction inputs, with quorums conducting locking sessions and broadcasting a verifiable transaction-lock message.",
+      "sourceIds": ["S7"],
+      "support": "direct"
+    },
+    {
+      "id": "C11",
+      "text": "ChainLocks threshold-sign the first Core block observed at a height, causing nodes to reject competing blocks at that height and any descendants of those competing blocks, which prevents reorganizations below the locked block.",
+      "sourceIds": ["S6"],
+      "support": "direct"
+    },
+    {
+      "id": "C12",
+      "text": "ChainLock creation waits until every transaction in the Core block has an InstantSend lock, establishing retroactive locks where needed.",
+      "sourceIds": ["S6"],
+      "support": "direct"
+    },
+    {
+      "id": "C13",
+      "text": "For identity funding, Dash is locked in a Core asset-lock transaction and Platform accepts either an InstantSend proof or proof that the transaction appears in a ChainLocked block.",
+      "sourceIds": ["S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C14",
+      "text": "Platform data is designed to be verifiable, with proof mechanics covered by the later Proofs lesson.",
+      "sourceIds": ["S2", "S9"],
+      "support": "direct"
+    },
+    {
+      "id": "C15",
+      "text": "InstantSend and ChainLocks protect Core transactions and blocks, while Tenderdash quorum consensus finalizes Platform blocks; LLMQs connect the systems without giving both chains the same finality rule.",
+      "sourceIds": ["S3", "S4", "S5", "S6", "S7"],
+      "support": "inference"
+    }
+  ],
+  "examples": [],
+  "conflicts": [],
+  "uncertainties": []
+}
