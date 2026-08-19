@@ -83,7 +83,7 @@ async function runCommand(resume) {
   try {
   const secretFiles = await readableSecretFiles();
   if (secretFiles.length) throw new Error(`Agent run refused: move secret-bearing files outside the checkout first: ${secretFiles.join(", ")}`);
-  if (selected.some((lesson) => lesson.tier === "sdk")) validateLiveConfiguration();
+  if (args.live && selected.some((lesson) => lesson.tier === "sdk")) validateLiveConfiguration();
   const baseline = await assertPreparedBaseline();
   const runId = args.run_id ?? (resume ? await requireRunId() : makeRunId());
   const runDir = path.join(runRoot, runId);
@@ -116,7 +116,7 @@ async function runCommand(resume) {
     }
   });
   await Promise.all(workers);
-  for (const lesson of selected.filter((candidate) => candidate.tier === "sdk")) {
+  for (const lesson of args.live ? selected.filter((candidate) => candidate.tier === "sdk") : []) {
     const item = state.lessons[lesson.module];
     if (item.status !== "local-passed") continue;
     const lessonDir = path.join(runDir, "lessons", lessonKey(lesson));
@@ -135,7 +135,7 @@ async function runCommand(resume) {
   const statuses = selected.map((lesson) => state.lessons[lesson.module].status);
   printRun(state, selected);
   if (statuses.includes("blocked")) process.exitCode = 2;
-  else if (statuses.some((status) => status !== "passed")) process.exitCode = 1;
+  else if (statuses.some((status) => !["passed", "local-passed"].includes(status))) process.exitCode = 1;
   } finally {
     await lock.close();
     await rm(lockPath, { force: true });
@@ -295,14 +295,18 @@ async function integrateCommand() {
   }
   const pages = [];
   for (const lesson of manifest.lessons) {
+    if (state.lessons[lesson.module]?.status !== "passed") continue;
     try { await access(path.join(worktree, "content/academy", `${lesson.slug}.mdx`)); pages.push(lesson.slug); } catch {}
   }
   await writeFile(path.join(worktree, "content/academy/meta.json"), `${JSON.stringify({ title: "Dash Academy", pages }, null, 2)}\n`);
   await command("git", ["add", "content/academy/meta.json"], { cwd: worktree });
   await command("git", ["commit", "-m", `content(academy): integrate tier ${tier}`], { cwd: worktree });
   for (const [program, programArgs] of [["npm", ["run", "lint"]], ["npm", ["run", "build"]]]) {
-    const result = await command(program, programArgs, { cwd: worktree });
-    if (result.code !== 0) throw new Error(`Integration check failed: ${program} ${programArgs.join(" ")}\n${result.stderr}`);
+    let result = await command(program, programArgs, { cwd: worktree });
+    if (result.code !== 0 && programArgs.includes("build") && /fumadocs-mdx:collections\/server/.test(`${result.stdout}\n${result.stderr}`)) {
+      result = await command(program, programArgs, { cwd: worktree });
+    }
+    if (result.code !== 0) throw new Error(`Integration check failed: ${program} ${programArgs.join(" ")}\n${result.stdout}\n${result.stderr}`);
   }
   console.log(`Created local integration branch ${branch} at ${worktree}`);
 }

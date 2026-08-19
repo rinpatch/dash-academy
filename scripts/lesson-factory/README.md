@@ -1,6 +1,12 @@
 # Lesson factory
 
-`npm run lessons -- preflight` checks the local tools and committed baseline. `run --module N` creates a lesson worktree, launches an independent research agent, pauses on blocking questions, then authors, validates, browser-tests, reviews, and commits the lesson branch. `questions`, `answer`, `resume`, `status`, `test`, and `integrate` operate on the latest run unless `--run-id` is provided.
+`npm run lessons -- preflight` checks the local tools and committed baseline. `run --module N` creates a lesson worktree, launches an independent research agent, pauses on blocking questions, then authors, validates, browser-tests, reviews, and commits the lesson branch. `questions`, `answer`, `resume`, `status`, `test`, and `integrate` operate on the latest run unless `--run-id` is provided. Tier 2 runs are secretless by default and stop at `local-passed`; use `resume --tier 2 --live` only in the separate trusted phase.
+
+```sh
+npm run lessons -- run --tier 1 --concurrency 3
+npm run lessons -- run --tier 2 --concurrency 3
+npm run lessons -- resume --tier 2 --live
+```
 
 Agents never execute live writes. Use `test N --live` only after every Codex and dev-server process has exited, the issuer mnemonic has been moved outside the checkout, and the trusted harness guard variables are present. Live tests are serialized and fail closed when a lesson fixture is absent.
 
