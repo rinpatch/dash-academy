@@ -284,7 +284,7 @@ async function integrateCommand() {
   const state = await loadCurrentRun();
   const manifest = await loadManifest();
   const lessons = manifest.lessons.filter((lesson) => tier === 1 ? lesson.module <= 7 : lesson.module >= 8);
-  // ponytail: a lesson already shipped in the baseline needs no commit from this run
+  // a lesson already shipped in the baseline needs no commit from this run
   const inBaseline = async (lesson) =>
     (await command("git", ["cat-file", "-e", `${state.baseline}:content/academy/${lesson.slug}.mdx`])).code === 0;
   const missing = [];

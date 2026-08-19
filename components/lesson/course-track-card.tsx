@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useCompletedChallenges } from "@/components/providers/progress-provider";
 import { getCompletedLessonIds } from "@/lib/progress";
 
-// ponytail: single hardcoded track name until the content model supports multiple tracks
+// single hardcoded track name until the content model supports multiple tracks
 const TRACK_NAME = "Dash Platform";
 
 export function CourseTrackCard({ totalLessons }: { totalLessons: number }) {

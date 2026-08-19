@@ -34,7 +34,7 @@ export function getClient(): Promise<Client> {
   return (globalForDash.dashAcademyClient ??= build());
 }
 
-// ponytail: quorums rotate on testnet, staling the cached trusted context;
+// quorums rotate on testnet, staling the cached trusted context;
 // callers should invoke this and retry once when a request fails as retriable
 export function resetClient() {
   globalForDash.dashAcademyClient = undefined;

@@ -54,6 +54,6 @@ Then commit the bumped submodule pointer.
 
 `platform-book` is sparse-checked out to `book/` only (cone mode also keeps top-level repo files like `Cargo.toml`, `package.json` — harmless, ~12M total vs. the full monorepo). After any `submodule update`, sparse-checkout stays put — no need to re-set it.
 
-<!-- ponytail: shallow submodules; docs/binary (141M PDFs) + docs/locale (62M translations) are pulled but useless here. If disk matters, sparse-checkout to exclude them:
+<!-- shallow submodules; docs/binary (141M PDFs) + docs/locale (62M translations) are pulled but useless here. If disk matters, sparse-checkout to exclude them:
   git -C docs sparse-checkout set --no-cone '/*' '!/binary' '!/locale'
 Not reproducible across fresh clones without scripting — add only if it bites. -->

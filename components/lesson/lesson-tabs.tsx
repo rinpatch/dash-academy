@@ -32,7 +32,7 @@ export function LessonTabs({ overview }: { overview: ReactNode }) {
       <div role="tabpanel" hidden={active !== "Overview"}>
         {overview}
       </div>
-      {/* ponytail: Resources/Discussion have no content model yet, placeholder until they do */}
+      {/* Resources/Discussion have no content model yet, placeholder until they do */}
       <div role="tabpanel" hidden={active !== "Resources"} className="text-sm text-foreground/60">
         Additional resources for this lesson are coming soon.
       </div>

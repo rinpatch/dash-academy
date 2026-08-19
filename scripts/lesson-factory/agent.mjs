@@ -5,7 +5,7 @@ import { command, glossaryIds, repoRoot, secretlessEnv, writeJson } from "./lib.
 
 const schemaDir = path.join(repoRoot, "scripts/lesson-factory/schemas");
 const skillPath = ".agents/skills/write-dash-lesson/SKILL.md";
-// ponytail: one model for every role, override with LESSON_MODEL. Split per role only if a
+// one model for every role, override with LESSON_MODEL. Split per role only if a
 // stage's quality measurably lags.
 const model = process.env.LESSON_MODEL ?? "tokenrouter/anthropic/claude-sonnet-5";
 

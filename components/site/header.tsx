@@ -9,7 +9,7 @@ import { WalletConnect } from "@/components/site/wallet-connect";
 
 const navLinks = [
   { label: "Lessons", href: "/learn/what-is-dash-platform" },
-  // ponytail: Community/Resources/My Profile have no destination yet, shown inert until those pages exist
+  // Community/Resources/My Profile have no destination yet, shown inert until those pages exist
   { label: "Community", href: null },
   { label: "Resources", href: null },
   { label: "My Profile", href: null },

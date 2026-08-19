@@ -41,7 +41,7 @@ export function useDashPlatformExtension(): boolean | null {
         setAvailable(true);
         clearInterval(id);
       } else if (tries >= 20) {
-        // ponytail: 20 x 150ms = 3s ceiling, then assume not installed. Bump if the
+        // 20 x 150ms = 3s ceiling, then assume not installed. Bump if the
         // extension's injection turns out to lag further on slow machines.
         setAvailable(false);
         clearInterval(id);
