@@ -13,83 +13,79 @@ prerequisites: [1]
 
 By the end of this lesson, you will be able to:
 
-- explain what a blockchain network offers an application developer;
-- separate Dash Core's job—moving money—from Dash Platform's job—storing app data;
+- separate Dash Core's job — moving money — from Dash Platform's job — storing application data;
+- describe how Platform stores data: a schema you declare, records the schema accepts, and signed changes that update them;
 - name concrete kinds of applications you can build on Dash; and
-- outline the application you will build, end to end, later in this course.
+- outline the application you will assemble, end to end, later in this course.
 
-Dash splits one network into two connected layers with different jobs. In this lesson you will meet both halves, see what a developer can build with them, and preview the app you will build yourself over the rest of this course.
-
-## What a blockchain network gives you
-
-A blockchain is a network of computers that independently agree on one shared, append-only record. The record is not kept in a single company's database; copies are spread across the network and reconciled through a consensus the network enforces rather than one operator deciding.
-
-From an app developer's point of view, that shared record changes the deal:
-
-- **Decentralized storage.** An application's data lives on many independent computers, so it does not depend on one company's server staying up or staying honest.
-- **Shared state.** Any client that connects sees the same data and can cryptographically check that data is what the network agreed to.
-- **Client libraries.** A software development kit (SDK) hides the low-level networking and cryptography, so you write ordinary application code instead of protocol code.
-
-You do not have to run your own network node or build the cryptography yourself. You use the network the way you would use a backend service—except the backend belongs to no single company.
+In the previous lesson you met Dash the money. This lesson introduces the other half of the same network: Dash Platform, the layer that gives your application somewhere to keep its data.
 
 ## One network, two jobs
 
-Dash organizes that shared record into two layers so that one layer can stay focused on money while the other carries application data.
+Dash is one network organized as two layers, each focused on its own job. You already met the first:
 
-| | Dash Core | Dash Platform |
-| --- | --- | --- |
-| Layer | Layer 1 | Layer 2 |
-| Job | Move value | Store and verify app data |
-| What you submit | A payment transaction | A signed <Term id="state-transition">state transition</Term> |
+- **Dash Core** is the layer-1 money layer. It settles Dash payments and carries the currency itself.
+- **Dash Platform** is the layer-2 application-data layer. It stores structured application data — the records behind usernames, profiles, listings, and other app state — and verifies that only authorized operations change it.
 
-**Dash Core** is the layer-1 blockchain. It is the money layer: it settles Dash payments and carries the Dash currency itself.
-
-**Dash Platform** is the layer-2 application-data layer. It stores structured application data—the records behind usernames, profiles, listings, and other app state—and verifies that only authorized write operations change it.
-
-The relationship runs one way: Platform can read what is on Core, but Core does not depend on Platform. That lets Dash add application capabilities without making the money layer responsible for application data.
+The relationship runs one way: Platform can read what is on Core, but Core does not depend on Platform. Splitting the network this way keeps the money layer focused on money while the data layer handles everything an application needs to keep.
 
 <Callout type="info" title="A useful mental model">
-Core is the payment rail. Platform is the database. They share one network, but each stays focused on its own job.
+Core is the payment rail. Platform is the database. One network, two jobs.
 </Callout>
 
-### How Platform stores data
+## How Platform stores your data
 
-On most blockchains, adding application logic means deploying a <Term id="smart-contract">smart contract</Term>—code the network runs for you. Dash Platform takes a different path: instead of uploading custom code, you **describe** your data.
+Most blockchains add application logic by letting you deploy a <Term id="smart-contract">smart contract</Term> — program code the network runs for you. Platform takes the opposite approach: there is no contract code of your own to upload or run. Instead, you **describe** your data, and the network stores and validates it.
 
-- A **data contract** is a schema that declares the records your app may store—their fields, types, and indexes.
-- A **state transition** is a signed operation that changes data, such as creating an identity, registering a name, or writing a record.
-- The network validates every change against the contract and stores the result; there is no contract code of your own for it to execute.
+Three ideas carry the whole thing:
 
-Two components do the work behind the scenes:
+1. **A data contract describes the shape of your data.** It is a schema — a JSON Schema document that declares the kinds of records your app stores, with their fields and types. It is the same idea as defining a schema for a document-oriented database such as MongoDB: you say what a record may contain, and the network holds you to it.
+2. **Documents are the records.** Each record your app actually stores is a document, in the same sense as a row in a table or an object in a database. Every document must conform to the data contract it belongs to, and each one is owned by an identity.
+3. **State transitions are the only way data changes.** Nothing writes to Platform directly. Every create, update, or delete is a signed state transition from the identity that owns the record. The network checks the change against the contract, and only then records it.
 
-- **Drive** is Platform's decentralized storage. It validates and keeps the network's application state.
-- **DAPI** is the decentralized API. It exposes <Term id="json-rpc">JSON-RPC</Term> and <Term id="grpc">gRPC</Term> endpoints through a network of <Term id="masternode">masternodes</Term>, so your app can read and write Platform data and query the Core chain without running its own node.
+Here is the smallest possible taste of idea one. A note-taking app might describe its records like this:
 
-## Payments confirm in about a second
+```json
+{
+  "note": {
+    "type": "object",
+    "properties": {
+      "message": { "type": "string", "position": 0 }
+    },
+    "required": ["message"],
+    "additionalProperties": false
+  }
+}
+```
 
-Dash is built for payments, and speed is the point. A Dash payment reaches confirmation in **about a second**—the Dash documentation describes a transaction reaching confirmation in "little more than a second."
+This is a declaration, not code. (The `position` entry is an ordering detail you will meet when you write contracts yourself later on — for now, notice only the shape.) Hold onto the pattern: **declare the data, submit signed changes, let the network validate and store them.**
 
-What does that buy a developer? For a seller, it means you can accept a Dash payment and treat it as done almost immediately, the way a card or cash payment feels, instead of waiting through several mined blocks before trusting that the money arrived. That gives a checkout or peer-to-peer payment flow <Term id="fiat">fiat</Term>-like speed at low cost—without a middleman holding the funds.
+Two components do the storing and serving:
 
-This speed comes from how the Dash network reaches agreement. The mechanics live in later lessons; for now, the effect is what matters: **fast, cheap confirmation you can build a payment experience around.**
+- **Drive** is Platform's decentralized storage. It validates each signed change and keeps the network's copy of every app's data in <Term id="grovedb">GroveDB</Term>, a storage engine that can hand back cryptographic proofs with an answer to a query.
+- **DAPI** — the decentralized API — is how your app talks to all of it. It exposes <Term id="json-rpc">JSON-RPC</Term> and <Term id="grpc">gRPC</Term> endpoints, so a client can read and write Platform data (and query Core) through the SDK without running a node of its own.
+
+<Callout type="info" title="Why the proofs matter">
+Because GroveDB answers come with proofs, your app can check that the data it reads is genuinely the network's data — not something a single server made up. You do not have to trust the node you queried; you verify what it returns.
+</Callout>
 
 ## What you can build
 
-The two layers combine into a toolkit. Here are concrete things developers build on Dash:
+With storage, identities, and signed writes in place, the same primitives combine into many different applications. Concrete things developers build on Platform include:
 
-- **Usernames and identities.** The Dash Platform Name Service (DPNS) ties a human-readable `.dash` name like `alice.dash` to a Platform <Term id="identity">identity</Term>, a persistent account that owns data and signs the actions that change it.
-- **Application data.** Publish a data contract and submit documents — individual data records stored on Platform — so users share verifiable records instead of trusting one app's database.
-- **Fungible tokens** (interchangeable, one-like-another units). Create a configurable token for rewards, memberships, or loyalty points.
-- **Non-fungible tokens.** Build unique, document-based NFTs for collectibles and digital goods.
-- **Payments.** Accept Dash with about-a-second confirmation.
+- **Usernames.** The Dash Platform Name Service (DPNS) registers human-readable `.dash` names like `alice.dash` and ties each one to a Platform identity — a persistent account that owns data and signs the changes to it. DPNS is itself just an app built on Platform.
+- **Shared application data.** Publish a data contract and submit documents, so your users share verifiable records — profiles, posts, listings — instead of trusting one company's database.
+- **Tokens.** Create configurable fungible tokens (interchangeable, one-like-another units) for rewards, memberships, or loyalty points, without deploying contract code.
+- **NFTs.** Build unique, document-based non-fungible tokens for collectibles and digital goods — each one is a document with a unique ID, with transfer and purchase built in.
+- **Payments by name.** DashPay, Dash's flagship wallet, sends and receives money addressed to a username instead of a bare address by building on Platform's identities and DPNS names.
 
-The Dash documentation's own tutorials walk through working examples: **Dashnote** (a small notes app built from contracts and documents), **DashMint Lab** (an NFT marketplace), and **DashPay** (payments addressed by username).
+The documentation's own tutorials build working examples with these pieces: **Dashnote** (a small notes app), **DashMint Lab** (an NFT marketplace), and **DashPay**.
 
-Note what is missing from that list: a marketplace for arbitrary user-deployed code. Platform gives you storage, validation, and signed operations—it does not run unrestricted programs on every node. You design the data and the rules around it in your own application code.
+Notice what is absent from the list: a marketplace for arbitrary user-deployed programs. Platform gives you storage, validation, and signed operations — it does not run unrestricted code on every node. You design the data and the rules around it in your own application code.
 
 ## What you will build in this course
 
-The rest of this course is hands-on. Working entirely on <Term id="testnet">testnet</Term>, you will assemble one small application from end to end:
+The rest of the course is hands-on. Working entirely on <Term id="testnet">testnet</Term> — the parallel copy of the network that runs on free coins — you will assemble one small application from end to end:
 
 1. Connect to DAPI and make a verified read.
 2. Derive and fund a Platform address.
@@ -100,7 +96,7 @@ The rest of this course is hands-on. Working entirely on <Term id="testnet">test
 7. Transfer a document and run a purchase flow.
 8. Create a native token and charge tokens for document operations.
 
-By the final module, you will have touched every layer introduced here: the Core payment rail, Platform identities, names, data contracts, documents, and tokens—all without running your own node.
+By the final module you will have touched every layer introduced here — the Core payment rail, identities, names, a data contract, documents, and a token — all without running a node of your own. Each hands-on lesson builds one piece; together they make one working app.
 
 ## Checkpoint
 
@@ -111,68 +107,68 @@ Pass the quiz to complete the lesson.
   passingScore={4}
   questions={[
     {
-      id: "layers",
+      id: "layer-split",
       prompt: "Which description correctly separates Dash Core from Dash Platform?",
       options: [
-        { id: "a", label: "Core stores application documents, while Platform mines Dash payments." },
-        { id: "b", label: "Core is the layer-1 money layer, while Platform is the layer-2 application-data layer." },
-        { id: "c", label: "They are two names for the same chain and state." },
-        { id: "d", label: "Platform is a centralized database used only by Core nodes." },
+        { id: "a", label: "Core stores application records, while Platform mines Dash payments." },
+        { id: "b", label: "Core is the layer-1 money layer; Platform is the layer-2 application-data layer that stores and verifies records." },
+        { id: "c", label: "Core and Platform are two names for the same chain and data store." },
+        { id: "d", label: "Platform is a private database that only Core nodes may query." },
       ],
       correctOptionId: "b",
       explanation: "Core settles Dash payments on layer 1. Platform stores and verifies structured application data on layer 2.",
     },
     {
-      id: "network-value",
-      prompt: "What does a blockchain network give an application developer?",
-      options: [
-        { id: "a", label: "A dedicated server that one company operates on your behalf." },
-        { id: "b", label: "Shared, verifiable state that no single company owns, plus client libraries that hide the complexity." },
-        { id: "c", label: "A place to host arbitrary private user files for free." },
-        { id: "d", label: "A cloud that automatically keeps every field secret from every node." },
-      ],
-      correctOptionId: "b",
-      explanation: "Your data lives on many independent nodes, clients can verify it, and an SDK hides the low-level cryptography and networking.",
-    },
-    {
       id: "schema-not-code",
       prompt: "How does an application store data on Dash Platform?",
       options: [
-        { id: "a", label: "It deploys custom code that the network runs on every write." },
-        { id: "b", label: "It describes the data with a schema and submits signed state transitions that change it." },
-        { id: "c", label: "It writes directly to a single company's database through DAPI." },
-        { id: "d", label: "It uploads unvalidated JSON that any node may freely edit." },
+        { id: "a", label: "It deploys custom code the network runs on every write." },
+        { id: "b", label: "It describes records with a schema (a data contract) and submits signed changes; the network validates and stores them." },
+        { id: "c", label: "It writes directly into a single company's database through DAPI." },
+        { id: "d", label: "It uploads unvalidated JSON that any node may edit at will." },
       ],
       correctOptionId: "b",
-      explanation: "A data contract declares the shape of the data, and signed state transitions change it. There is no custom contract code for the network to execute.",
+      explanation: "A data contract declares the shape of the data, and signed state transitions change it. There is no contract code for the network to execute.",
     },
     {
-      id: "fast-payments",
-      prompt: "What does about-a-second payment confirmation buy a developer?",
+      id: "change-mechanism",
+      prompt: "What is the only way a Platform record can change?",
       options: [
-        { id: "a", label: "The ability to accept a Dash payment almost immediately without waiting through several blocks." },
-        { id: "b", label: "Guaranteed secrecy of every payment amount on chain." },
-        { id: "c", label: "A refund window controlled by the sender's bank." },
-        { id: "d", label: "Removal of all network fees forever." },
+        { id: "a", label: "Anyone holding the app's URL can edit any record directly." },
+        { id: "b", label: "A signed state transition from the identity that owns the record, checked against the data contract." },
+        { id: "c", label: "The developer rewrites records on a read replica and reproduces them on demand." },
+        { id: "d", label: "A nightly batch job that reconciles rows against a local cache." },
       ],
-      correctOptionId: "a",
-      explanation: "Near-instant confirmation lets a seller treat a Dash payment as done, like a card payment, instead of waiting for several mined blocks.",
+      correctOptionId: "b",
+      explanation: "Nothing writes to Platform directly. Every create, update, or delete is a signed state transition that the network validates against the contract before recording.",
+    },
+    {
+      id: "buildables",
+      prompt: "Which is NOT something you can build on Dash Platform today?",
+      options: [
+        { id: "a", label: "Human-readable .dash usernames tied to an identity." },
+        { id: "b", label: "A marketplace for arbitrary user-deployed code that runs on every node." },
+        { id: "c", label: "Shared document-backed app data, such as profiles, posts, or listings." },
+        { id: "d", label: "Configurable fungible tokens and document-based NFTs." },
+      ],
+      correctOptionId: "b",
+      explanation: "Platform gives storage, validation, and signed operations — not a place to run unrestricted user-written code. That is the trade it makes versus a general-purpose smart-contract chain.",
     },
     {
       id: "course-arc",
       prompt: "What will you build over the rest of this course?",
       options: [
-        { id: "a", label: "A single end-to-end app: connect to DAPI, create an identity, register a username, publish a contract, submit and query documents, and create a token." },
-        { id: "b", label: "A new layer-1 blockchain that replaces Dash Core." },
-        { id: "c", label: "Arbitrary smart contracts deployed to run on every node." },
-        { id: "d", label: "Only payment transactions, with no application data involved." },
+        { id: "a", label: "A single end-to-end testnet app: connect to DAPI, create an identity, register a username, publish a contract, submit and query documents, and create a token." },
+        { id: "b", label: "A replacement layer-1 blockchain that upgrades Dash Core." },
+        { id: "c", label: "A collection of unrelated scripts with no shared data." },
+        { id: "d", label: "Only payment transactions — no identities, contracts, or documents." },
       ],
       correctOptionId: "a",
-      explanation: "Working on testnet, you will assemble identities, names, data contracts, documents, and a token into one small application.",
+      explanation: "Working on testnet, you will assemble identities, names, a data contract, documents, and a token into one small application.",
     },
   ]}
 />
 
 ## What you accomplished
 
-You can now explain what a blockchain network gives an app developer, separate Dash Core's money job from Dash Platform's data job, and recognize the concrete applications that combination makes possible. You also know the path ahead: a hands-on, testnet build that will take you from your first verified read to a token-charged application.
+You can now separate Dash Core's money job from Dash Platform's data job, and describe how Platform stores data — a schema you declare, documents it accepts, and signed state transitions that change them. You can name the concrete applications that combination makes possible, from `.dash` usernames to tokens and NFTs, and you know the path ahead: a hands-on, testnet build that takes you from your first verified read to a token-charged application.

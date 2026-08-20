@@ -1,21 +1,34 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const mdxUrl = new URL("../../content/academy/what-is-dash-platform.mdx", import.meta.url);
 const ledgerUrl = new URL("../../lesson-sources/what-is-dash-platform.json", import.meta.url);
+const verifierUrl = new URL("./what-is-dash-platform.verify.mjs", import.meta.url);
 
-test("lesson follows the module 1 concept contract", async () => {
+const documentedPublicSchemas = {
+  note: {
+    type: "object",
+    properties: {
+      message: { type: "string", position: 0 },
+    },
+    required: ["message"],
+    additionalProperties: false,
+  },
+};
+
+test("lesson follows the module 2 concept contract", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
   assert.match(mdx, /title: What is Dash Platform\?/);
-  assert.match(mdx, /description: Meet Dash, and see what Dash Platform lets you build\./);
-  assert.match(mdx, /module: 1/);
+  assert.match(mdx, /description: See what Dash Platform lets you build, and what you will build here\./);
+  assert.match(mdx, /module: 2/);
   assert.match(mdx, /tier: concepts/);
   assert.match(mdx, /estimatedMinutes: 12/);
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
-  assert.match(mdx, /prerequisites: \[\]/);
+  assert.match(mdx, /prerequisites: \[1\]/);
   assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="what-is-dash-platform"/);
@@ -27,24 +40,24 @@ test("lesson covers each mustCover item in its own terms", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
   for (const required of [
-    "Decentralized storage",
-    "Shared state",
-    "Client libraries",
     "Dash Core",
     "Dash Platform",
     "data contract",
+    "JSON Schema",
+    "MongoDB",
+    "document",
     "state transition",
     "Drive",
     "DAPI",
-    "about a second",
-    "little more than a second",
-    "fiat",
+    "GroveDB",
+    "additionalProperties",
     "DPNS",
     "identity",
     "fungible",
+    "non-fungible",
+    "DashPay",
     "Dashnote",
     "DashMint Lab",
-    "DashPay",
     "testnet",
   ]) {
     assert.ok(mdx.includes(required), `missing required lesson concept: ${required}`);
@@ -54,20 +67,20 @@ test("lesson covers each mustCover item in its own terms", async () => {
 test("lesson stays inside the mustNotCover boundary", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
-  for (const forbidden of ["InstantSend", "ChainLock", "ChainLocks", "Tenderdash", "LLMQ", "Quorum", "quorum"]) {
+  for (const forbidden of ["InstantSend", "ChainLock", "ChainLocks", "Tenderdash", "LLMQ", "Quorum", "quorum", "masternode"]) {
     assert.ok(!mdx.includes(forbidden), `lesson must not cover: ${forbidden}`);
   }
 });
 
-test("the completing quiz checks layers, network value, schema, speed, and the course arc", async () => {
+test("the completing quiz checks layer split, storage, change mechanism, buildables, and the course arc", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
   const challengeIds = [...mdx.matchAll(/challengeId="([^"]+)"/g)].map((match) => match[1]);
 
   assert.deepEqual(challengeIds, ["what-is-dash-platform"]);
-  assert.match(mdx, /id: "layers"/);
-  assert.match(mdx, /id: "network-value"/);
+  assert.match(mdx, /id: "layer-split"/);
   assert.match(mdx, /id: "schema-not-code"/);
-  assert.match(mdx, /id: "fast-payments"/);
+  assert.match(mdx, /id: "change-mechanism"/);
+  assert.match(mdx, /id: "buildables"/);
   assert.match(mdx, /id: "course-arc"/);
   assert.match(mdx, /passingScore=\{4\}/);
 });
@@ -92,8 +105,9 @@ test("evidence ledger resolves every claim and non-blocking uncertainty", async 
   const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
   const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-  assert.equal(ledger.module, 1);
+  assert.equal(ledger.module, 2);
   assert.equal(ledger.slug, "what-is-dash-platform");
+  assert.equal(ledger.apiExamples.length, 0);
   assert.ok(ledger.conflicts.length === 0);
   for (const claim of ledger.claims) {
     assert.ok(claim.sourceIds.length > 0, `${claim.id} has no evidence`);
@@ -102,4 +116,44 @@ test("evidence ledger resolves every claim and non-blocking uncertainty", async 
   for (const uncertainty of ledger.uncertainties) {
     assert.equal(uncertainty.blocking, false, `${uncertainty.id} is unresolved`);
   }
+});
+
+test("independent WASM verifier constructs the documented public schema model", () => {
+  const publicOutput = { documentSchemas: documentedPublicSchemas };
+  const result = spawnSync(process.execPath, [verifierUrl.pathname], {
+    encoding: "utf8",
+    input: `${JSON.stringify(publicOutput)}\n`,
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), {
+    type: "verification",
+    status: "passed",
+    documentTypes: ["note"],
+  });
+});
+
+test("independent verifier rejects fields beyond public learner output", () => {
+  const result = spawnSync(process.execPath, [verifierUrl.pathname], {
+    encoding: "utf8",
+    input: `${JSON.stringify({
+      documentSchemas: documentedPublicSchemas,
+      signingSecret: "not-accepted",
+    })}\n`,
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /documentSchemas is the only accepted public field/);
+});
+
+test("independent verifier rejects an invalid Dash schema", () => {
+  const invalidSchemas = structuredClone(documentedPublicSchemas);
+  invalidSchemas.note.properties.message.type = "unsupported-type";
+
+  const result = spawnSync(process.execPath, [verifierUrl.pathname], {
+    encoding: "utf8",
+    input: `${JSON.stringify({ documentSchemas: invalidSchemas })}\n`,
+  });
+
+  assert.notEqual(result.status, 0);
 });
