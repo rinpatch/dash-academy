@@ -193,4 +193,16 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "Transport Layer Security: the protocol that encrypts a connection so it cannot be read or tampered with in transit. It protects the pipe, not the truth of the data inside it.",
     tag: "Protocol",
   },
+  node: {
+    title: "Node",
+    definition:
+      "A computer running the Dash software that takes part in the network: it keeps a copy of the chain, relays transactions, and checks each new block against the rules.",
+    tag: "Basics",
+  },
+  mining: {
+    title: "Mining",
+    definition:
+      "The work of proposing new blocks to the network. Miners compete to assemble the next block of transactions and are paid in newly issued coins for the block the network accepts.",
+    tag: "Basics",
+  },
 };
