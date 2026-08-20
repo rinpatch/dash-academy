@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "module": 4,
+  "module": 11,
   "slug": "data-contracts",
   "title": "Data Contracts",
   "sources": [
@@ -93,109 +93,160 @@
     {
       "id": "claim-scope",
       "text": "Module 4 is a concepts-tier lesson titled Data Contracts, requires module 3 Identities, must cover schemas, document types, indexes, contract-time decisions, and no triggers or joins, and completes through quiz challenge data-contracts.",
-      "sourceIds": ["src-manifest"],
+      "sourceIds": [
+        "src-manifest"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-contract-purpose",
       "text": "A data contract is the registered schema for application data; document writes and changes succeed only when their data conforms to that schema.",
-      "sourceIds": ["src-contract-explanation", "src-contract-reference", "src-platform-book-contracts"],
+      "sourceIds": [
+        "src-contract-explanation",
+        "src-contract-reference",
+        "src-platform-book-contracts"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-ownership",
       "text": "The identity that registers a contract owns it, and only that owner can update it.",
-      "sourceIds": ["src-contract-explanation"],
+      "sourceIds": [
+        "src-contract-explanation"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-document-types",
       "text": "A contract contains named document types, each defining the fields, validation rules, indexes, and relevant behavior for one category of application record.",
-      "sourceIds": ["src-contract-reference", "src-document-explanation", "src-platform-book-contracts"],
+      "sourceIds": [
+        "src-contract-reference",
+        "src-document-explanation",
+        "src-platform-book-contracts"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-schema-fields",
       "text": "Document properties use JSON Schema-style types and constraints, distinguish required from optional fields, and require unique sequential positions starting at zero at each level.",
-      "sourceIds": ["src-contract-reference"],
+      "sourceIds": [
+        "src-contract-reference"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-additional-properties",
       "text": "Dash contracts must set additionalProperties to false wherever properties are defined.",
-      "sourceIds": ["src-contract-reference"],
+      "sourceIds": [
+        "src-contract-reference"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-index-query-link",
       "text": "Indexes are part of each document type and determine which fields can be filtered or sorted; non-indexed fields cannot be used for those operations apart from documented primary-key handling for $id.",
-      "sourceIds": ["src-query-explanation", "src-query-reference", "src-contract-reference"],
+      "sourceIds": [
+        "src-query-explanation",
+        "src-query-reference",
+        "src-contract-reference"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-compound-indexes",
       "text": "Compound-index property order matters because usable queries must follow index prefix and ordering rules.",
-      "sourceIds": ["src-contract-reference", "src-query-reference", "src-platform-book-indexes"],
+      "sourceIds": [
+        "src-contract-reference",
+        "src-query-reference",
+        "src-platform-book-indexes"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-index-asc-only",
       "text": "Dash currently restricts an index's sort direction to ascending ('asc'); Drive only uses ascending storage today even though the direction field is preserved through the contract, so richer sort behaviour is deferred to the module 14 query lesson.",
-      "sourceIds": ["src-register-tutorial", "src-platform-book-indexes"],
+      "sourceIds": [
+        "src-register-tutorial",
+        "src-platform-book-indexes"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-unique-indexes",
       "text": "A unique index prevents two documents of one type from sharing the same indexed value combination when every indexed property is non-null, making it both a query structure and an enforced invariant for fully populated combinations. If any indexed property is null, uniqueness cannot be enforced for that document; the lesson's required string-typed slug cannot be null, so its example invariant applies.",
-      "sourceIds": ["src-contract-reference", "src-platform-book-indexes"],
+      "sourceIds": [
+        "src-contract-reference",
+        "src-platform-book-indexes"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-indexed-string-limit",
       "text": "An indexed string property has a documented maximum length of 63 characters.",
-      "sourceIds": ["src-contract-reference"],
+      "sourceIds": [
+        "src-contract-reference"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-contract-time",
       "text": "Document boundaries, field constraints and requiredness, behavior, uniqueness, and query indexes are contract-time decisions; compatible additions are possible while renames, removals, type changes, and changes to existing unique indexes are restricted.",
-      "sourceIds": ["src-contract-explanation", "src-contract-reference", "src-query-explanation"],
+      "sourceIds": [
+        "src-contract-explanation",
+        "src-contract-reference",
+        "src-query-explanation"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-no-custom-triggers",
       "text": "Ordinary application developers cannot deploy custom data triggers; Platform's hard-coded triggers are protocol logic used only by system contracts.",
-      "sourceIds": ["src-trigger-explanation"],
+      "sourceIds": [
+        "src-trigger-explanation"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-no-joins",
       "text": "The document query surface targets one dataContractId and one documentTypeName and has no second source or join clause, so Platform provides no server-side relational joins.",
-      "sourceIds": ["src-query-reference", "src-sdk-query-types"],
+      "sourceIds": [
+        "src-query-reference",
+        "src-sdk-query-types"
+      ],
       "support": "inference"
     },
     {
       "id": "claim-aggregate-only-grouping",
       "text": "The groupBy query option is ignored by regular document fetching and is used by the aggregate count, sum, and average query APIs.",
-      "sourceIds": ["src-sdk-query-types"],
+      "sourceIds": [
+        "src-sdk-query-types"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-relationship-pattern",
       "text": "Applications relate document types with stored identifier fields and separate fetches, or deliberate read-oriented duplication whose consistency the application manages.",
-      "sourceIds": ["src-document-explanation", "src-sdk-query-types"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-sdk-query-types"
+      ],
       "support": "inference"
     },
     {
       "id": "claim-lesson-boundary",
       "text": "As a concepts-tier quiz lesson before later writing and registration modules, module 4 should use a compact non-executable schema illustration rather than SDK registration or testnet code.",
-      "sourceIds": ["src-manifest"],
+      "sourceIds": [
+        "src-manifest"
+      ],
       "support": "inference"
     },
     {
       "id": "claim-verifier-api",
       "text": "The pinned WASM SDK 4.1.1 exposes a DataContract constructor with ownerId, identityNonce, schemas, and an optional fullValidation flag; the independent fixture confirms construction of the corrected public schema, but does not treat that runtime check as proof that every documented index constraint is enforced.",
-      "sourceIds": ["src-sdk-query-types", "src-lesson-verifier"],
+      "sourceIds": [
+        "src-sdk-query-types",
+        "src-lesson-verifier"
+      ],
       "support": "direct"
     }
   ],
@@ -203,7 +254,10 @@
     {
       "id": "conflict-indexed-string-runtime-validation",
       "description": "The authoritative data-contract reference limits indexed string properties to 63 characters, but the pinned WASM 4.1.1 DataContract constructor accepted test schemas whose indexed strings declared larger maxLength values.",
-      "sourceIds": ["src-contract-reference", "src-lesson-verifier"],
+      "sourceIds": [
+        "src-contract-reference",
+        "src-lesson-verifier"
+      ],
       "resolution": "The lesson and fixture enforce the documented 63-character limit with a separate deterministic assertion. The WASM test is described only as a constructor check, not complete validation of documented deployment constraints.",
       "status": "resolved"
     }

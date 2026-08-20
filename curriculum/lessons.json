@@ -11,19 +11,32 @@
   "lessons": [
     {
       "module": 1,
-      "slug": "what-is-dash-platform",
-      "title": "What is Dash Platform?",
+      "slug": "what-is-dash",
+      "title": "What is Dash?",
       "tier": "concepts",
-      "description": "Meet Dash, and see what Dash Platform lets you build.",
+      "description": "Start from zero: what a blockchain is, and what makes Dash different.",
       "estimatedMinutes": 12,
       "exp": 100,
       "prerequisites": [],
-      "verification": { "kind": "quiz", "challengeId": "what-is-dash-platform" },
-      "mustCover": ["what a blockchain network gives an app developer", "Dash Core for money and Dash Platform for app data", "payments confirm in about a second, and what that buys you", "concrete things you can build", "what you will build in this course"],
-      "mustNotCover": ["masternode quorums and LLMQs", "InstantSend versus ChainLock mechanics", "Tenderdash and consensus internals"]
+      "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
+      "mustCover": ["what a blockchain is, in terms a developer already understands", "transactions, keys, and addresses", "why decentralization matters to someone building an app", "Dash as money", "masternodes as the thing that makes the rest possible", "payments confirm in about a second", "one network, two jobs: Dash Core and Dash Platform"],
+      "mustNotCover": ["LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
     },
     {
       "module": 2,
+      "slug": "what-is-dash-platform",
+      "title": "What is Dash Platform?",
+      "tier": "concepts",
+      "description": "See what Dash Platform lets you build, and what you will build here.",
+      "estimatedMinutes": 12,
+      "exp": 100,
+      "prerequisites": ["what-is-dash"],
+      "verification": { "kind": "quiz", "challengeId": "what-is-dash-platform" },
+      "mustCover": ["how Platform stores application data", "concrete things you can build", "what you will build in this course"],
+      "mustNotCover": ["masternode quorums and LLMQs", "InstantSend versus ChainLock mechanics", "Tenderdash and consensus internals", "re-teaching what a blockchain is"]
+    },
+    {
+      "module": 3,
       "slug": "why-build-on-dash",
       "title": "Why build on Dash?",
       "tier": "concepts",
@@ -35,91 +48,69 @@
       "mustCover": ["fit and non-fit", "payments and tokens", "usernames and NFTs", "Dash versus Credits", "privacy", "DAO"]
     },
     {
-      "module": 3,
-      "slug": "identities",
-      "title": "Identities",
-      "tier": "concepts",
-      "description": "Understand Platform identities, keys, credits, and their relationship to wallets.",
-      "estimatedMinutes": 12,
-      "exp": 100,
-      "prerequisites": ["why-build-on-dash"],
-      "verification": { "kind": "quiz", "challengeId": "identities" },
-      "mustCover": ["identity versus wallet address", "identity keys", "credits and fees"]
-    },
-    {
       "module": 4,
-      "slug": "data-contracts",
-      "title": "Data Contracts",
-      "tier": "concepts",
-      "description": "Model application data with document types and indexes.",
-      "estimatedMinutes": 14,
-      "exp": 100,
-      "prerequisites": ["identities"],
-      "verification": { "kind": "quiz", "challengeId": "data-contracts" },
-      "mustCover": ["schemas", "document types", "indexes", "contract-time decisions", "no triggers or joins"]
-    },
-    {
-      "module": 5,
-      "slug": "documents",
-      "title": "Documents",
-      "tier": "concepts",
-      "description": "Understand the lifecycle, ownership, and revision of Platform documents.",
-      "estimatedMinutes": 14,
-      "exp": 100,
-      "prerequisites": ["data-contracts"],
-      "verification": { "kind": "quiz", "challengeId": "documents" },
-      "mustCover": ["read and write lifecycle", "ownership", "revisions", "delete refunds"]
-    },
-    {
-      "module": 6,
-      "slug": "dapi",
-      "title": "DAPI",
-      "tier": "concepts",
-      "description": "Understand Dash's decentralized API and how clients use it.",
-      "estimatedMinutes": 10,
-      "exp": 100,
-      "prerequisites": ["documents"],
-      "verification": { "kind": "quiz", "challengeId": "dapi" },
-      "mustCover": ["decentralized API", "Core and Platform access", "endpoint selection"]
-    },
-    {
-      "module": 7,
-      "slug": "proofs",
-      "title": "Proofs",
-      "tier": "concepts",
-      "description": "Verify Platform responses instead of trusting a single server.",
-      "estimatedMinutes": 12,
-      "exp": 100,
-      "prerequisites": ["dapi"],
-      "verification": { "kind": "quiz", "challengeId": "proofs" },
-      "mustCover": ["state proofs", "light-client trust", "verification boundaries"]
-    },
-    {
-      "module": 8,
       "slug": "environment-setup",
       "title": "Environment setup",
       "tier": "sdk",
       "description": "Install the SDK, connect to Dash Platform, and make a verified read.",
       "estimatedMinutes": 18,
       "exp": 150,
-      "prerequisites": ["proofs"],
+      "prerequisites": ["why-build-on-dash"],
       "verification": { "kind": "testnet", "challengeId": "environment-setup", "operation": "verified-read" },
-      "mustCover": ["install Evo SDK", "connect to testnet", "read from live DAPI"]
+      "mustCover": ["install Evo SDK", "connect to testnet", "read from live DAPI"],
+      "mustNotCover": ["how DAPI selects an endpoint", "how state proofs are verified"]
     },
     {
-      "module": 9,
+      "module": 5,
+      "slug": "dapi-and-proofs",
+      "title": "DAPI and Proofs",
+      "tier": "concepts",
+      "description": "Understand what answered your first request, and why you can trust the answer.",
+      "estimatedMinutes": 15,
+      "exp": 100,
+      "prerequisites": ["environment-setup"],
+      "verification": { "kind": "quiz", "challengeId": "dapi-and-proofs" },
+      "mustCover": ["decentralized API", "Core and Platform access", "endpoint selection", "state proofs", "light-client trust", "verification boundaries"]
+    },
+    {
+      "module": 6,
+      "slug": "identities",
+      "title": "Identities",
+      "tier": "concepts",
+      "description": "Understand Platform identities, keys, credits, and their relationship to wallets.",
+      "estimatedMinutes": 12,
+      "exp": 100,
+      "prerequisites": ["dapi-and-proofs"],
+      "verification": { "kind": "quiz", "challengeId": "identities" },
+      "mustCover": ["identity versus wallet address", "identity keys", "credits and fees"]
+    },
+    {
+      "module": 7,
+      "slug": "wallets-keys-and-testnet",
+      "title": "Wallets, keys, and testnet",
+      "tier": "concepts",
+      "description": "Handle keys safely and get the testnet funds the next lessons need.",
+      "estimatedMinutes": 14,
+      "exp": 100,
+      "prerequisites": ["identities"],
+      "verification": { "kind": "quiz", "challengeId": "wallets-keys-and-testnet" },
+      "mustCover": ["seed phrases and derivation", "what a private key controls, and what losing it costs", "testnet versus mainnet", "getting testnet Dash from a faucet"],
+      "mustNotCover": ["DIP-18 Platform address derivation"]
+    },
+    {
+      "module": 8,
       "slug": "fund-a-platform-address",
       "title": "Fund a Platform address",
       "tier": "sdk",
       "description": "Derive and fund a Platform address for identity creation.",
       "estimatedMinutes": 20,
       "exp": 175,
-      "prerequisites": ["environment-setup"],
+      "prerequisites": ["wallets-keys-and-testnet"],
       "verification": { "kind": "testnet", "challengeId": "fund-a-platform-address", "operation": "funded-address" },
       "mustCover": ["DIP-18 derivation", "bech32m Platform address", "funding", "identity funding path"]
     },
     {
-      "module": 10,
+      "module": 9,
       "slug": "create-a-dash-identity",
       "title": "Create a Dash Identity",
       "tier": "sdk",
@@ -131,7 +122,7 @@
       "mustCover": ["identity creation", "key purposes and security levels", "credit balance"]
     },
     {
-      "module": 11,
+      "module": 10,
       "slug": "register-a-username",
       "title": "Register a Username (DPNS)",
       "tier": "sdk",
@@ -143,6 +134,18 @@
       "mustCover": ["preorder and registration", "salt handling", "premium-name voting"]
     },
     {
+      "module": 11,
+      "slug": "data-contracts",
+      "title": "Data Contracts",
+      "tier": "concepts",
+      "description": "Model application data with document types and indexes.",
+      "estimatedMinutes": 14,
+      "exp": 100,
+      "prerequisites": ["register-a-username"],
+      "verification": { "kind": "quiz", "challengeId": "data-contracts" },
+      "mustCover": ["schemas", "document types", "indexes", "contract-time decisions", "no triggers or joins"]
+    },
+    {
       "module": 12,
       "slug": "write-your-first-data-contract",
       "title": "Write your first Data Contract",
@@ -150,24 +153,36 @@
       "description": "Design and publish a small data contract.",
       "estimatedMinutes": 28,
       "exp": 250,
-      "prerequisites": ["register-a-username"],
+      "prerequisites": ["data-contracts"],
       "verification": { "kind": "hybrid", "quizChallengeId": "write-your-first-data-contract:quiz", "challengeId": "write-your-first-data-contract", "operation": "contract-create" },
       "mustCover": ["document schema", "indexes", "contract registration"]
     },
     {
       "module": 13,
+      "slug": "documents",
+      "title": "Documents",
+      "tier": "concepts",
+      "description": "Understand the lifecycle, ownership, and revision of Platform documents.",
+      "estimatedMinutes": 14,
+      "exp": 100,
+      "prerequisites": ["write-your-first-data-contract"],
+      "verification": { "kind": "quiz", "challengeId": "documents" },
+      "mustCover": ["read and write lifecycle", "ownership", "revisions", "delete refunds"]
+    },
+    {
+      "module": 14,
       "slug": "submit-a-document",
       "title": "Submit a Document",
       "tier": "sdk",
       "description": "Create and submit a document to a deployed contract.",
       "estimatedMinutes": 22,
       "exp": 200,
-      "prerequisites": ["write-your-first-data-contract"],
+      "prerequisites": ["documents"],
       "verification": { "kind": "testnet", "challengeId": "submit-a-document", "operation": "document-create" },
       "mustCover": ["document creation", "state transition", "ownership and fees"]
     },
     {
-      "module": 14,
+      "module": 15,
       "slug": "query-documents",
       "title": "Query Documents",
       "tier": "sdk",
@@ -179,7 +194,7 @@
       "mustCover": ["filters", "sorting", "range constraints", "v4 aggregation"]
     },
     {
-      "module": 15,
+      "module": 16,
       "slug": "document-transfer-and-purchase",
       "title": "Document Transfer and Purchase",
       "tier": "sdk",
@@ -191,7 +206,7 @@
       "mustCover": ["transfer", "purchase", "price updates", "ownership checks"]
     },
     {
-      "module": 16,
+      "module": 17,
       "slug": "tokens",
       "title": "Tokens",
       "tier": "sdk",
@@ -203,7 +218,7 @@
       "mustCover": ["token configuration", "action set", "groups", "mint and transfer"]
     },
     {
-      "module": 17,
+      "module": 18,
       "slug": "token-paid-document-creation",
       "title": "Token-paid document creation",
       "tier": "sdk",

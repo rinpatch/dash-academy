@@ -14,6 +14,48 @@ export type GlossaryEntry = {
  * padding a lesson with a definition that readers who already know the term have to skim past.
  */
 export const GLOSSARY: Record<string, GlossaryEntry> = {
+  block: {
+    title: "Block",
+    definition:
+      "A batch of transactions the network has agreed on, chained to the block before it. Appending a block is how a blockchain moves forward; rewriting one means redoing every block after it.",
+    tag: "Basics",
+  },
+  transaction: {
+    title: "Transaction",
+    definition:
+      "A signed instruction to move value or change state. Once it is in a block the whole network has the same copy, and nobody can quietly edit it afterwards.",
+    tag: "Basics",
+  },
+  "private-key": {
+    title: "Private key",
+    definition:
+      "The secret number that authorises spending or signing. Whoever holds it controls the funds — there is no password reset, and no support desk that can restore it.",
+    tag: "Basics",
+  },
+  "seed-phrase": {
+    title: "Seed phrase",
+    definition:
+      "A list of words, usually twelve or twenty-four, that every key in a wallet is derived from. Back it up offline: it is the wallet, and anyone who reads it owns the funds.",
+    tag: "Basics",
+  },
+  address: {
+    title: "Address",
+    definition:
+      "A short string derived from a public key that others can pay. Publishing it is safe; it reveals nothing about the private key behind it.",
+    tag: "Basics",
+  },
+  finality: {
+    title: "Finality",
+    definition:
+      "The point at which a payment can no longer be reversed. On many chains it means waiting for several blocks; on Dash, InstantSend gets there in about a second.",
+    tag: "Dash",
+  },
+  faucet: {
+    title: "Faucet",
+    definition:
+      "A free dispenser of testnet coins. Testnet coins are worth nothing, which is exactly why you can practise with them.",
+    tag: "Basics",
+  },
   "smart-contract": {
     title: "Smart contract",
     definition:

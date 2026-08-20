@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "module": 10,
+  "module": 9,
   "slug": "create-a-dash-identity",
   "title": "Create a Dash Identity",
   "sources": [
@@ -93,103 +93,154 @@
     {
       "id": "claim-scope",
       "text": "Module 10 is an sdk-tier, 20-minute lesson titled Create a Dash Identity, verified on testnet with challengeId create-a-dash-identity and operation identity-create; its prerequisite is module 9 (fund-a-platform-address) and its mustCover items are identity creation, key purposes and security levels, and credit balance.",
-      "sourceIds": ["src-manifest"],
+      "sourceIds": [
+        "src-manifest"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-identity-record",
       "text": "A Platform identity is a record with a 32-byte id, an array of public keys, and a credit balance (plus a revision counter); it is the actor that owns application data and signs the changes to it.",
-      "sourceIds": ["src-identity-reference", "src-identity-explanation"],
+      "sourceIds": [
+        "src-identity-reference",
+        "src-identity-explanation"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-address-create-transition",
       "text": "Identity Create from Addresses (state transition type 10, enabled in Protocol Version 11) creates a new identity funded directly from one or more Platform address balances, with no pre-existing identity required.",
-      "sourceIds": ["src-address-system"],
+      "sourceIds": [
+        "src-address-system"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-sdk-call",
       "text": "The SDK call is sdk.addresses.createIdentity({ identity, inputs, identitySigner, addressSigner }), returning an IdentityCreateFromAddressesResult with the created identity and the updated address information.",
-      "sourceIds": ["src-sdk-types", "src-register-tutorial"],
+      "sourceIds": [
+        "src-sdk-types",
+        "src-register-tutorial"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-two-signers",
       "text": "identitySigner proves ownership of the identity's new public keys while addressSigner authorizes spending credits from the funding Platform address; both are required.",
-      "sourceIds": ["src-register-tutorial", "src-sdk-types"],
+      "sourceIds": [
+        "src-register-tutorial",
+        "src-sdk-types"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-shell-build",
       "text": "An identity shell is built with new Identity(new Identifier(randomBytes(32))) and given each key via identity.addPublicKey(key.toIdentityPublicKey()), where the keys come from keyManager.getKeysInCreation(); the temporary id is replaced by the network with the real one.",
-      "sourceIds": ["src-register-tutorial", "src-sdk-types"],
+      "sourceIds": [
+        "src-register-tutorial",
+        "src-sdk-types"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-five-standard-keys",
       "text": "The standard SDK key manager derives five keys from the mnemonic — key 0 AUTHENTICATION/MASTER, key 1 AUTHENTICATION/HIGH, key 2 AUTHENTICATION/CRITICAL, key 3 TRANSFER/CRITICAL, key 4 ENCRYPTION/MEDIUM.",
-      "sourceIds": ["src-setup-tutorial", "src-platform-book-keys"],
+      "sourceIds": [
+        "src-setup-tutorial",
+        "src-platform-book-keys"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-purpose-semantics",
       "text": "A key's purpose describes what it can do while its security level describes how carefully it should be protected. Purposes are AUTHENTICATION(0), ENCRYPTION(1), DECRYPTION(2), TRANSFER(3); security levels form the hierarchy MASTER(0) > CRITICAL(1) > HIGH(2) > MEDIUM(3).",
-      "sourceIds": ["src-identity-reference", "src-platform-book-keys", "src-sdk-types"],
+      "sourceIds": [
+        "src-identity-reference",
+        "src-platform-book-keys",
+        "src-sdk-types"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-allowed-combinations",
       "text": "Purpose/security-level combinations are constrained: AUTHENTICATION allows any level; ENCRYPTION and DECRYPTION require MEDIUM; TRANSFER requires CRITICAL. System, Voting, and Owner purposes are reserved for the network and cannot be created manually.",
-      "sourceIds": ["src-identity-reference", "src-platform-book-keys"],
+      "sourceIds": [
+        "src-identity-reference",
+        "src-platform-book-keys"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-master-key",
       "text": "Each identity must include exactly one MASTER-level AUTHENTICATION key; it is the identity's root of trust, required for identity updates, and should be kept out of routine use.",
-      "sourceIds": ["src-identity-reference", "src-platform-book-keys"],
+      "sourceIds": [
+        "src-identity-reference",
+        "src-platform-book-keys"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-credit-conversion",
       "text": "Credits are Platform's fee unit: 1,000 credits are created per duff, so 1 DASH = 100,000,000 duffs = 100,000,000,000 credits.",
-      "sourceIds": ["src-protocol-constants"],
+      "sourceIds": [
+        "src-protocol-constants"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-create-fee",
       "text": "Identity creation costs a base 2,000,000 credits plus 6,500,000 credits per key (5 keys equalling 34,500,000 credits); the listed input amount becomes the identity's balance while the fee is deducted from the funding address's remaining balance.",
-      "sourceIds": ["src-identity-reference", "src-address-system"],
+      "sourceIds": [
+        "src-identity-reference",
+        "src-address-system"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-funding-coverage",
       "text": "Because the address covers both the identity balance and the fee, address-based identity creation requires sum(input) >= sum(output) + fee; for the 5,000,000-credit worked example with a 5-key identity the address must hold 39,500,000 credits.",
-      "sourceIds": ["src-platform-book-fees", "src-address-system", "src-register-tutorial"],
+      "sourceIds": [
+        "src-platform-book-fees",
+        "src-address-system",
+        "src-register-tutorial"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-minimums",
       "text": "Minimum identity funding for address-based create/top-up is 200,000 credits, and address-based transitions have no debt or refund mechanism — they are rejected when inputs cannot cover outputs plus fees.",
-      "sourceIds": ["src-protocol-constants", "src-address-system", "src-platform-book-fees"],
+      "sourceIds": [
+        "src-protocol-constants",
+        "src-address-system",
+        "src-platform-book-fees"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-read-balance",
       "text": "After creation the identity holds a credit balance used to pay for later actions; it is read via sdk.identities.fetch(id) (identity.balance is a bigint, identity.publicKeys the keys) or sdk.identities.balance(id).",
-      "sourceIds": ["src-identity-explanation", "src-retrieve-tutorial", "src-sdk-types"],
+      "sourceIds": [
+        "src-identity-explanation",
+        "src-retrieve-tutorial",
+        "src-sdk-types"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-id-accessor",
       "text": "The created identity's id is read as result.identity.id.toString(), where id is a getter returning an Identifier and toString() yields the Base58 form.",
-      "sourceIds": ["src-sdk-types", "src-register-tutorial"],
+      "sourceIds": [
+        "src-sdk-types",
+        "src-register-tutorial"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-proof-catch",
       "text": "A known SDK issue (dashpay/platform #3095) can make proof verification throw after the identity was actually created; the canonical tutorial recovers the real identity id from the error message text.",
-      "sourceIds": ["src-register-tutorial"],
+      "sourceIds": [
+        "src-register-tutorial"
+      ],
       "support": "direct"
     }
   ],
@@ -197,28 +248,41 @@
     {
       "id": "conflict-input-object-form",
       "description": "The IdentityCreateFromAddressesOptions type declares inputs as PlatformAddressInput[], whose constructor requires a nonce, but the pinned register-an-identity tutorial passes plain { address, amount } objects.",
-      "sourceIds": ["src-sdk-types", "src-register-tutorial"],
+      "sourceIds": [
+        "src-sdk-types",
+        "src-register-tutorial"
+      ],
       "resolution": "The lesson and fixture use the plain-object form from the pinned tutorial. The wasm binding's identityCreateFromAddresses fetches current nonces itself, so a nonce is not required from the caller in 4.1.1.",
       "status": "resolved"
     },
     {
       "id": "conflict-id-accessor",
       "description": "The addresses facade JSDoc example writes result.identity.id() (method), while the 4.1.1 wasm type declares `get id(): Identifier` (a property).",
-      "sourceIds": ["src-sdk-types", "src-register-tutorial"],
+      "sourceIds": [
+        "src-sdk-types",
+        "src-register-tutorial"
+      ],
       "resolution": "The lesson uses result.identity.id.toString(); the packaged Identifier is a getter whose toString() returns the Base58 string, matching the pinned tutorial.",
       "status": "resolved"
     },
     {
       "id": "conflict-random-identifier",
       "description": "The addresses facade JSDoc example calls Identifier.random(), but the generated Identifier class exposes no static random().",
-      "sourceIds": ["src-sdk-types", "src-register-tutorial"],
+      "sourceIds": [
+        "src-sdk-types",
+        "src-register-tutorial"
+      ],
       "resolution": "The lesson uses new Identifier(randomBytes(32)) from node:crypto, exactly as the pinned tutorial does; Identifier's constructor accepts a Uint8Array.",
       "status": "resolved"
     },
     {
       "id": "conflict-funding-amount",
       "description": "The pinned tutorial sets amount: 5,000,000 for a 5-key identity whose creation fee is roughly 34,500,000 credits, so a reader could mistake the input amount for the total required.",
-      "sourceIds": ["src-register-tutorial", "src-identity-reference", "src-platform-book-fees"],
+      "sourceIds": [
+        "src-register-tutorial",
+        "src-identity-reference",
+        "src-platform-book-fees"
+      ],
       "resolution": "The lesson teaches that amount funds the identity's initial balance while the base + per-key fee is deducted separately from the address, so the address must cover balance plus fee (39,500,000 credits for the worked example).",
       "status": "resolved"
     }
@@ -227,22 +291,54 @@
     {
       "id": "ex-create",
       "purpose": "The full, runnable identity-register flow: build a 5-key identity shell and submit createIdentity funded from the Platform address, printing the identity ID.",
-      "apiSymbols": ["Identity", "Identifier", "IdentityPublicKeyInCreation", "toIdentityPublicKey", "Identity.addPublicKey", "IdentitySigner", "PlatformAddressSigner", "sdk.addresses.createIdentity", "IdentityCreateFromAddressesResult"],
-      "sourceIds": ["src-register-tutorial", "src-setup-tutorial", "src-sdk-types"],
+      "apiSymbols": [
+        "Identity",
+        "Identifier",
+        "IdentityPublicKeyInCreation",
+        "toIdentityPublicKey",
+        "Identity.addPublicKey",
+        "IdentitySigner",
+        "PlatformAddressSigner",
+        "sdk.addresses.createIdentity",
+        "IdentityCreateFromAddressesResult"
+      ],
+      "sourceIds": [
+        "src-register-tutorial",
+        "src-setup-tutorial",
+        "src-sdk-types"
+      ],
       "verification": "testnet"
     },
     {
       "id": "ex-keyspecs",
       "purpose": "Deterministically build the five IdentityPublicKeyInCreation objects from the documented KEY_SPECS and assert the correct purpose/security-level/keyType mapping and that addPublicKey yields five keys.",
-      "apiSymbols": ["Purpose", "SecurityLevel", "KeyType", "IdentityPublicKeyInCreation", "Identity.addPublicKey", "Identity.publicKeys"],
-      "sourceIds": ["src-setup-tutorial", "src-platform-book-keys", "src-sdk-types"],
+      "apiSymbols": [
+        "Purpose",
+        "SecurityLevel",
+        "KeyType",
+        "IdentityPublicKeyInCreation",
+        "Identity.addPublicKey",
+        "Identity.publicKeys"
+      ],
+      "sourceIds": [
+        "src-setup-tutorial",
+        "src-platform-book-keys",
+        "src-sdk-types"
+      ],
       "verification": "fixture"
     },
     {
       "id": "ex-verify-balance",
       "purpose": "After creation, fetch the identity and read its credit balance (bigint) to confirm the funding-minus-fee outcome.",
-      "apiSymbols": ["sdk.identities.fetch", "Identity.balance", "sdk.identities.balance"],
-      "sourceIds": ["src-retrieve-tutorial", "src-sdk-types"],
+      "apiSymbols": [
+        "sdk.identities.fetch",
+        "Identity.balance",
+        "sdk.identities.balance"
+      ],
+      "sourceIds": [
+        "src-retrieve-tutorial",
+        "src-sdk-types"
+      ],
       "verification": "testnet"
     }
   ],

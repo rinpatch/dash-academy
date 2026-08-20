@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "identities",
-  "module": 3,
+  "module": 6,
   "title": "Identities",
   "targets": {
     "coreDocs": "23.0.0",
@@ -71,91 +71,127 @@
     {
       "id": "C1",
       "text": "An identity is a low-level Platform construct: one or more public keys recorded on the platform chain plus a credit balance, used to own data and sign state transitions, and kept separate from DPNS usernames.",
-      "sourceIds": ["S1", "S3"],
+      "sourceIds": [
+        "S1",
+        "S3"
+      ],
       "support": "direct"
     },
     {
       "id": "C2",
       "text": "A Core (layer-1) wallet address is a legacy Base58Check address used on the money layer to hold and move Dash, and is distinct from Platform's independent bech32m address system (DIP-18).",
-      "sourceIds": ["S5"],
+      "sourceIds": [
+        "S5"
+      ],
       "support": "direct"
     },
     {
       "id": "C3",
       "text": "A Platform address is a bech32m-encoded layer-2 address (dash1.../tdash1...) that holds credits directly and is used for address-based operations such as funding identity creation, independent of any identity.",
-      "sourceIds": ["S5", "S6"],
+      "sourceIds": [
+        "S5",
+        "S6"
+      ],
       "support": "inference"
     },
     {
       "id": "C4",
       "text": "An identity balances the Core address / Platform address contrast: it is not an address at all, but a key set plus a credit balance; its 32-byte id is produced from a double SHA-256 of the funding outpoint rather than from a public key hash.",
-      "sourceIds": ["S3", "S1"],
+      "sourceIds": [
+        "S3",
+        "S1"
+      ],
       "support": "direct"
     },
     {
       "id": "C5",
       "text": "Creating an identity locks Dash on Core in an asset lock transaction; that lock is proven in an identity create state transition, and the locked value (minus fees) becomes the identity's initial credit balance.",
-      "sourceIds": ["S1"],
+      "sourceIds": [
+        "S1"
+      ],
       "support": "direct"
     },
     {
       "id": "C6",
       "text": "An identity's credit balance can be topped up by locking more Dash; anyone may top up any identity, which lets developers subsidize their users' usage.",
-      "sourceIds": ["S1"],
+      "sourceIds": [
+        "S1"
+      ],
       "support": "direct"
     },
     {
       "id": "C7",
       "text": "Each identity holds one or more public keys; every key carries a purpose (authentication, encryption, decryption, transfer) describing what it may be used for.",
-      "sourceIds": ["S3", "S6"],
+      "sourceIds": [
+        "S3",
+        "S6"
+      ],
       "support": "direct"
     },
     {
       "id": "C8",
       "text": "Every key also carries a security level (master, critical, high, medium) describing how carefully it should be stored; the master key is required and can only be used to update the identity.",
-      "sourceIds": ["S3"],
+      "sourceIds": [
+        "S3"
+      ],
       "support": "direct"
     },
     {
       "id": "C9",
       "text": "Every identity must have exactly one master-level authentication key used for updating the identity; additional authentication and transfer keys are strongly recommended.",
-      "sourceIds": ["S3", "S6"],
+      "sourceIds": [
+        "S3",
+        "S6"
+      ],
       "support": "direct"
     },
     {
       "id": "C10",
       "text": "Wallets conventionally derive five standard identity keys (DIP-9): master, high authentication, critical authentication, transfer, and encryption (medium).",
-      "sourceIds": ["S6", "S7"],
+      "sourceIds": [
+        "S6",
+        "S7"
+      ],
       "support": "direct"
     },
     {
       "id": "C11",
       "text": "Identity keys are derived from the wallet mnemonic via DIP-13 feature path m/9'/coin'/5'/0'/0'/{identityIndex}'/{keyIndex}', while addresses use BIP44 — so one wallet seed derives both addresses and identity keys.",
-      "sourceIds": ["S6"],
+      "sourceIds": [
+        "S6"
+      ],
       "support": "direct"
     },
     {
       "id": "C12",
       "text": "Credits are the layer-2 unit of account for fees; the conversion is 1 duff = 1,000 credits (CREDITS_PER_DUFF), so 1 Dash = 100,000,000 duffs = 100,000,000,000 credits.",
-      "sourceIds": ["S4"],
+      "sourceIds": [
+        "S4"
+      ],
       "support": "direct"
     },
     {
       "id": "C13",
       "text": "Platform fees are divided into storage fees (cost of keeping data across the network) and processing fees (cost of validating state transitions); they are paid by deducting credits from the identity's balance.",
-      "sourceIds": ["S2"],
+      "sourceIds": [
+        "S2"
+      ],
       "support": "direct"
     },
     {
       "id": "C14",
       "text": "For everyday use processing fees are minuscule compared to storage fees, but they become prohibitively expensive in attack conditions.",
-      "sourceIds": ["S2"],
+      "sourceIds": [
+        "S2"
+      ],
       "support": "direct"
     },
     {
       "id": "C15",
       "text": "Credits can be converted back to Dash via an identity credit withdrawal state transition, subject to a daily network-wide limit.",
-      "sourceIds": ["S1"],
+      "sourceIds": [
+        "S1"
+      ],
       "support": "direct"
     }
   ],
@@ -165,21 +201,28 @@
       "id": "V1",
       "topic": "Fee constants disagree across vendored docs",
       "status": "resolved",
-      "sources": ["S2", "S4"],
+      "sources": [
+        "S2",
+        "S4"
+      ],
       "resolution": "Keep module 3 conceptual: state only 1 duff = 1,000 credits and the storage-vs-processing split; quote no per-byte or per-key fee constants, which belong to later hands-on lessons."
     },
     {
       "id": "V2",
       "topic": "mustCover names two objects but the acceptance test names four",
       "status": "resolved",
-      "sources": ["S5"],
+      "sources": [
+        "S5"
+      ],
       "resolution": "Distinguish Core wallet/address, Platform address, and Platform identity in prose and a comparison table, naming each without the DIP-18 derivation mechanics reserved for module 9."
     },
     {
       "id": "V3",
       "topic": "How deep identity keys should go relative to module 10",
       "status": "resolved",
-      "sources": ["S3"],
+      "sources": [
+        "S3"
+      ],
       "resolution": "Name the purposes (authentication, encryption, decryption, transfer) and security levels (master/critical/high/medium) and the mandatory master-level authentication key, without the full purpose/security-level allowlist or signing-behavior details."
     }
   ],

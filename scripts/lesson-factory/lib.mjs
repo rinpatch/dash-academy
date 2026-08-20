@@ -24,16 +24,25 @@ export async function loadManifest() {
   return manifest;
 }
 
+// Concepts and sdk lessons interleave, so a lesson's tier comes from the manifest rather than from
+// its position. Everything that used to split the course at module 7 goes through here instead.
+export const LESSON_TIERS = ["concepts", "sdk"];
+
+export function lessonTier(lesson) {
+  return lesson.tier === "concepts" ? 1 : 2;
+}
+
 export function validateManifest(manifest) {
   if (manifest.schemaVersion !== 1 || !Array.isArray(manifest.lessons)) throw new Error("Unsupported curriculum manifest");
-  if (manifest.lessons.length !== 17) throw new Error("Curriculum must contain exactly 17 lessons");
+  const moduleCount = manifest.lessons.length;
+  if (moduleCount < 1) throw new Error("Curriculum must contain at least one lesson");
   const modules = new Set();
   const slugs = new Set();
   const challenges = new Set();
   for (const lesson of manifest.lessons) {
-    if (!Number.isInteger(lesson.module) || lesson.module < 1 || lesson.module > 17 || modules.has(lesson.module)) throw new Error(`Invalid or duplicate module ${lesson.module}`);
+    if (!Number.isInteger(lesson.module) || lesson.module < 1 || lesson.module > moduleCount || modules.has(lesson.module)) throw new Error(`Invalid or duplicate module ${lesson.module}`);
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(lesson.slug) || slugs.has(lesson.slug)) throw new Error(`Invalid or duplicate slug ${lesson.slug}`);
-    if ((lesson.module <= 7 ? "concepts" : "sdk") !== lesson.tier) throw new Error(`Tier mismatch in module ${lesson.module}`);
+    if (!LESSON_TIERS.includes(lesson.tier)) throw new Error(`Invalid tier in module ${lesson.module}`);
     const ids = [lesson.verification.challengeId, lesson.verification.quizChallengeId].filter(Boolean);
     for (const id of ids) {
       if (challenges.has(id)) throw new Error(`Duplicate challenge ID ${id}`);
@@ -42,7 +51,7 @@ export function validateManifest(manifest) {
     modules.add(lesson.module);
     slugs.add(lesson.slug);
   }
-  for (let moduleNumber = 1; moduleNumber <= 17; moduleNumber += 1) if (!modules.has(moduleNumber)) throw new Error(`Missing module ${moduleNumber}`);
+  for (let moduleNumber = 1; moduleNumber <= moduleCount; moduleNumber += 1) if (!modules.has(moduleNumber)) throw new Error(`Missing module ${moduleNumber}`);
   for (const lesson of manifest.lessons) for (const prerequisite of lesson.prerequisites) {
     const dependency = manifest.lessons.find((candidate) => candidate.slug === prerequisite);
     if (!dependency || dependency.module >= lesson.module) throw new Error(`Invalid prerequisite ${prerequisite} for ${lesson.slug}`);
@@ -67,7 +76,7 @@ export function selectIntegrationPages({ lessons, runLessons, validPrerequisiteM
   return lessons
     .filter((lesson) => {
       if (runLessons[lesson.module]?.status === "passed") return true;
-      return lesson.module <= 7 && validPrerequisiteModules.has(lesson.module);
+      return lessonTier(lesson) === 1 && validPrerequisiteModules.has(lesson.module);
     })
     .map((lesson) => lesson.slug);
 }

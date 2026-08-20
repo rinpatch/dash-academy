@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "why-build-on-dash",
-  "module": 2,
+  "module": 3,
   "title": "Why build on Dash?",
   "targets": {
     "coreDocs": "23.0.0",
@@ -127,85 +127,121 @@
     {
       "id": "C1",
       "text": "Dash is organized into two layers: Core (layer 1) settles Dash payments and provides governance, while Platform (layer 2) stores and verifies structured application data via data contracts, documents, identities, and signed state transitions.",
-      "sourceIds": ["S2", "S3"],
+      "sourceIds": [
+        "S2",
+        "S3"
+      ],
       "support": "direct"
     },
     {
       "id": "C2",
       "text": "A Dash payment reaches confirmation in about a second, at no extra cost, because every transaction is InstantSend-locked and blocks are ChainLocked — practical for checkout and user-facing payment flows.",
-      "sourceIds": ["S3"],
+      "sourceIds": [
+        "S3"
+      ],
       "support": "direct"
     },
     {
       "id": "C3",
       "text": "Dash has no general-purpose smart-contract VM today: developers declare data with JSON-Schema data contracts instead of deploying code, which removes whole classes of smart-contract vulnerabilities; a VM is planned for Platform v4.0.",
-      "sourceIds": ["S4"],
+      "sourceIds": [
+        "S4"
+      ],
       "support": "direct"
     },
     {
       "id": "C4",
       "text": "Dash's clearest non-fit is arbitrary on-chain computation — anything that needs a Turing-complete VM or heavy custom code per node — while its clear fits are payments, verifiable app data with proofs, identities/usernames, tokens, and digital assets.",
-      "sourceIds": ["S4"],
+      "sourceIds": [
+        "S4"
+      ],
       "support": "inference"
     },
     {
       "id": "C5",
       "text": "DPNS registers human-readable .dash names (e.g. alice.dash) and ties them to a Platform identity, giving name-based interaction; premium names go through a masternode vote, ordinary names register immediately.",
-      "sourceIds": ["S8"],
+      "sourceIds": [
+        "S8"
+      ],
       "support": "direct"
     },
     {
       "id": "C6",
       "text": "NFTs on Dash are documents, not a separate token standard: each document has a unique ID analogous to an ERC-721 token ID, plus built-in transfer, set-price purchase, mutation, deletion, and creation-restriction options.",
-      "sourceIds": ["S9"],
+      "sourceIds": [
+        "S9"
+      ],
       "support": "direct"
     },
     {
       "id": "C7",
       "text": "Fungible tokens are first-class protocol objects declared in a data contract (no smart contract): minting, max supply, freeze/pause, burning, scheduled and perpetual distribution, and groups with voting thresholds are configured declaratively and enforced by the protocol.",
-      "sourceIds": ["S10", "S4"],
+      "sourceIds": [
+        "S10",
+        "S4"
+      ],
       "support": "direct"
     },
     {
       "id": "C8",
       "text": "Credits are a distinct unit of account from Dash: they are created at exactly 1000 credits per duff (1 DASH = 100,000,000,000 credits) by locking Dash on Core via an asset lock, and are spent on layer-2 fees.",
-      "sourceIds": ["S11", "S6"],
+      "sourceIds": [
+        "S11",
+        "S6"
+      ],
       "support": "direct"
     },
     {
       "id": "C9",
       "text": "Platform fees are storage fees plus processing fees, scaled by a network-governed fee multiplier, with a refund when stored data is deleted and a user fee increase to prioritize inclusion during congestion.",
-      "sourceIds": ["S7"],
+      "sourceIds": [
+        "S7"
+      ],
       "support": "direct"
     },
     {
       "id": "C10",
       "text": "Credits can be converted back to Dash through the identity credit withdrawal state transition, subject to a network-wide daily limit; anyone may top up any identity, so apps can subsidize user fees.",
-      "sourceIds": ["S6"],
+      "sourceIds": [
+        "S6"
+      ],
       "support": "direct"
     },
     {
       "id": "C11",
       "text": "Layer-1 transaction privacy comes from CoinJoin (formerly PrivateSend), a non-custodial mixing service coordinated by masternodes, so a user shuffles their Dash with others without trusting a third party.",
-      "sourceIds": ["S14", "S16"],
+      "sourceIds": [
+        "S14",
+        "S16"
+      ],
       "support": "direct"
     },
     {
       "id": "C12",
       "text": "Platform defines a shielded pool using Orchard/Halo2 zero-knowledge proofs for credits and tokens, with shield/unshield/shielded-transfer state transitions; however the shielded DAPI endpoints are defined in the protocol but not yet available on public nodes.",
-      "sourceIds": ["S12", "S13", "S5"],
+      "sourceIds": [
+        "S12",
+        "S13",
+        "S5"
+      ],
       "support": "direct"
     },
     {
       "id": "C13",
       "text": "Dash is the world's first and longest-running DAO: a treasury funded by a portion of the block subsidy pays approved proposals, and masternodes — which hold 1000 DASH as collateral — vote on how treasury funds are spent.",
-      "sourceIds": ["S3", "S16"],
+      "sourceIds": [
+        "S3",
+        "S16"
+      ],
       "support": "direct"
     },
     {
       "id": "C14",
       "text": "Platform clients verify query responses with cryptographic proofs rather than trusting the node that served them, giving a light client full-node-equivalent security guarantees.",
-      "sourceIds": ["S2", "S4"],
+      "sourceIds": [
+        "S2",
+        "S4"
+      ],
       "support": "direct"
     }
   ],

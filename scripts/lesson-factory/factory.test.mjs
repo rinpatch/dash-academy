@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { glossaryIds, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
+import { glossaryIds, lessonTier, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
 import { command, repoRoot } from "./lib.mjs";
 import { formatEvent, parseResult, shouldRetryAgent } from "./agent.mjs";
 import { usesComponent, VERIFICATION_COMPONENTS } from "./validate.mjs";
@@ -21,8 +21,17 @@ test("agent result parsing takes the last assistant message and surfaces provide
 
 test("the curriculum has one fixed lesson per module", async () => {
   const manifest = await loadManifest();
-  assert.equal(manifest.lessons.length, 17);
-  assert.deepEqual(manifest.lessons.map((lesson) => lesson.module), Array.from({ length: 17 }, (_, index) => index + 1));
+  const count = manifest.lessons.length;
+  assert.deepEqual(manifest.lessons.map((lesson) => lesson.module), Array.from({ length: count }, (_, index) => index + 1));
+});
+
+test("tiers interleave rather than splitting the course at a fixed module", async () => {
+  const manifest = await loadManifest();
+  const tiers = manifest.lessons.map(lessonTier);
+  // A concepts lesson appearing after an sdk lesson is the whole point of the interleaved order;
+  // if this ever holds, something has silently reverted to the old concepts-then-sdk split.
+  assert.ok(tiers.indexOf(1) < tiers.lastIndexOf(1));
+  assert.ok(tiers.indexOf(2) < tiers.lastIndexOf(1), "expected at least one concepts lesson after the first sdk lesson");
 });
 
 test("manifest validation rejects duplicate modules", async () => {
@@ -33,25 +42,29 @@ test("manifest validation rejects duplicate modules", async () => {
 
 test("Tier 2 integration retains valid prerequisite pages without admitting stale later pages", async () => {
   const lessons = (await loadManifest()).lessons;
+  const conceptModules = new Set(lessons.filter((lesson) => lessonTier(lesson) === 1).map((lesson) => lesson.module));
   const runLessons = Object.fromEntries(lessons.map((lesson) => [lesson.module, {
-    status: lesson.module >= 8 ? "passed" : "pending",
+    status: lessonTier(lesson) === 2 ? "passed" : "pending",
   }]));
   const pages = selectIntegrationPages({
     lessons,
     tier: 2,
     runLessons,
-    validPrerequisiteModules: new Set([1, 2, 3, 4, 5, 6, 7]),
+    validPrerequisiteModules: new Set(conceptModules),
   });
   assert.deepEqual(pages, lessons.map((lesson) => lesson.slug));
 
-  runLessons[10].status = "pending";
+  // An sdk lesson that did not pass this run must stay out even when it is listed as a valid
+  // prerequisite module — only concepts pages are admitted on that path.
+  const staleSdk = lessons.find((lesson) => lessonTier(lesson) === 2);
+  runLessons[staleSdk.module].status = "pending";
   const withoutUnpassedTier2Page = selectIntegrationPages({
     lessons,
     tier: 2,
     runLessons,
-    validPrerequisiteModules: new Set([1, 2, 3, 4, 5, 6, 7, 10]),
+    validPrerequisiteModules: new Set([...conceptModules, staleSdk.module]),
   });
-  assert.equal(withoutUnpassedTier2Page.includes(lessons[9].slug), false);
+  assert.equal(withoutUnpassedTier2Page.includes(staleSdk.slug), false);
 });
 
 test("Agent child environment excludes common credential variables", () => {

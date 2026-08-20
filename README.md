@@ -1,6 +1,6 @@
 # Dash Academy
 
-Dash Academy is a Next.js course application backed by a fixed 17-module curriculum. Lesson content is MDX under `content/academy/`; each lesson's committed technical evidence is under `lesson-sources/`.
+Dash Academy is a Next.js course application backed by a fixed 18-module curriculum. Lesson content is MDX under `content/academy/`; each lesson's committed technical evidence is under `lesson-sources/`.
 
 ## Develop the application
 

@@ -1,6 +1,6 @@
 # Lesson factory operator runbook
 
-This factory researches, authors, tests, independently reviews, and commits the fixed 17-module Dash Academy curriculum. Each lesson runs on its own branch and Git worktree. Git MDX plus its evidence ledger are the source of truth; Notion is reference input only.
+This factory researches, authors, tests, independently reviews, and commits the fixed 18-module Dash Academy curriculum. Each lesson runs on its own branch and Git worktree. Git MDX plus its evidence ledger are the source of truth; Notion is reference input only.
 
 Read the repository [`AGENTS.md`](../../AGENTS.md) before operating the factory. Lesson agents are instructed through [`write-dash-lesson`](../../.agents/skills/write-dash-lesson/SKILL.md) and must use the vendored [`dash-docs`](../../.agents/skills/dash-docs/SKILL.md) sources. The fixed scope, ordering, verification type, and challenge IDs live in [`curriculum/lessons.json`](../../curriculum/lessons.json).
 

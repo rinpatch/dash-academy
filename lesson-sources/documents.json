@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "module": 5,
+  "module": 13,
   "slug": "documents",
   "title": "Documents",
   "sources": [
@@ -86,91 +86,135 @@
     {
       "id": "claim-manifest-scope",
       "text": "Module 5 is a concepts-tier lesson titled Documents, requires module 4 Data Contracts, must cover the read and write lifecycle, ownership, revisions, and delete refunds, and completes through quiz challenge documents.",
-      "sourceIds": ["src-manifest"],
+      "sourceIds": [
+        "src-manifest"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-document-definition",
       "text": "A document is an atomic, user-submitted unit of application data that resembles a JSON document in a document-oriented database; every document belongs to an application and must conform to both the generic DPP document rules and its application's data contract.",
-      "sourceIds": ["src-document-explanation", "src-document-ref"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-document-ref"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-base-fields",
       "text": "Every document carries DPP base fields prefixed with $: $id, $type, $revision, $dataContractId, and $ownerId, plus $createdAt/$updatedAt/$transferredAt and their block-height variants, which appear only when the document type lists them as required properties.",
-      "sourceIds": ["src-document-explanation", "src-document-ref"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-document-ref"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-app-fields",
       "text": "An application's own fields are declared by the document type's schema in the data contract through its properties, required/transient lists, and indices.",
-      "sourceIds": ["src-document-explanation", "src-document-config"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-document-config"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-id-derivation",
       "text": "The document $id is derived by double-SHA256 hashing the dataContractId, ownerId, document type name, and 32-byte entropy.",
-      "sourceIds": ["src-document-ref"],
+      "sourceIds": [
+        "src-document-ref"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-write-lifecycle",
       "text": "The write lifecycle is a small set of transitions: create, replace, and delete are the core CRUD actions, with transfer, purchase, and update price adding ownership and trading. Each is wrapped in a Batch state transition and submitted to DAPI by the owning identity.",
-      "sourceIds": ["src-document-explanation", "src-state-transition-explanation", "src-document-ref"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-state-transition-explanation",
+        "src-document-ref"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-read-lifecycle",
       "text": "The read lifecycle is a query against committed network state via DAPI, using an SDK query with dataContractId, documentTypeName, and optional where/orderBy/limit/startAt/startAfter options, returning documents keyed by their $id.",
-      "sourceIds": ["src-retrieve-tutorial", "src-update-tutorial"],
+      "sourceIds": [
+        "src-retrieve-tutorial",
+        "src-update-tutorial"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-ownership-recorded",
       "text": "Ownership is recorded in the $ownerId base field, which holds the identity that submitted and owns the document.",
-      "sourceIds": ["src-document-explanation", "src-document-ref"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-document-ref"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-ownership-changes",
       "text": "Ownership changes only through either the transfer transition (setting recipientOwnerId to the new owner) or a purchase; the update price transition can only be set by the current owner, and transfer and update price are restricted to document types the contract marks transferable or sellable.",
-      "sourceIds": ["src-document-explanation", "src-document-ref", "src-nft-explanation"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-document-ref",
+        "src-nft-explanation"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-owner-authorizes",
       "text": "Replace and delete operate on a document the submitting identity owns; the owner signs the state transition with the identity key bound to the document, so only the owner can mutate or remove it.",
-      "sourceIds": ["src-document-explanation", "src-nft-explanation"],
+      "sourceIds": [
+        "src-document-explanation",
+        "src-nft-explanation"
+      ],
       "support": "inference"
     },
     {
       "id": "claim-revision-field",
       "text": "$revision is a 64-bit unsigned base field starting at 1; it is present for mutable documents and absent for immutable ones.",
-      "sourceIds": ["src-document-ref", "src-document-config"],
+      "sourceIds": [
+        "src-document-ref",
+        "src-document-config"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-revision-bump",
       "text": "Each replace must submit a $revision strictly greater than the stored one; the SDK pattern is fetch the current document, increment the revision by one, then replace, and non-increasing revisions are rejected as optimistic-concurrency protection.",
-      "sourceIds": ["src-update-tutorial", "src-document-ref"],
+      "sourceIds": [
+        "src-update-tutorial",
+        "src-document-ref"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-contract-options",
       "text": "The data contract's per-document-type options control the lifecycle: documentsMutable (default true), canBeDeleted (default true), transferable, tradeMode, and creationRestrictionMode.",
-      "sourceIds": ["src-document-config", "src-nft-explanation"],
+      "sourceIds": [
+        "src-document-config",
+        "src-nft-explanation"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-delete-refund",
       "text": "Deleting data before its storage fee is fully paid out refunds the remaining not-yet-distributed storage fee: storage fees are distributed to masternodes over the data's 50-year lifetime, so deleting early returns the undistributed remainder as a storage refund, and the processing fee is not refunded.",
-      "sourceIds": ["src-fees-explanation"],
+      "sourceIds": [
+        "src-fees-explanation"
+      ],
       "support": "direct"
     },
     {
       "id": "claim-verifier-api",
       "text": "The pinned WASM SDK 4.1.1 exposes a Document.generateId(documentTypeName, ownerId, dataContractId, entropy) static that reconstructs a document ID from its base fields, so an independent fixture can confirm the id derivation and revision semantics without touching a live network.",
-      "sourceIds": ["src-sdk-types", "src-lesson-verifier"],
+      "sourceIds": [
+        "src-sdk-types",
+        "src-lesson-verifier"
+      ],
       "support": "direct"
     }
   ],

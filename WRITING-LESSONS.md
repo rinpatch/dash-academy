@@ -21,7 +21,7 @@ handing work over — it catches the mistakes that are easy to make and annoying
 
 ## The curriculum is fixed
 
-The 17 lessons are defined in `curriculum/lessons.json`. That file is the source of truth for each
+The 18 lessons are defined in `curriculum/lessons.json`. That file is the source of truth for each
 lesson's title, description, length, and what it must cover. **You edit the lesson text; a developer
 edits the curriculum.** If a lesson needs a different title or a different scope, ask — don't change
 the frontmatter to disagree with the manifest, because validation will reject it.
@@ -47,8 +47,8 @@ prerequisites: []
 | Field | What it is |
 |---|---|
 | `title`, `description` | Must match the manifest word for word |
-| `module` | Position in the course, 1–17 |
-| `tier` | `concepts` (reading + quiz) or `sdk` (hands-on testnet work) |
+| `module` | Position in the course, 1–18 |
+| `tier` | `concepts` (reading + quiz) or `sdk` (hands-on testnet work). The two interleave — a concepts lesson sits directly in front of the lab that uses it, so tier does not follow from the module number |
 | `estimatedMinutes`, `exp` | From the manifest |
 | `verification` | `quiz`, `testnet`, or `hybrid` |
 | `prerequisites` | **Module numbers, not slugs** — `[3]`, not `["identities"]` |
@@ -86,6 +86,7 @@ Dash Platform has no <Term id="smart-contract">smart contracts</Term> to deploy.
 
 Available ids, defined in `lib/glossary.ts`:
 
+`block` · `transaction` · `private-key` · `seed-phrase` · `address` · `finality` · `faucet` ·
 `smart-contract` · `ico` · `premine` · `grpc` · `json-rpc` · `fiat` · `masternode` · `dapp` ·
 `testnet` · `identity` · `state-transition`
 

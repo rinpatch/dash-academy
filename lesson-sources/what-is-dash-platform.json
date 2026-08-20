@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "what-is-dash-platform",
-  "module": 1,
+  "module": 2,
   "title": "What is Dash Platform?",
   "targets": {
     "coreDocs": "23.0.0",
@@ -92,55 +92,83 @@
     {
       "id": "C1",
       "text": "Module 1 is a 12-minute concepts lesson worth 100 EXP with no prerequisites, whose quiz challenge ID is what-is-dash-platform and whose scope is the two-layer split, developer value, about-a-second payments, concrete buildables, and the course arc.",
-      "sourceIds": ["S1"],
+      "sourceIds": [
+        "S1"
+      ],
       "support": "direct"
     },
     {
       "id": "C2",
       "text": "Dash has two connected layers: Dash Core, the layer-1 blockchain that settles Dash payments, and Dash Platform, a layer-2 application state and structured-data layer.",
-      "sourceIds": ["S2", "S3", "S4"],
+      "sourceIds": [
+        "S2",
+        "S3",
+        "S4"
+      ],
       "support": "direct"
     },
     {
       "id": "C3",
       "text": "On Platform, a developer describes application data with a schema (a data contract) and submits signed state transitions that change it; they do not deploy arbitrary user-written code for the network to run.",
-      "sourceIds": ["S3", "S4"],
+      "sourceIds": [
+        "S3",
+        "S4"
+      ],
       "support": "direct"
     },
     {
       "id": "C4",
       "text": "Platform's two core components are Drive (consensus-backed decentralized storage) and DAPI (a decentralized API with JSON-RPC and gRPC endpoints that lets a client read and write Platform data and query the Core chain without running a node).",
-      "sourceIds": ["S3", "S4"],
+      "sourceIds": [
+        "S3",
+        "S4"
+      ],
       "support": "direct"
     },
     {
       "id": "C5",
       "text": "A blockchain network gives an app developer decentralized storage and shared state that is not owned by one company's server, plus client libraries that hide blockchain complexity.",
-      "sourceIds": ["S3"],
+      "sourceIds": [
+        "S3"
+      ],
       "support": "direct"
     },
     {
       "id": "C6",
       "text": "Dash payments confirm in about a second: Dash reached transaction finality in little more than a second and offers instant transaction confirmation.",
-      "sourceIds": ["S2", "S10"],
+      "sourceIds": [
+        "S2",
+        "S10"
+      ],
       "support": "direct"
     },
     {
       "id": "C7",
       "text": "About-a-second confirmation means a seller can accept a Dash payment immediately without waiting for multiple mined blocks, getting fiat-like speed at low cost.",
-      "sourceIds": ["S2"],
+      "sourceIds": [
+        "S2"
+      ],
       "support": "direct"
     },
     {
       "id": "C8",
       "text": "Concrete things a developer can build on Dash include human-readable .dash usernames via DPNS tied to identities, structured application data (data contracts and documents), configurable fungible tokens, document-based NFTs, and Dash payments—exemplified by DashMint Lab, Dashnote, and DashPay.",
-      "sourceIds": ["S5", "S6", "S7", "S8", "S9", "S4"],
+      "sourceIds": [
+        "S5",
+        "S6",
+        "S7",
+        "S8",
+        "S9",
+        "S4"
+      ],
       "support": "direct"
     },
     {
       "id": "C9",
       "text": "In this course the learner builds, on testnet, a small end-to-end app: connect to DAPI and make a verified read, derive and fund a Platform address, create an identity, register a DPNS username, publish a data contract, submit and query documents, transfer and purchase documents, create a native token, and charge tokens for document operations.",
-      "sourceIds": ["S11"],
+      "sourceIds": [
+        "S11"
+      ],
       "support": "inference"
     }
   ],

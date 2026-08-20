@@ -7,13 +7,14 @@ export type QuizEvidence = {
 export type TestnetEvidence = { reference: string };
 
 export const challengeSpecs = {
+  "what-is-dash": { lessonId: "what-is-dash", evidence: "quiz", completesLesson: true },
   "what-is-dash-platform": { lessonId: "what-is-dash-platform", evidence: "quiz", completesLesson: true },
   "why-build-on-dash": { lessonId: "why-build-on-dash", evidence: "quiz", completesLesson: true },
+  "dapi-and-proofs": { lessonId: "dapi-and-proofs", evidence: "quiz", completesLesson: true },
   identities: { lessonId: "identities", evidence: "quiz", completesLesson: true },
+  "wallets-keys-and-testnet": { lessonId: "wallets-keys-and-testnet", evidence: "quiz", completesLesson: true },
   "data-contracts": { lessonId: "data-contracts", evidence: "quiz", completesLesson: true },
   documents: { lessonId: "documents", evidence: "quiz", completesLesson: true },
-  dapi: { lessonId: "dapi", evidence: "quiz", completesLesson: true },
-  proofs: { lessonId: "proofs", evidence: "quiz", completesLesson: true },
   "environment-setup": { lessonId: "environment-setup", evidence: "testnet", completesLesson: true },
   "fund-a-platform-address": { lessonId: "fund-a-platform-address", evidence: "testnet", completesLesson: true },
   "create-a-dash-identity": { lessonId: "create-a-dash-identity", evidence: "testnet", completesLesson: true },

@@ -5,7 +5,7 @@ import readline from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { browserTest } from "./lesson-factory/browser.mjs";
 import { runAgent } from "./lesson-factory/agent.mjs";
-import { command, hash, latestRunId, lessonKey, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, selectIntegrationPages, writeJson } from "./lesson-factory/lib.mjs";
+import { command, hash, latestRunId, lessonKey, lessonTier, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, selectIntegrationPages, writeJson } from "./lesson-factory/lib.mjs";
 import { liveTest, validateLiveConfiguration } from "./lesson-factory/testnet.mjs";
 import { deterministicTests, validateLesson } from "./lesson-factory/validate.mjs";
 import { assertAllowedChanges, assertGlossaryOnlyGrew, assertPreparedBaseline, changedFiles, cloneNodeModules, commitLesson, createWorktree } from "./lesson-factory/worktree.mjs";
@@ -41,7 +41,7 @@ async function preflight() {
   }
   const secretFiles = await readableSecretFiles();
   checks.push({ label: "secretless agent workspace", passed: secretFiles.length === 0, detail: secretFiles.length ? `Move outside checkout: ${secretFiles.join(", ")}` : "ok" });
-  checks.push({ label: "curriculum", passed: manifest.lessons.length === 17, detail: "17 fixed modules" });
+  checks.push({ label: "curriculum", passed: manifest.lessons.length > 0, detail: `${manifest.lessons.length} fixed modules` });
   for (const check of checks) console.log(`${check.passed ? "✓" : "✗"} ${check.label}: ${check.detail}`);
   if (checks.some((check) => !check.passed)) process.exitCode = 1;
 }
@@ -283,7 +283,7 @@ async function integrateCommand() {
   if (![1, 2].includes(tier)) usage("integrate requires --tier 1 or --tier 2");
   const state = await loadCurrentRun();
   const manifest = await loadManifest();
-  const lessons = manifest.lessons.filter((lesson) => tier === 1 ? lesson.module <= 7 : lesson.module >= 8);
+  const lessons = manifest.lessons.filter((lesson) => lessonTier(lesson) === tier);
   // a lesson already shipped in the baseline needs no commit from this run
   const inBaseline = async (lesson) =>
     (await command("git", ["cat-file", "-e", `${state.baseline}:content/academy/${lesson.slug}.mdx`])).code === 0;
@@ -305,7 +305,7 @@ async function integrateCommand() {
     if (pick.code !== 0) throw new Error(`Cherry-pick failed for module ${lesson.module}: ${pick.stderr}`);
   }
   const validPrerequisiteModules = new Set();
-  for (const lesson of manifest.lessons.filter((candidate) => candidate.module <= 7)) {
+  for (const lesson of manifest.lessons.filter((candidate) => lessonTier(candidate) === 1)) {
     try {
       await access(path.join(worktree, "content/academy", `${lesson.slug}.mdx`));
       const errors = await validateLesson(lesson, worktree, { complete: false });
@@ -335,7 +335,7 @@ function selectLessons(manifest) {
       return lesson;
     });
   }
-  if (args.tier) return manifest.lessons.filter((lesson) => Number(args.tier) === 1 ? lesson.module <= 7 : lesson.module >= 8);
+  if (args.tier) return manifest.lessons.filter((lesson) => lessonTier(lesson) === Number(args.tier));
   if (args.all) return manifest.lessons;
   throw new Error("Select --module N, --tier 1|2, or --all");
 }
