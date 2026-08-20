@@ -4,11 +4,20 @@
     "what-is-dash",
     "what-is-dash-platform",
     "why-build-on-dash",
+    "environment-setup",
     "dapi-and-proofs",
     "identities",
     "wallets-keys-and-testnet",
+    "fund-a-platform-address",
     "create-a-dash-identity",
+    "register-a-username",
     "data-contracts",
-    "documents"
+    "write-your-first-data-contract",
+    "documents",
+    "submit-a-document",
+    "query-documents",
+    "document-transfer-and-purchase",
+    "tokens",
+    "token-paid-document-creation"
   ]
 }
