@@ -145,6 +145,12 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "Dash's decentralized API. Apps and SDKs read and write Platform and Core data through it instead of running their own node.",
     tag: "Dash",
   },
+  drive: {
+    title: "Drive",
+    definition:
+      "Dash Platform's storage component that holds the state DAPI reads and writes. It is built on GroveDB, Platform's storage engine.",
+    tag: "Dash",
+  },
   duff: {
     title: "Duff",
     definition:
@@ -216,5 +222,23 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition:
       "A client that verifies data against cryptographic proofs and block headers instead of downloading or re-running the whole chain itself.",
     tag: "Dash",
+  },
+  bip39: {
+    title: "BIP39",
+    definition:
+      "A standard that turns a seed phrase of 12 to 24 words into the seed a wallet uses to derive every key. It is why a backup phrase is all you need to restore a wallet.",
+    tag: "Protocol",
+  },
+  bip32: {
+    title: "BIP32",
+    definition:
+      "The standard for hierarchical deterministic wallets: one seed grows a whole tree of child keys and addresses, and the same seed always grows the same tree.",
+    tag: "Protocol",
+  },
+  bip44: {
+    title: "BIP44",
+    definition:
+      "A convention on top of BIP32 that derives addresses at a fixed path, so different wallets agree on which address is which. Dash uses a different coin type on testnet than on mainnet.",
+    tag: "Protocol",
   },
 };
