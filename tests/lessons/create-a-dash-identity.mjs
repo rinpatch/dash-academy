@@ -26,17 +26,17 @@ if (isLiveProtocol) {
 }
 
 function registerTests() {
-  test("lesson follows the module 10 sdk contract", async () => {
+  test("lesson follows the module 9 sdk contract", async () => {
     const mdx = await readFile(mdxUrl, "utf8");
 
     assert.match(mdx, /title: Create a Dash Identity/);
     assert.match(mdx, /description: Create and verify a Dash Platform identity on testnet\./);
-    assert.match(mdx, /module: 10/);
+    assert.match(mdx, /module: 9/);
     assert.match(mdx, /tier: sdk/);
     assert.match(mdx, /estimatedMinutes: 20/);
     assert.match(mdx, /exp: 200/);
     assert.match(mdx, /verification: testnet/);
-    assert.match(mdx, /prerequisites: \[9\]/);
+    assert.match(mdx, /prerequisites: \[8\]/);
     assert.match(mdx, /## Learning objectives/);
     assert.match(mdx, /## Checkpoint/);
     assert.match(mdx, /challengeId="create-a-dash-identity"/);
@@ -144,7 +144,7 @@ function registerTests() {
     const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
     const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-    assert.equal(ledger.module, 10);
+    assert.equal(ledger.module, 9);
     assert.equal(ledger.slug, "create-a-dash-identity");
     assert.equal(ledger.uncertainties.length, 0);
     for (const claim of ledger.claims) {

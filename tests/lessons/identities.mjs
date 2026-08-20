@@ -16,17 +16,17 @@ const documentedPublicKeySpecs = [
   { keyId: 5, purpose: "DECRYPTION", securityLevel: "MEDIUM" },
 ];
 
-test("lesson follows the module 3 concept contract", async () => {
+test("lesson follows the module 6 concept contract", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
   assert.match(mdx, /title: Identities/);
   assert.match(mdx, /description: Understand Platform identities, keys, credits, and their relationship to wallets\./);
-  assert.match(mdx, /module: 3/);
+  assert.match(mdx, /module: 6/);
   assert.match(mdx, /tier: concepts/);
   assert.match(mdx, /estimatedMinutes: 12/);
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
-  assert.match(mdx, /prerequisites: \[2\]/);
+  assert.match(mdx, /prerequisites: \[5\]/);
   assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="identities"/);
@@ -125,7 +125,7 @@ test("evidence ledger resolves every claim and conflict", async () => {
   const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
   const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-  assert.equal(ledger.module, 3);
+  assert.equal(ledger.module, 6);
   assert.equal(ledger.slug, "identities");
   assert.equal(ledger.uncertainties.length, 0);
   for (const claim of ledger.claims) {

@@ -5,17 +5,17 @@ import test from "node:test";
 const mdxUrl = new URL("../../content/academy/why-build-on-dash.mdx", import.meta.url);
 const ledgerUrl = new URL("../../lesson-sources/why-build-on-dash.json", import.meta.url);
 
-test("lesson follows the module 2 concept contract", async () => {
+test("lesson follows the module 3 concept contract", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
   assert.match(mdx, /title: Why build on Dash\?/);
   assert.match(mdx, /description: Decide when Dash is a good fit for an application\./);
-  assert.match(mdx, /module: 2/);
+  assert.match(mdx, /module: 3/);
   assert.match(mdx, /tier: concepts/);
   assert.match(mdx, /estimatedMinutes: 12/);
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
-  assert.match(mdx, /prerequisites: \[1\]/);
+  assert.match(mdx, /prerequisites: \[2\]/);
   assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="why-build-on-dash"/);
@@ -88,7 +88,7 @@ test("evidence ledger resolves every claim and non-blocking uncertainty", async 
   const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
   const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-  assert.equal(ledger.module, 2);
+  assert.equal(ledger.module, 3);
   assert.equal(ledger.slug, "why-build-on-dash");
   assert.ok(ledger.conflicts.length === 0);
   for (const claim of ledger.claims) {

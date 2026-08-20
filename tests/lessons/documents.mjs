@@ -16,17 +16,17 @@ const DOCUMENT = {
   $entropy: "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc=",
 };
 
-test("lesson follows the module 5 concept contract", async () => {
+test("lesson follows the module 13 concept contract", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
   assert.match(mdx, /title: Documents/);
   assert.match(mdx, /description: Understand the lifecycle, ownership, and revision of Platform documents\./);
-  assert.match(mdx, /module: 5/);
+  assert.match(mdx, /module: 13/);
   assert.match(mdx, /tier: concepts/);
   assert.match(mdx, /estimatedMinutes: 14/);
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
-  assert.match(mdx, /prerequisites: \[4\]/);
+  assert.match(mdx, /prerequisites: \[12\]/);
   assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="documents"/);
@@ -96,7 +96,7 @@ test("evidence ledger resolves every claim and non-blocking uncertainty", async 
   const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
   const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-  assert.equal(ledger.module, 5);
+  assert.equal(ledger.module, 13);
   assert.equal(ledger.slug, "documents");
   assert.equal(ledger.examples.length, 0);
   assert.ok(ledger.conflicts.every(({ status }) => status === "resolved"));

@@ -34,14 +34,14 @@ const documentedPublicSchemas = {
   },
 };
 
-test("lesson follows the module 4 concept contract", async () => {
+test("lesson follows the module 11 concept contract", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
   assert.match(mdx, /title: Data Contracts/);
-  assert.match(mdx, /module: 4/);
+  assert.match(mdx, /module: 11/);
   assert.match(mdx, /tier: concepts/);
   assert.match(mdx, /estimatedMinutes: 14/);
-  assert.match(mdx, /prerequisites: \[3\]/);
+  assert.match(mdx, /prerequisites: \[10\]/);
   assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="data-contracts"/);
@@ -74,7 +74,7 @@ test("evidence ledger resolves every claim", async () => {
   const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
   const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-  assert.equal(ledger.module, 4);
+  assert.equal(ledger.module, 11);
   assert.equal(ledger.slug, "data-contracts");
   assert.equal(ledger.uncertainties.length, 0);
   for (const claim of ledger.claims) {
