@@ -205,4 +205,16 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "The work of proposing new blocks to the network. Miners compete to assemble the next block of transactions and are paid in newly issued coins for the block the network accepts.",
     tag: "Basics",
   },
+  "state-proof": {
+    title: "State proof",
+    definition:
+      "A cryptographic proof a Platform query can return alongside its data, proving the response matches committed state. A client checks it against the block's AppHash instead of trusting the node that answered.",
+    tag: "Protocol",
+  },
+  "light-client": {
+    title: "Light client",
+    definition:
+      "A client that verifies data against cryptographic proofs and block headers instead of downloading or re-running the whole chain itself.",
+    tag: "Dash",
+  },
 };

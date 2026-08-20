@@ -1,0 +1,200 @@
+---
+title: DAPI and Proofs
+description: Understand what answered your first request, and why you can trust the answer.
+module: 5
+tier: concepts
+estimatedMinutes: 15
+exp: 100
+verification: quiz
+prerequisites: [4]
+---
+
+## Learning objectives
+
+By the end of this lesson, you will be able to:
+
+- decide when to trust a DAPI answer, based on what kind of endpoint answered and whether a proof was verified;
+- tell Core access from Platform access by endpoint family and proof; and
+- name the single thing trusted mode still takes on trust.
+
+## Meet DAPI
+
+In module 4 you installed the SDK and made your first verified read. That `connect()` call quietly opened a conversation with the network — and the thing on the other end of that conversation was **DAPI**, Dash's decentralized API. This lesson answers two questions about that conversation: *what* answered you, and *why you can trust the answer*.
+
+DAPI is one API for both halves of Dash. It gives every app and SDK a single interface to **layer 1** (Dash Core's blockchain, where Dash moves) and **layer 2** (Dash Platform, where data lives). It runs on Dash's masternode infrastructure — specifically the <Term id="evonode">evonodes</Term>, the <Term id="masternode">masternodes</Term> that also serve Platform.
+
+Three things follow from DAPI being decentralized:
+
+- You get the *same access and security* you would get from running your own Dash node, without the cost and upkeep of one.
+- Because DAPI is served by many masternode instances, there is **no single point of failure**: if one instance is slow or down, a client can ask a different one.
+- You talk to it the way an app talks to any remote service: over HTTP, with <Term id="tls">TLS</Term> encrypting the connection against interception or tampering.
+
+DAPI speaks two endpoint languages. **<Term id="json-rpc">JSON-RPC</Term>** endpoints expose a little layer-1 (Core) information. **<Term id="grpc">gRPC</Term>** endpoints serve layer 2 (Platform) and also stream live events — blocks, transactions and other transitions, and masternode-list updates.
+
+<Callout type="info" title="TLS protects the pipe, not the data">
+TLS stops someone from reading or rewriting your request *in transit*. It does not prove that the data inside the response is correct. For that you need proofs, which we get to in a moment. Keep the two jobs separate in your head.
+</Callout>
+
+## How the SDK picks who to ask
+
+"DAPI" is not one server — it is many masternode instances behind one name. So the SDK has to choose which one to actually talk to. This is **endpoint selection**.
+
+For a built-in network such as testnet, mainnet, or local, the SDK discovers endpoints from **seed nodes** and rotates between them automatically. If a node fails, it is temporarily banned and the SDK retries against a healthy one:
+
+```typescript
+import { EvoSDK } from "@dashevo/evo-sdk";
+
+const sdk = EvoSDK.testnetTrusted();
+await sdk.connect(); // discovers DAPI endpoints from seed nodes, then connects
+```
+
+On testnet the seed node lives at `seed-1.testnet.networks.dash.org:1443`; the SDK's factories already know where to look, so you never type it yourself.
+
+You can also *pin* exact addresses instead of letting the SDK discover them. `EvoSDK.withAddresses` takes a list of masternode URLs and uses only those — discovery is switched off:
+
+```typescript
+const sdk = EvoSDK.withAddresses(["https://52.12.176.90:1443"], "testnet");
+await sdk.connect();
+```
+
+Discovery is the convenient default; pinning is the escape hatch for private networks, specific nodes, or debugging.
+
+## What answered your first read
+
+When you read data in module 4, the answer did not come out of thin air. It was read from **Platform state**: the current snapshot of everything stored on the platform.
+
+Platform state lives in <Term id="grovedb">GroveDB</Term>, an authenticated data structure maintained by Drive. "Authenticated" is the word that matters here: every change to the state updates one aggregate root hash that commits to the whole tree. Each committed block header carries that root as its <Term id="apphash">AppHash</Term>. Check a node's AppHash against yours and you know you have the correct state.
+
+Two more properties make these reads dependable:
+
+- **Finalized.** Queries return the latest committed state — the state at the most recent block — not pending or half-applied changes.
+- **Deterministic.** The same query on any two honest, up-to-date nodes returns the same result, so your app behaves the same no matter which node answered.
+
+## State proofs
+
+A query can do better than "trust the node that answered." When a request sets `prove: true`, Platform returns a **state proof** alongside the data — a cryptographic receipt you can check yourself, so you no longer have to take the node's word for it.
+
+There are two kinds of proof, and they answer two different questions:
+
+- An **inclusion proof** proves that specific data exists and has not been modified. ("This identity really is in the state tree.")
+- A **non-inclusion proof** proves that specific data does *not* exist. That is what makes a uniqueness check — like "is this username already taken?" — safe.
+
+A proof response carries a few parts: a root tree proof and one or more store tree proofs (the Merkle paths through the state tree), plus the quorum hash and a quorum signature that tie those paths to the validator set. In the SDK these are surfaced as the fields of a `ProofInfo` object: `grovedbProof` (the tree path), `quorumHash`, `signature`, `round`, `blockIdHash`, and `quorumType`. None of it is a human-readable guarantee — it is a set of bytes your client can check against a known anchor.
+
+## Why you can trust it
+
+The anchor is the key to the whole idea. A proof only means something if you can check it against a value you already know.
+
+That value is the **AppHash** in the block header — the same committed state root from two sections ago. A state proof is verified against that AppHash, and the AppHash itself is signed by the validator quorum — a <Term id="llmq">Long-Living Masternode Quorum</Term> of masternodes whose threshold signature no single member can forge. So a **light client** can confirm the returned data without downloading or re-running the chain:
+
+1. Reconstruct the tree path from the proof and check it against the AppHash.
+2. Check the AppHash against the quorum's signature.
+
+If both match, you know the data is real Platform state — even though you never trusted the node that handed it to you.
+
+## The one thing you still trust
+
+For step 2 you need the quorum's public keys. A full node reads them from the Core chain for free; a lightweight SDK running in a browser cannot.
+
+**Trusted mode** solves this with a single, explicit trade-off. When you create the SDK with a `*Trusted` factory (like `EvoSDK.testnetTrusted()` above), `connect()` does one extra step first: it fetches the *current quorum public keys* from a well-known HTTPS endpoint and caches them. From then on, every response is verified against those keys.
+
+Read the trade-off carefully:
+
+- You *do not* trust any individual DAPI node for the data itself — every returned byte is checked.
+- You *do* trust one HTTPS endpoint to have handed you the correct quorum keys.
+
+<Callout type="info" title="Trust one key source, verify everything else">
+Trusted mode shrinks your trust surface from "every node you ever query" down to "one key-distribution endpoint." Trusted mode does not mean "no trust at all" — it means trust is concentrated in exactly one place, and everything downstream of it is checked.
+</Callout>
+
+## Verification boundaries
+
+Everything so far adds up to a simple rule — the verification boundary between *verified* and *taken on trust*:
+
+| What happened | Verified or trusted? |
+| --- | --- |
+| Core JSON-RPC lookup (`getBestBlockHash`, `getBlockHash`) | Trusted — returns no proof |
+| Platform read with `prove: true` and quorum keys available | Verified — checked against the quorum-signed AppHash |
+| Platform read without a proof, or via an `Unproved` variant | Trusted — you accept the responding node's answer |
+
+Two sides of that boundary are worth keeping in mind:
+
+- The layer-1 JSON-RPC endpoints expose only two Core lookups — `getBestBlockHash` and `getBlockHash` — and they return *no* cryptographic proof, so their answers are simply taken from the responding node.
+- A Platform read is proof-verifiable *only when* a proof is requested **and** the quorum keys are available to check it against. Without trusted mode, the SDK still works but cannot verify — you are trusting the node.
+
+So the answer to "when can I trust a DAPI answer?" is: a Core lookup and an unproved read are trust-based, while a Platform read with a requested, verified proof is something you checked for yourself.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="dapi-and-proofs"
+  passingScore={4}
+  questions={[
+    {
+      id: "why-decentralized",
+      prompt: "What makes DAPI decentralized, compared to a normal hosted API?",
+      options: [
+        { id: "a", label: "It is served by many masternode instances, so there is no single point of failure." },
+        { id: "b", label: "It runs only on servers operated by a single company." },
+        { id: "c", label: "It encodes every response as JSON." },
+        { id: "d", label: "It requires a username and password to connect." },
+      ],
+      correctOptionId: "a",
+      explanation: "DAPI runs on Dash's masternode infrastructure, and clients can connect to different instances. No single instance is essential, so there is no single point of failure.",
+    },
+    {
+      id: "core-vs-platform",
+      prompt: "Which statement correctly describes DAPI's two endpoint styles?",
+      options: [
+        { id: "a", label: "JSON-RPC serves most Platform data; gRPC serves Core transactions." },
+        { id: "b", label: "gRPC serves layer 2 (Platform) and streams events; JSON-RPC exposes a little layer-1 (Core) information." },
+        { id: "c", label: "Both endpoint styles return the same Platform documents." },
+        { id: "d", label: "JSON-RPC returns proofs and gRPC does not." },
+      ],
+      correctOptionId: "b",
+      explanation: "JSON-RPC exposes a few Core lookups; gRPC is the workhorse for Platform data and event streaming. Proofs are a feature of Platform gRPC responses, not JSON-RPC.",
+    },
+    {
+      id: "endpoint-selection",
+      prompt: "How does the SDK choose which DAPI node to talk to on a built-in network?",
+      options: [
+        { id: "a", label: "It asks the user to type an IP address on every request." },
+        { id: "b", label: "It broadcasts every request to every node at once." },
+        { id: "c", label: "It discovers endpoints from seed nodes and rotates between them, temporarily banning failed nodes." },
+        { id: "d", label: "It uses one hardcoded IP for the lifetime of the app." },
+      ],
+      correctOptionId: "c",
+      explanation: "The SDK discovers DAPI endpoints from seed nodes and rotates between them, banning failed nodes so it retries against healthy ones. Pinning explicit addresses with EvoSDK.withAddresses turns discovery off.",
+    },
+    {
+      id: "state-proof-anchor",
+      prompt: "What is a Platform state proof checked against?",
+      options: [
+        { id: "a", label: "The reputation of the node that answered." },
+        { id: "b", label: "The TLS certificate on the connection." },
+        { id: "c", label: "The AppHash in the block header, which is signed by the validator quorum." },
+        { id: "d", label: "The JSON-RPC method name in the request." },
+      ],
+      correctOptionId: "c",
+      explanation: "A state proof is a set of Merkle paths that are checked against the committed AppHash, and the AppHash is authenticated by the quorum's threshold signature.",
+    },
+    {
+      id: "trusted-mode-boundary",
+      prompt: "In trusted mode, what is the one thing a client still takes on trust?",
+      options: [
+        { id: "a", label: "The data each DAPI node returns." },
+        { id: "b", label: "The quorum public keys fetched once from a well-known HTTPS endpoint." },
+        { id: "c", label: "The proof attached to a response." },
+        { id: "d", label: "The block timestamp." },
+      ],
+      correctOptionId: "b",
+      explanation: "Trusted mode verifies every response against quorum keys it prefetches once. It does not trust individual DAPI nodes for data, but it does trust that one key-distribution endpoint.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now explain what answered your first Platform read — a DAPI node reading finalized, deterministic state from GroveDB — and why some answers are safer than others. You can tell Core access from Platform access by endpoint family and proof, describe how the SDK selects endpoints (seed-node discovery with rotation and ban-on-failure, or pinned addresses), and summarize how a state proof is checked against a quorum-signed AppHash. Finally, you know the exact trust boundary: Core lookups and unproved reads are taken on trust, Platform reads are proof-verifiable only when a proof is requested and quorum keys are present, and even trusted mode still trusts one thing — the key-distribution endpoint.

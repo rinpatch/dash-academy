@@ -1,393 +1,273 @@
 {
   "schemaVersion": 1,
-  "module": 5,
   "slug": "dapi-and-proofs",
+  "module": 5,
   "title": "DAPI and Proofs",
   "targets": {
-    "platformDocs": "3.1.0"
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "evoSdk": "4.1.1",
+    "wasmSdk": "4.1.1"
   },
   "sources": [
     {
-      "id": "s-manifest",
-      "title": "Dash Academy fixed curriculum — module 5",
-      "kind": "repository manifest",
-      "locator": "curriculum/lessons.json",
-      "version": "repository source of truth"
-    },
-    {
-      "id": "d-s-dapi-explain",
-      "title": "Decentralized API (DAPI)",
+      "id": "s1",
+      "title": "Decentralized API (DAPI) — explanation",
       "kind": "vendored authoritative Dash Platform documentation",
       "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "d-s-what-is-platform",
-      "title": "What is Dash Platform",
+      "id": "s2",
+      "title": "What is Dash Platform (DAPI/Drive, verifiable access)",
       "kind": "vendored authoritative Dash Platform documentation",
       "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "d-s-dapi-endpoints",
-      "title": "DAPI Endpoints",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "d-s-core-grpc",
-      "title": "Core gRPC Endpoints",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints-core-grpc-endpoints.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "d-s-core-jsonrpc",
-      "title": "JSON-RPC Endpoints",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints-json-rpc-endpoints.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "d-s-grpc-overview",
-      "title": "gRPC Overview",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints-grpc-overview.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "d-s-connect-masternode",
-      "title": "Connect to a network (Dash Masternode)",
-      "kind": "vendored authoritative Dash Platform tutorial",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/node-setup/connect-to-a-network-dash-masternode.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "d-s-incentives",
-      "title": "Overview (incentives)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/other/incentives.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "d-s-faq",
-      "title": "FAQ",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/resources/faq.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "p-S1",
-      "title": "Dash Academy fixed curriculum — module 7",
-      "kind": "repository manifest",
-      "locator": "curriculum/lessons.json:84-95",
-      "version": "repository lessons.json"
-    },
-    {
-      "id": "p-S2",
-      "title": "Platform Proofs",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/platform-proofs.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "p-S3",
-      "title": "Platform State (Drive)",
+      "id": "s3",
+      "title": "Platform State (GroveDB, AppHash, proofs)",
       "kind": "vendored authoritative Dash Platform documentation",
       "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-state.md",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "p-S4",
-      "title": "Query Capabilities",
+      "id": "s4",
+      "title": "Platform Chain (consensus, finality, validators)",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-chain.md",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s5",
+      "title": "Query Capabilities (determinism, inclusion/non-inclusion proofs)",
       "kind": "vendored authoritative Dash Platform documentation",
       "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "p-S5",
-      "title": "Decentralized API (DAPI) — Security",
+      "id": "s6",
+      "title": "Platform Proofs (proof structure)",
       "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/platform-proofs.md",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "p-S6",
-      "title": "Platform Consensus",
+      "id": "s7",
+      "title": "DAPI Endpoints (JSON-RPC vs gRPC, Core vs Platform)",
       "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-consensus.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "p-S7",
-      "title": "Pinned WASM SDK ProofInfo type",
+      "id": "s8",
+      "title": "JSON-RPC Endpoints (Core chain lookups)",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints-json-rpc-endpoints.md",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s9",
+      "title": "Evo SDK — Trusted Mode and Proof Verification",
+      "kind": "vendored authoritative Dash Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/trusted-mode.md",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "s10",
+      "title": "Evo SDK — Networks and Environments (endpoint discovery)",
+      "kind": "vendored authoritative Dash Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/networks-and-environments.md",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "s11",
+      "title": "Evo SDK — Getting Started (factories, connect)",
+      "kind": "vendored authoritative Dash Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/getting-started.md",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "s12",
+      "title": "Setup SDK Client tutorial",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/setup-sdk-client.md",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s13",
+      "title": "Connect to a network tutorial (seed node, WASM factory note)",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/connecting-to-testnet.md",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "s14",
+      "title": "Evo SDK 4.1.1 connection options, trusted context, and factories",
       "kind": "installed package type declaration",
-      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts:6891-6909",
-      "version": "@dashevo/wasm-sdk 4.1.1"
+      "locator": "node_modules/@dashevo/evo-sdk/dist/sdk.d.ts",
+      "version": "@dashevo/evo-sdk 4.1.1"
     },
     {
-      "id": "p-S8",
-      "title": "Pinned Evo SDK connection options, trusted context, and proof facades",
-      "kind": "installed package type declaration and README",
-      "locator": "node_modules/@dashevo/evo-sdk/dist/sdk.d.ts:15-108; node_modules/@dashevo/evo-sdk/README.md:30-58; node_modules/@dashevo/evo-sdk/dist/identities/facade.d.ts:1-28",
-      "version": "@dashevo/evo-sdk 4.1.1"
+      "id": "s15",
+      "title": "WASM SDK 4.1.1 ProofInfo type declaration",
+      "kind": "installed package type declaration",
+      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts",
+      "version": "@dashevo/wasm-sdk 4.1.1"
     }
   ],
   "claims": [
     {
-      "id": "c-manifest",
-      "text": "Module 5 is a 15-minute concepts-tier lesson whose completing quiz uses challenge ID `dapi-and-proofs`, with prerequisite environment-setup (module 4), covering decentralized API, Core and Platform access, endpoint selection, state proofs, light-client trust, verification boundaries.",
-      "sourceIds": [
-        "s-manifest"
-      ],
+      "id": "C1",
+      "text": "DAPI is a decentralized API built on Dash's masternode infrastructure that provides a single interface to both layer 1 (Core blockchain) and layer 2 (Dash Platform).",
+      "sourceIds": ["s1", "s2"],
       "support": "direct"
     },
     {
-      "id": "d-c-dapi-definition",
-      "text": "DAPI is a decentralized HTTP API exposing JSON-RPC and gRPC endpoints.",
-      "sourceIds": [
-        "d-s-dapi-explain",
-        "d-s-what-is-platform"
-      ],
+      "id": "C2",
+      "text": "DAPI gives a client the same access and security as running its own Dash node, and because clients can connect to different masternode instances there is no single point of failure.",
+      "sourceIds": ["s2"],
       "support": "direct"
     },
     {
-      "id": "d-c-dapi-node-equivalence",
-      "text": "DAPI gives developers the same access and security as running their own Dash node, without the cost and maintenance overhead.",
-      "sourceIds": [
-        "d-s-what-is-platform"
-      ],
+      "id": "C3",
+      "text": "DAPI exposes two endpoint styles: JSON-RPC (some layer-1 Core information) and gRPC (layer-2 Platform, plus streaming of blocks, transactions/transitions, and masternode-list updates).",
+      "sourceIds": ["s1", "s7"],
       "support": "direct"
     },
     {
-      "id": "d-c-dapi-hosting",
-      "text": "DAPI is served by Dash's masternode infrastructure: the masternodes that run Platform (the evonodes) operate the public API that receives data requests and changes.",
-      "sourceIds": [
-        "d-s-dapi-explain",
-        "d-s-incentives",
-        "d-s-faq"
-      ],
+      "id": "C4",
+      "text": "The JSON-RPC endpoints expose only two Core chain lookups (getBestBlockHash and getBlockHash) and return no cryptographic proof, so their answers are taken on trust from the responding node.",
+      "sourceIds": ["s7", "s8"],
       "support": "direct"
     },
     {
-      "id": "d-c-dapi-no-spof",
-      "text": "Unlike a traditional API with a single point of failure, clients can connect to different DAPI instances depending on resource availability in the network.",
-      "sourceIds": [
-        "d-s-what-is-platform"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "d-c-dapi-two-layers",
-      "text": "DAPI supports both layer 1 (Core blockchain) and layer 2 (Dash Platform) through a single interface.",
-      "sourceIds": [
-        "d-s-dapi-explain"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "d-c-dapi-endpoint-kinds",
-      "text": "DAPI currently provides two endpoint kinds: JSON-RPC endpoints expose some layer-1 (Core) information, while gRPC endpoints support layer 2 (Platform) and also Core, including streaming of events related to blocks, transactions/transitions, and masternode-list updates.",
-      "sourceIds": [
-        "d-s-dapi-explain",
-        "d-s-dapi-endpoints"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "d-c-dapi-jsonrpc-layer1",
-      "text": "The JSON-RPC endpoints provide access to Core-chain (layer 1) information; documented examples include getBestBlockHash and getBlockHash.",
-      "sourceIds": [
-        "d-s-core-jsonrpc",
-        "d-s-dapi-endpoints"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "d-c-dapi-core-grpc",
-      "text": "Core gRPC endpoints include broadcastTransaction, getTransaction, getBestBlockHeight, and subscription endpoints such as subscribeToBlockHeadersWithChainLocks, subscribeToMasternodeList, and subscribeToTransactionsWithProofs.",
-      "sourceIds": [
-        "d-s-dapi-endpoints",
-        "d-s-core-grpc"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "d-c-dapi-platform-grpc",
-      "text": "Platform gRPC endpoints include getIdentity, getIdentityBalance, getDataContract(s), getDocuments, broadcastStateTransition, waitForStateTransitionResult, and system-info/token endpoints.",
-      "sourceIds": [
-        "d-s-dapi-endpoints"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "d-c-dapi-security",
-      "text": "DAPI encrypts connections with TLS; Platform gRPC endpoints can additionally return cryptographic proofs that verify the server responded without modifying the requested data (proofs are optional per-request).",
-      "sourceIds": [
-        "d-s-dapi-explain"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "d-c-dapi-seed-selection",
-      "text": "A client selects a DAPI endpoint by network name (testnet, mainnet, or local) or by an explicit seed list/URL; the public testnet seed is seed-1.testnet.networks.dash.org on port 1443.",
-      "sourceIds": [
-        "d-s-core-grpc",
-        "d-s-connect-masternode",
-        "d-s-grpc-overview",
-        "d-s-core-jsonrpc"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "p-C1",
-      "text": "Module 7 is a concepts-tier lesson that completes with exactly one quiz using challengeId 'proofs'; it must cover state proofs, light-client trust, and verification boundaries, with prerequisite module 6 (dapi) and no testnet verifier.",
-      "sourceIds": [
-        "p-S1"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "p-C2",
-      "text": "Each committed Platform block header contains an AppHash that commits to the post-execution GroveDB state-tree root; Tenderdash's same-block execution means the committed block itself commits to the state after its transactions are applied.",
-      "sourceIds": [
-        "p-S3",
-        "p-S6"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "p-C3",
-      "text": "A Platform state proof lets a verifier reconstruct the relevant authenticated tree path and check the requested data against a known root hash rather than trusting the responding node.",
-      "sourceIds": [
-        "p-S2",
-        "p-S3"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "p-C4",
-      "text": "Inclusion proofs establish that specific data exists and was not modified; non-inclusion proofs establish that specific data does not exist in the proved state.",
-      "sourceIds": [
-        "p-S4"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "p-C5",
-      "text": "The AppHash commitment is authenticated by the validator quorum's BLS threshold signature (produced by a Long-Living Masternode Quorum of masternodes), so a light client can verify the GroveDB proof against the AppHash and authenticate that commitment against the quorum — confirming the returned state without trusting the responding DAPI node or replaying the chain.",
-      "sourceIds": [
-        "p-S3",
-        "p-S6"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "p-C6",
-      "text": "Proof verification is meaningful only against an 'authenticated consensus anchor' — quorum public keys or equivalent commitment obtained from an independently trusted source. In the pinned Evo SDK this is the pre-fetched 'trusted context' of quorum keys; a root, signature, or quorum id supplied by the same server is not independently authenticated merely because it arrives in the payload.",
-      "sourceIds": [
-        "p-S6",
-        "p-S8"
-      ],
+      "id": "C5",
+      "text": "Connections to DAPI are encrypted with TLS, which protects the data in transit; TLS secures the pipe but does not by itself prove that the data inside it is correct.",
+      "sourceIds": ["s1"],
       "support": "inference"
     },
     {
-      "id": "p-C7",
-      "text": "In the pinned 4.1.1 SDK the proof payload is ProofInfo { grovedbProof, quorumHash, signature, round, blockIdHash, quorumType }, returned as ProofMetadataResponse { data, metadata, proof }; Platform docs 3.1.0 describe a legacy four-part payload (rootTreeProof, storeTreeProofs, signatureLlmqHash, signature). The installed SDK declaration is authoritative for the current shape.",
-      "sourceIds": [
-        "p-S2",
-        "p-S7"
-      ],
+      "id": "C6",
+      "text": "Platform gRPC endpoints optionally return cryptographic proofs when the request sets prove: true, allowing a client to confirm the response matches consensus state instead of trusting the node.",
+      "sourceIds": ["s1", "s6"],
       "support": "direct"
     },
     {
-      "id": "p-C8",
-      "text": "TLS and state proofs solve different problems: TLS encrypts the connection against interception and tampering, while the cryptographic proof authenticates the returned state and guarantees the server did not modify the requested data.",
-      "sourceIds": [
-        "p-S5"
-      ],
+      "id": "C7",
+      "text": "Platform state is stored in GroveDB, an authenticated data structure, and every committed block header includes an AppHash that commits to the root of the post-execution state tree.",
+      "sourceIds": ["s3"],
       "support": "direct"
     },
     {
-      "id": "p-C9",
-      "text": "Queries and proofs concern finalized state at a committed block; they do not include pending changes or the historical event sequence that produced that state.",
-      "sourceIds": [
-        "p-S4"
-      ],
+      "id": "C8",
+      "text": "A state proof is verified against the block header's AppHash, which is signed by the validator quorum, so a light client can certify returned data without re-executing the chain.",
+      "sourceIds": ["s3"],
       "support": "direct"
     },
     {
-      "id": "p-C10",
-      "text": "Proof delivery is optional (docs request it with prove:true; the SDK's proofs option merely toggles/forces it). A client that neither requests nor verifies a proof receives no proof-backed guarantee and must trust the response through some other mechanism.",
-      "sourceIds": [
-        "p-S2",
-        "p-S8"
-      ],
+      "id": "C9",
+      "text": "Queries return the latest finalized state deterministically: the same query on two honest, up-to-date nodes produces the same result.",
+      "sourceIds": ["s5"],
+      "support": "direct"
+    },
+    {
+      "id": "C10",
+      "text": "There are two proof types: inclusion proofs (data exists and is unmodified) and non-inclusion proofs (data does not exist, useful for uniqueness checks such as usernames).",
+      "sourceIds": ["s5"],
+      "support": "direct"
+    },
+    {
+      "id": "C11",
+      "text": "A proof response comprises a root tree proof, one or more store tree proofs, and a quorum hash plus a quorum signature tying those paths to the validator set; in the SDK these surface as ProofInfo fields grovedbProof, quorumHash, signature, round, blockIdHash, and quorumType.",
+      "sourceIds": ["s6", "s15"],
+      "support": "direct"
+    },
+    {
+      "id": "C12",
+      "text": "The Evo SDK discovers DAPI endpoints from seed nodes and rotates between them automatically, temporarily banning failed nodes; supplying explicit addresses via withAddresses disables that discovery.",
+      "sourceIds": ["s10", "s11"],
+      "support": "direct"
+    },
+    {
+      "id": "C13",
+      "text": "In trusted mode (the *Trusted factory helpers), connect() fetches the current validator quorum public keys once from a well-known HTTPS endpoint and then verifies every subsequent response against them.",
+      "sourceIds": ["s9", "s11"],
+      "support": "direct"
+    },
+    {
+      "id": "C14",
+      "text": "Trusted-mode trust boundary: the client trusts one key-distribution endpoint for the validator set but does not trust any individual DAPI node for the data itself; in non-trusted mode or via Unproved variants the client skips verification and trusts the responding node.",
+      "sourceIds": ["s9"],
+      "support": "direct"
+    },
+    {
+      "id": "C15",
+      "text": "The verification boundary is therefore: Core JSON-RPC lookups and unproved reads are trust-based, while Platform data is only proof-verifiable when proofs are requested and quorum keys are available to check them against.",
+      "sourceIds": ["s8", "s9", "s6"],
       "support": "inference"
     },
     {
-      "id": "p-C11",
-      "text": "A proof establishes membership or absence relative to the authenticated consensus state — not that the data is desirable, semantically useful, or true in the real world. Consensus is not real-world truth.",
-      "sourceIds": [
-        "p-S3",
-        "p-S4",
-        "p-S5"
-      ],
-      "support": "inference"
+      "id": "C16",
+      "text": "The pinned @dashevo/evo-sdk 4.1.1 exports EvoSDK.testnetTrusted(), mainnetTrusted(), localTrusted(), and withAddresses(addresses, network), plus the trusted and proofs options and the banFailedAddress transport setting, so every API symbol named in the lesson exists in the pinned SDK.",
+      "sourceIds": ["s14", "s10", "s11"],
+      "support": "direct"
     },
     {
-      "id": "p-C12",
-      "text": "A proof-verification failure must be presented as an unverified response, not as valid Platform state; accepting the payload anyway would cross the lesson's verification boundary.",
-      "sourceIds": [
-        "p-S2",
-        "p-S3",
-        "p-S5"
-      ],
-      "support": "inference"
+      "id": "C17",
+      "text": "The pinned @dashevo/wasm-sdk 4.1.1 ProofInfo constructor takes exactly (grovedbProof, quorumHash, signature, round, blockIdHash, quorumType), confirming the documented proof field shape.",
+      "sourceIds": ["s15"],
+      "support": "direct"
     }
   ],
-  "examples": [],
   "conflicts": [
     {
       "id": "X1",
-      "description": "Platform docs 3.1.0 describe a legacy four-part proof payload (rootTreeProof, storeTreeProofs, signatureLlmqHash, and a signature said to cover the rootTreeProof Merkle root), while the pinned @dashevo/wasm-sdk 4.1.1 exposes ProofInfo with grovedbProof, quorumHash, signature, round, blockIdHash, and quorumType. The docs also defer root-tree verification details and do not establish the exact signed message for the current SDK shape.",
-      "sourceIds": [
-        "S2",
-        "S7"
-      ],
-      "resolution": "Resolved by source authority and scope: the installed @dashevo/wasm-sdk 4.1.1 declaration is authoritative for the current ProofInfo payload fields (grovedbProof, quorumHash, signature, round, blockIdHash, quorumType), while the Platform docs 3.1.0 support only the conceptual proof semantics and verification model. The lesson therefore uses the current SDK field shape, does not present the legacy four-part documentation shape as current, and defers field-level signature verification to the SDK's trusted context.",
-      "status": "resolved"
+      "topic": "SDK version surface across pinned sources",
+      "status": "resolved",
+      "sources": ["s9", "s10", "s14", "s15"],
+      "resolution": "The richest behavior docs (trusted mode, endpoint rotation, withAddresses) live in the platform book at v4.2-dev while the course pins evoSdk/wasmSdk 4.1.1. Resolved against the installed packages: @dashevo/evo-sdk 4.1.1 sdk.d.ts exports testnetTrusted/mainnetTrusted/localTrusted and withAddresses plus the trusted/proofs/banFailedAddress options, and @dashevo/wasm-sdk 4.1.1 declares ProofInfo with grovedbProof/quorumHash/signature/round/blockIdHash/quorumType. The lesson names only these verified symbols and otherwise describes behavior by effect."
     }
   ],
   "uncertainties": [
     {
-      "id": "u-endpoint-selection-scope",
-      "question": "Does 'endpoint selection' mean node/network selection, endpoint-family selection, or both?",
-      "impact": "Both meanings are documented: the lesson covers them together under one section, targeting a quiz question for each.",
+      "id": "u1",
+      "question": "Which Evo SDK API surface is authoritative given the course pins evoSdk/wasmSdk 4.1.1, while the richest behavior docs come from the platform book at v4.2-dev and docs-platform at 3.1.0?",
+      "whyItMatters": "Citing a factory or fetch variant that did not exist in the pinned 4.1.1 SDK would falsify an API claim for a learner coding against 4.1.1.",
+      "recommendation": "Describe behavior by effect and reuse only symbols verified against the installed 4.1.1 package types.",
       "blocking": false,
-      "resolution": "Cover both lightly in a single 'choosing an endpoint' section, since 'Core and Platform access' names the families while 'decentralized API' names the multi-instance story."
+      "resolution": "Verified testnetTrusted/mainnetTrusted/localTrusted, withAddresses, trusted, proofs, and banFailedAddress in @dashevo/evo-sdk 4.1.1 sdk.d.ts, and ProofInfo fields in @dashevo/wasm-sdk 4.1.1 sdk.d.ts. The lesson names these and no unverified method signatures."
     },
     {
-      "id": "u-masternode-vs-evonode",
-      "question": "Should the lesson attribute DAPI hosting to 'masternodes' or to 'evonodes'?",
-      "impact": "The explanations/incentives pages say masternodes while the FAQ says evonode-hosted API; evonodes are the masternode subset that runs Platform.",
+      "id": "u2",
+      "question": "The glossary contains two GroveDB entries (grovedb and grove-db); which should the state-proof prose reference given the rule against removing or rewording existing entries?",
+      "whyItMatters": "A Term reference must resolve to a single glossary id, and the lesson needs GroveDB/AppHash to explain state proofs.",
+      "recommendation": "Use the grovedb id for GroveDB, rely on the existing apphash entry, and add state-proof and light-client entries; do not delete or reword the duplicate.",
       "blocking": false,
-      "resolution": "Say 'masternodes — specifically the evonodes that run Platform' at first mention, then 'masternodes' briefly afterward."
+      "resolution": "The lesson references id=grovedb for GroveDB and id=apphash for AppHash; appended state-proof and light-client entries to lib/glossary.ts and left the grove-db duplicate untouched."
+    }
+  ],
+  "examples": [
+    {
+      "id": "ex-trusted-connect",
+      "purpose": "Show connecting the SDK in trusted mode so it discovers DAPI endpoints from seeds and prefetches quorum keys for proof verification (illustrative — mirrors module 4's connection).",
+      "apiSymbols": ["EvoSDK.testnetTrusted()", "EvoSDK.mainnetTrusted()", "EvoSDK.localTrusted()", "sdk.connect()"],
+      "sourceIds": ["s9", "s10", "s11", "s12", "s13"],
+      "verification": "compile"
     },
     {
-      "id": "u-sdk-version-mismatch",
-      "question": "Does this lesson need SDK connection code, given docs 3.1.0 show the legacy dapi-client while the manifest targets SDK 4.1.1?",
-      "impact": "Showing SDK code would require the 4.1.1 API and a fixture, out of scope for a tier-1 quiz lesson.",
-      "blocking": false,
-      "resolution": "Use only a conceptual/URL example (network name and seed host) with no library code; SDK connection specifics belong to module 8."
+      "id": "ex-proof-boundary",
+      "purpose": "Illustrate the trust gradient: a default verified read versus skipping verification and trusting the responding node, using only 4.1.1-verified symbols.",
+      "apiSymbols": ["sdk.identities.fetch(id)", "fetchWithProof(id)", "fetchUnproved(id)"],
+      "sourceIds": ["s9", "s14"],
+      "verification": "compile"
     },
     {
-      "id": "U1",
-      "question": "What exact message does the 4.1.1 ProofInfo 'signature' authenticate, and how are 'round', 'blockIdHash', and 'quorumType' incorporated into verification (in contrast to docs 3.1.0's 'signature of the merkle root of the rootTreeProof')?",
-      "whyItMatters": "It prevents teaching a manual field-level signature algorithm, but it does not block a concepts-tier lesson because the lesson accurately explains the verification boundary and defers cryptographic verification to the trusted SDK context.",
-      "recommendation": "Teach the conceptual verification boundary and defer field-level signature verification to the SDK's trusted context; use the current ProofInfo field names and do not present the legacy four-part docs shape as current.",
-      "blocking": false
+      "id": "ex-endpoint-selection",
+      "purpose": "Contrast automatic seed-node discovery with rotation against supplying explicit masternode addresses (which turns discovery off).",
+      "apiSymbols": ["EvoSDK.withAddresses(addresses, network)", "seed nodes", "banFailedAddress"],
+      "sourceIds": ["s10", "s11", "s14"],
+      "verification": "compile"
     }
   ]
 }
