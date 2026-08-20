@@ -1,13 +1,14 @@
 {
   "title": "Dash Academy",
   "pages": [
+    "what-is-dash",
     "what-is-dash-platform",
     "why-build-on-dash",
+    "dapi-and-proofs",
     "identities",
+    "wallets-keys-and-testnet",
+    "create-a-dash-identity",
     "data-contracts",
-    "documents",
-    "dapi",
-    "proofs",
-    "create-a-dash-identity"
+    "documents"
   ]
 }
