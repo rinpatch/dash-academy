@@ -56,7 +56,11 @@ export function SiteHeader() {
             aria-label="Toggle color theme"
             className="flex size-10 items-center justify-center rounded-xl border border-foreground/24 text-foreground/64 transition-colors hover:bg-foreground/5"
           >
-            {resolvedTheme === "dark" ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
+            {/* Both icons ship in the HTML and CSS picks one. next-themes only resolves the
+                theme after mount, so branching on it here renders a different icon on the
+                server than on the client. */}
+            <Sun size={16} aria-hidden="true" className="hidden dark:block" />
+            <Moon size={16} aria-hidden="true" className="dark:hidden" />
           </button>
           <SaveProgress />
           <WalletConnect />
