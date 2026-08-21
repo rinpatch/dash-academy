@@ -1,4 +1,5 @@
 import "server-only";
+import { randomBytes } from "node:crypto";
 import type { ChallengeId } from "@/lib/progress";
 import {
   PROGRESS_BITFIELD_BYTES,
@@ -15,6 +16,16 @@ export type StoredProgress = {
   revision: bigint;
   completed: Set<ChallengeId>;
 };
+
+/**
+ * byteArray fields are asymmetric, and neither direction is what the SDK examples suggest:
+ * writes go through Document.fromObject with raw bytes (`new Document({ properties })`
+ * silently mangles them into an integer array and fails deep in storage), while `where`
+ * clauses match on base64. Reads come back as Uint8Array.
+ */
+function toQueryValue(bytes: Uint8Array): string {
+  return Buffer.from(bytes).toString("base64");
+}
 
 /** Runs `operation`, retrying once on a retriable failure with a rebuilt client. */
 async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
@@ -36,19 +47,20 @@ export async function fetchProgress(key: Uint8Array): Promise<StoredProgress | n
     const results = await sdk.documents.query({
       dataContractId: config.contractId,
       documentTypeName: DOCUMENT_TYPE,
-      where: [["learnerKey", "==", key]],
+      where: [["learnerKey", "==", toQueryValue(key)]],
       limit: 1,
     });
 
     for (const document of results.values()) {
       if (!document) continue;
+      // Read $id off the Document rather than toObject(), which hands back raw bytes whose
+      // toString() is a list of numbers, not the base58 id.
       const object = document.toObject() as unknown as {
-        $id: { toString(): string };
         $revision?: bigint;
         completed?: Uint8Array;
       };
       return {
-        documentId: object.$id.toString(),
+        documentId: document.id.toString(),
         revision: object.$revision ?? BigInt(1),
         completed: decodeCompletion(object.completed ?? new Uint8Array(PROGRESS_BITFIELD_BYTES)),
       };
@@ -75,42 +87,43 @@ export async function saveProgress(
   return withRetry(async () => {
     const existing = await fetchProgress(key);
     const merged = new Set<ChallengeId>([...(existing?.completed ?? []), ...completed]);
+    const now = BigInt(Date.now());
 
-    const properties = {
+    // The contract requires both timestamps, so they have to be set explicitly or the
+    // document fails to serialize before it ever reaches the network.
+    const base = {
+      $formatVersion: "0",
+      $ownerId: config.identityId,
+      $dataContractId: config.contractId,
+      $type: DOCUMENT_TYPE,
+      $updatedAt: now,
       learnerKey: key,
       version: PROGRESS_DOCUMENT_VERSION,
       completed: encodeCompletion(merged),
     };
 
     if (!existing) {
-      const document = new Document({
-        properties,
-        documentTypeName: DOCUMENT_TYPE,
-        dataContractId: config.contractId,
-        ownerId: config.identityId,
-      });
+      const entropy = new Uint8Array(randomBytes(32));
+      const document = Document.fromObject(
+        {
+          ...base,
+          $id: Document.generateId(DOCUMENT_TYPE, config.identityId, config.contractId, entropy),
+          $entropy: entropy,
+          $revision: BigInt(1),
+          $createdAt: now,
+        } as never,
+        null as never,
+      );
       await sdk.documents.create({ document, identityKey, signer });
-      return {
-        documentId: document.id.toString(),
-        revision: BigInt(1),
-        completed: merged,
-      };
+      return { documentId: document.id.toString(), revision: BigInt(1), completed: merged };
     }
 
     const revision = existing.revision + BigInt(1);
-    const document = new Document({
-      properties,
-      documentTypeName: DOCUMENT_TYPE,
-      dataContractId: config.contractId,
-      ownerId: config.identityId,
-      id: existing.documentId,
-      revision,
-    });
+    const document = Document.fromObject(
+      { ...base, $id: existing.documentId, $revision: revision, $createdAt: now } as never,
+      null as never,
+    );
     await sdk.documents.replace({ document, identityKey, signer });
-    return {
-      documentId: existing.documentId,
-      revision,
-      completed: merged,
-    };
+    return { documentId: existing.documentId, revision, completed: merged };
   });
 }

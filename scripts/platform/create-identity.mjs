@@ -18,7 +18,6 @@ import {
   Identifier,
   IdentityPublicKey,
   IdentitySigner,
-  PlatformAddressInput,
   PlatformAddressSigner,
   PrivateKey,
   wallet,
