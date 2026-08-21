@@ -57,6 +57,24 @@ One consequence to know up front: Platform can't see inside a byte array, so not
 completion is queryable. "How many learners finished module 12" has no answer here, with or
 without an index.
 
+## Costs
+
+Measured on testnet at protocol version 13, not estimated — run `npm run platform:measure-fees`
+to re-check:
+
+| | Credits | DASH |
+|---|---|---|
+| Create a record | 23,944,700 | 0.00023945 |
+| Update one | 2,777,300 | 0.00002777 |
+| A learner over a full course (1 create + ~25 updates) | 93,377,200 | 0.00093377 |
+
+That's roughly **9.3 DASH per 10,000 learners**. Registering the contract is a separate
+one-off: 0.171 DASH, most of it the flat 0.1 base fee.
+
+Fee constants belong to the protocol version, not the network, so these hold on mainnet only
+while both run the same version — testnet usually runs ahead. Re-measure after any Platform
+upgrade.
+
 ## Code map
 
 | Path | Role |
