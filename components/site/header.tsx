@@ -5,6 +5,7 @@ import { Moon, Search, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { DashAcademyLogo } from "@/components/site/dash-academy-logo";
+import { SaveProgress } from "@/components/site/save-progress";
 import { WalletConnect } from "@/components/site/wallet-connect";
 
 const navLinks = [
@@ -57,6 +58,7 @@ export function SiteHeader() {
           >
             {resolvedTheme === "dark" ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
           </button>
+          <SaveProgress />
           <WalletConnect />
         </div>
       </div>
