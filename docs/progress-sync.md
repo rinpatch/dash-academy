@@ -12,26 +12,21 @@ itself.
 ## How it works
 
 ```
-passkey ──PRF──▶ 32-byte secret ──sha256──▶ clientKey ──HMAC(salt)──▶ learnerKey
-   (browser, never leaves)                    (sent)                  (on-chain index)
+server challenge ──▶ passkey signs ──▶ server verifies against the stored public key
+                          │
+                    credential id ──HMAC(salt)──▶ learnerKey (on-chain index)
 ```
 
-A passkey can do more than sign challenges. The WebAuthn PRF extension asks it for
-`HMAC(secret_inside_the_authenticator, some_input)`, and the answer is always the same for the
-same input — on every device the passkey syncs to, and nowhere else. That gives us a stable
-account handle without storing anything about the user.
+The server issues a challenge, the passkey signs it, and the server verifies that signature
+against the public key it stored when the passkey was registered. Ordinary WebAuthn — no
+extensions, so it works on every authenticator.
 
-The server never sees the PRF output itself, only a hash of it, and it HMACs that with
-`DASH_LEARNER_KEY_SALT` before using it as the on-chain identifier. So scraping the contract
-gets you a pile of 32-byte keys that can't be reversed into anything that opens a record.
+The credential id becomes the record locator, HMAC'd with `DASH_LEARNER_KEY_SALT` first. So
+scraping the contract gets you a pile of 32-byte keys that can't be reversed into anything
+that opens a record.
 
 Credentials are discoverable (`residentKey: required`). There's no user table to look anyone
-up in, so the browser has to find the credential on its own.
-
-**The derived key is a bearer token.** Nothing is verified server-side — only the real passkey
-can produce that key, so holding it *is* the proof. Whoever has it can read and write that
-learner's progress. That's a fair trade for a record of course completion, but don't reuse the
-pattern for anything that matters more.
+up in, so the browser has to find the credential on its own and tell us which one it used.
 
 Lose the passkey and the record is gone. There's no recovery path.
 
@@ -45,6 +40,7 @@ and signs it — learners never hold Platform keys.
 | `learnerKey` | 32 B | unique index, and the only way to find a record |
 | `version` | int | wire format version of the bitfield |
 | `completed` | 4 B | one bit per challenge |
+| `credentialPublicKey` | ~77 B | verifies the learner's assertions; there's no database to keep it in |
 
 The bitfield is fixed width, and that's the whole cost model: a document that never changes
 size pays storage once when it's created, then only processing on every update after. Bit
@@ -79,11 +75,12 @@ upgrade.
 
 | Path | Role |
 |---|---|
-| `lib/passkey.ts` | PRF key derivation, browser only |
+| `lib/passkey.ts` | passkey ceremonies, browser only |
 | `lib/progress/sync.ts` | client entry points |
 | `app/actions/progress.ts` | server actions — no HTTP boundary, typed on both sides |
 | `app/lib/progress-repository.ts` | reads and writes the document |
-| `app/lib/session.ts` | signed cookies, no session store |
+| `app/lib/session.ts` | signed session and challenge cookies, no store |
+| `app/lib/webauthn.ts` | relying-party config |
 | `app/lib/platform.ts` | write-capable Evo SDK client |
 | `contracts/dash-academy.schema.json` | the contract |
 
