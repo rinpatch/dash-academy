@@ -33,13 +33,25 @@ these are set — see [`docs/progress-sync.md`](docs/progress-sync.md) for what 
 | `DASH_LEARNER_KEY_SALT` | ≥16 chars. Change it and every record is orphaned. |
 | `DASH_SESSION_SECRET` | ≥16 chars. Change it and everyone is signed out. |
 
-Copy `.env.example` to `.env.local` and fill it in, then register the contract once per
-network:
+Copy `.env.example` to `.env.local`, then run these once per network, filling in what each
+one prints as you go:
 
 ```sh
-npm run platform:register-contract   # prints the contract id to configure
+npm run platform:create-identity     # prints the identity id and signing key
+npm run platform:register-contract   # prints the contract id
 npm run platform:measure-fees        # replaces estimated costs with real ones
 ```
+
+`create-identity` generates a key, prints a platform address, and waits while you fund it
+through the [bridge](https://bridge.thepasta.org/) — testnet coins come from the
+[faucet](https://faucet.testnet.networks.dash.org/). If it times out, re-run it with
+`--wif <key>` so the funds you already sent aren't stranded — it prints the exact command,
+including the `--` separator npm needs to pass flags through.
+
+It prints **two** keys. The signing key goes in `.env.local`. The master key does not: it is
+the only thing that can change the identity's keys, so keep it somewhere the app can't reach.
+It is shown once and cannot be recovered — losing it means losing the ability to rotate a
+leaked signing key.
 
 `register-contract` refuses to run if `DASH_ACADEMY_CONTRACT_ID` is already set. Registering
 twice creates a second, unrelated contract and orphans every record written against the first.

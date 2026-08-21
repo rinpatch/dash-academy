@@ -59,3 +59,26 @@ export function formatCredits(credits) {
   const dash = Number(credits) / Number(CREDITS_PER_DASH);
   return `${credits.toLocaleString()} credits (${dash.toFixed(9)} DASH)`;
 }
+
+/**
+ * WasmSdkError is a wasm object, not an Error, so Node's default handler prints an opaque
+ * pointer. Its fields have to be read explicitly.
+ */
+export function describeError(error) {
+  if (error && typeof error === "object" && "kind" in error && "message" in error) {
+    const detail = [`${error.name ?? "WasmSdkError"} (${error.kind}): ${error.message}`];
+    if (error.code !== undefined && error.code !== -1) detail.push(`code ${error.code}`);
+    if (error.isRetriable) detail.push("retriable");
+    return detail.join(" · ");
+  }
+  return error?.stack ?? String(error);
+}
+
+process.on("uncaughtException", (error) => {
+  console.error(`\n${describeError(error)}`);
+  process.exit(1);
+});
+process.on("unhandledRejection", (error) => {
+  console.error(`\n${describeError(error)}`);
+  process.exit(1);
+});

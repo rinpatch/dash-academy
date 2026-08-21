@@ -12,6 +12,7 @@
     "lessons:validate": "node scripts/lessons.mjs validate",
     "test": "vitest run",
     "test:watch": "vitest",
+    "platform:create-identity": "node scripts/platform/create-identity.mjs",
     "platform:register-contract": "node scripts/platform/register-contract.mjs",
     "platform:measure-fees": "node scripts/platform/measure-fees.mjs"
   },
