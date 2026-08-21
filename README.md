@@ -19,6 +19,18 @@ npm test
 npm run lessons -- validate --all
 ```
 
+## Run E2E tests
+
+Install Playwright's Chromium build once, then run the E2E suite:
+
+```sh
+npm run test:e2e:install
+npm run test:e2e
+```
+
+Playwright starts and stops Next.js at `http://localhost:3000`. Set `PORT` to use a different
+port.
+
 ## Deploy
 
 Lessons work with no configuration at all. Progress sync is opt-in and stays hidden until

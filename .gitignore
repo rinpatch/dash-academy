@@ -12,6 +12,8 @@ verify-demo/.identity-wallet.json
 .lesson-worktrees/
 lesson-sources/*.draft.json
 test-results/lesson-factory/
+test-results/e2e/
+playwright-report/
 
 # Ad-hoc key dumps from the platform scripts
 keys

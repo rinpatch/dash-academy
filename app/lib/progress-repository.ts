@@ -8,6 +8,7 @@ import {
   encodeCompletion,
 } from "@/lib/progress/slots";
 import { getAcademySigner, resetAcademySigner } from "@/app/lib/platform";
+import { fetchE2EProgress, saveE2EProgress } from "@/app/lib/progress-repository.e2e";
 
 const DOCUMENT_TYPE = "progress";
 
@@ -41,6 +42,9 @@ async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
 }
 
 export async function fetchProgress(key: Uint8Array): Promise<StoredProgress | null> {
+  const local = await fetchE2EProgress(key);
+  if (local !== undefined) return local;
+
   const pending = getAcademySigner();
   if (!pending) return null;
   const { sdk, config } = await pending;
@@ -84,6 +88,9 @@ export async function saveProgress(
   completed: Iterable<ChallengeId>,
   credentialPublicKey?: Uint8Array,
 ): Promise<StoredProgress | null> {
+  const local = await saveE2EProgress(key, completed, credentialPublicKey);
+  if (local !== undefined) return local;
+
   const pending = getAcademySigner();
   if (!pending) return null;
   const { sdk, signer, identityKey, config } = await pending;

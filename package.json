@@ -12,6 +12,8 @@
     "lessons:validate": "node scripts/lessons.mjs validate",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.mts",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium",
     "test:watch": "vitest",
     "platform:create-identity": "node --env-file-if-exists=.env.local scripts/platform/create-identity.mjs",
     "platform:register-contract": "node --env-file-if-exists=.env.local scripts/platform/register-contract.mjs",
@@ -36,6 +38,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.2",
     "@types/node": "^20.19.0",
     "@types/react": "^19.2.0",
