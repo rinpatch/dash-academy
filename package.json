@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lessons": "node scripts/lessons.mjs",
     "lessons:validate": "node scripts/lessons.mjs validate",
-    "lessons:test": "node --test scripts/lesson-factory/*.test.mjs"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@dashevo/evo-sdk": "4.1.1",
@@ -38,6 +39,7 @@
     "eslint-config-next": "16.2.10",
     "portless": "0.15.5",
     "tailwindcss": "4.3.2",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.11"
   }
 }

@@ -15,7 +15,7 @@ Repository checks:
 ```sh
 npm run lint
 npm run build
-npm run lessons:test
+npm test
 npm run lessons -- validate --all
 ```
 

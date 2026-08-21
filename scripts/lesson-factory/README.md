@@ -23,7 +23,7 @@ opencode --version
 opencode auth list           # needs a provider with credit; see "Model" below
 node_modules/.bin/agent-browser doctor
 npm run lessons -- preflight
-npm run lessons:test
+npm test
 ```
 
 ### Model
