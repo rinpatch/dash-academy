@@ -14,7 +14,7 @@ import {
   createProgressStore,
   ProgressStoreApi,
   PROGRESS_STORAGE_KEY,
-} from "@/lib/progress-store";
+} from "@/lib/progress/store";
 
 const ProgressStoreContext = createContext<ProgressStoreApi | null>(null);
 

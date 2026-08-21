@@ -5,7 +5,7 @@ import { command, glossaryIds, lessonKey, repoRoot } from "./lib.mjs";
 export async function assertPreparedBaseline() {
   const required = [
     "AGENTS.md", ".gitignore", "package.json", "package-lock.json", "curriculum/lessons.json",
-    "lib/progress.ts", "components/lesson/course-track-card.tsx", "components/lesson/lesson-nav-list.tsx",
+    "lib/progress/index.ts", "components/lesson/course-track-card.tsx", "components/lesson/lesson-nav-list.tsx",
     ".agents/skills/write-dash-lesson/SKILL.md", ".agents/skills/write-dash-lesson/agents/openai.yaml",
     ".agents/skills/write-dash-lesson/references/workflow.md", "scripts/lessons.mjs",
     "scripts/lesson-factory/lib.mjs", "scripts/lesson-factory/agent.mjs", "scripts/lesson-factory/worktree.mjs",
