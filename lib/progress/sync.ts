@@ -3,10 +3,13 @@
 import type { ChallengeId } from "@/lib/progress";
 import { authenticatePasskey, createPasskey, PasskeyError } from "@/lib/passkey";
 import {
+  authenticate,
+  authenticationOptions,
   getSessionState,
-  openSession,
   pullProgress,
   pushProgress,
+  register as registerAction,
+  registrationOptions,
   signOut as signOutAction,
   type SessionState,
   type SyncResult,
@@ -16,17 +19,16 @@ import {
  * Client half of progress sync. Every call can fail quietly: localStorage is the source of
  * truth, and the course has to work with none of this available.
  *
- * The passkey work has to happen here — WebAuthn is a browser API — but everything after it
- * is a server action, so nothing is serialised by hand.
+ * The ceremonies have to run here — WebAuthn is a browser API — but the server issues every
+ * challenge and verifies every response, so nothing here is trusted.
  */
 
 export type { SessionState };
 
-/** Why sync couldn't proceed, in words a person can act on. */
 export type SyncFailure =
-  | "no-prf"
   | "cancelled"
   | "no-record"
+  | "rejected"
   | "unavailable"
   | "unauthenticated"
   | "failed";
@@ -42,10 +44,10 @@ function completedOf(result: SyncResult): ChallengeId[] {
   return result.completed;
 }
 
-/** Turns a passkey ceremony failure into the same vocabulary as a server failure. */
-async function derive(ceremony: () => Promise<string>): Promise<string> {
+/** Runs a ceremony, translating its failure into the same vocabulary the server uses. */
+async function ceremony<T>(run: () => Promise<T>): Promise<T> {
   try {
-    return await ceremony();
+    return await run();
   } catch (error) {
     throw new SyncError(error instanceof PasskeyError ? error.reason : "failed");
   }
@@ -57,14 +59,18 @@ export function status(): Promise<SessionState> {
 
 /** Creates a passkey and stores current progress under it. */
 export async function register(completed: ChallengeId[]): Promise<ChallengeId[]> {
-  const clientKey = await derive(createPasskey);
-  return completedOf(await openSession(clientKey, completed, true));
+  const options = await registrationOptions();
+  if (!options) throw new SyncError("unavailable");
+  const response = await ceremony(() => createPasskey(options));
+  return completedOf(await registerAction(response, completed));
 }
 
 /** Restores progress saved under an existing passkey. */
 export async function restore(completed: ChallengeId[]): Promise<ChallengeId[]> {
-  const clientKey = await derive(authenticatePasskey);
-  return completedOf(await openSession(clientKey, completed, false));
+  const options = await authenticationOptions();
+  if (!options) throw new SyncError("unavailable");
+  const response = await ceremony(() => authenticatePasskey(options));
+  return completedOf(await authenticate(response, completed));
 }
 
 /** Pulls stored progress for an already-open session. */

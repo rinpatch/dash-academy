@@ -21,6 +21,8 @@
     "@dashevo/evo-sdk": "4.1.1",
     "@dashevo/wasm-sdk": "4.1.1",
     "@radix-ui/react-scroll-area": "^1.2.18",
+    "@simplewebauthn/browser": "^13.3.0",
+    "@simplewebauthn/server": "^13.3.2",
     "@types/mdx": "^2.0.14",
     "fumadocs-core": "^16.11.4",
     "fumadocs-mdx": "^15.1.1",

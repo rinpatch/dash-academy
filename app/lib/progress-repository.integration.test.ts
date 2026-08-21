@@ -18,8 +18,10 @@ const configured = Boolean(getPlatformConfig());
 describe.skipIf(!configured)("progress repository against Platform", () => {
   test("creates, reads back, then merges into the same record", async () => {
     const key = new Uint8Array(randomBytes(32));
+    // 77 bytes is a typical ES256 COSE key; the repository only stores it verbatim.
+    const publicKey = new Uint8Array(randomBytes(77));
 
-    const created = await saveProgress(key, ["what-is-dash"]);
+    const created = await saveProgress(key, ["what-is-dash"], publicKey);
     assert.ok(created, "save returned nothing");
     assert.deepEqual(created.completed, new Set(["what-is-dash"]));
 
@@ -27,6 +29,7 @@ describe.skipIf(!configured)("progress repository against Platform", () => {
     assert.ok(read, "document was not found after creating it");
     assert.equal(read.documentId, created.documentId);
     assert.deepEqual(read.completed, new Set(["what-is-dash"]));
+    assert.deepEqual(read.credentialPublicKey, publicKey, "public key must survive a round trip");
 
     // Second write replaces the document; completion unions rather than overwriting.
     const updated = await saveProgress(key, ["identities"]);

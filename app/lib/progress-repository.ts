@@ -15,6 +15,8 @@ export type StoredProgress = {
   documentId: string;
   revision: bigint;
   completed: Set<ChallengeId>;
+  /** COSE public key of the learner's passkey, used to verify their assertions. */
+  credentialPublicKey: Uint8Array;
 };
 
 /**
@@ -58,11 +60,13 @@ export async function fetchProgress(key: Uint8Array): Promise<StoredProgress | n
       const object = document.toObject() as unknown as {
         $revision?: bigint;
         completed?: Uint8Array;
+        credentialPublicKey?: Uint8Array;
       };
       return {
         documentId: document.id.toString(),
         revision: object.$revision ?? BigInt(1),
         completed: decodeCompletion(object.completed ?? new Uint8Array(PROGRESS_BITFIELD_BYTES)),
+        credentialPublicKey: object.credentialPublicKey ?? new Uint8Array(),
       };
     }
     return null;
@@ -78,6 +82,7 @@ export async function fetchProgress(key: Uint8Array): Promise<StoredProgress | n
 export async function saveProgress(
   key: Uint8Array,
   completed: Iterable<ChallengeId>,
+  credentialPublicKey?: Uint8Array,
 ): Promise<StoredProgress | null> {
   const pending = getAcademySigner();
   if (!pending) return null;
@@ -88,6 +93,12 @@ export async function saveProgress(
     const existing = await fetchProgress(key);
     const merged = new Set<ChallengeId>([...(existing?.completed ?? []), ...completed]);
     const now = BigInt(Date.now());
+
+    const publicKey = existing?.credentialPublicKey ?? credentialPublicKey;
+    if (!publicKey?.length) {
+      // Without it the learner could never authenticate again, stranding the record.
+      throw new Error("Cannot create a progress document without the passkey public key");
+    }
 
     // The contract requires both timestamps, so they have to be set explicitly or the
     // document fails to serialize before it ever reaches the network.
@@ -100,6 +111,7 @@ export async function saveProgress(
       learnerKey: key,
       version: PROGRESS_DOCUMENT_VERSION,
       completed: encodeCompletion(merged),
+      credentialPublicKey: publicKey,
     };
 
     if (!existing) {
@@ -115,7 +127,12 @@ export async function saveProgress(
         null as never,
       );
       await sdk.documents.create({ document, identityKey, signer });
-      return { documentId: document.id.toString(), revision: BigInt(1), completed: merged };
+      return {
+        documentId: document.id.toString(),
+        revision: BigInt(1),
+        completed: merged,
+        credentialPublicKey: publicKey,
+      };
     }
 
     const revision = existing.revision + BigInt(1);
@@ -124,6 +141,11 @@ export async function saveProgress(
       null as never,
     );
     await sdk.documents.replace({ document, identityKey, signer });
-    return { documentId: existing.documentId, revision, completed: merged };
+    return {
+      documentId: existing.documentId,
+      revision,
+      completed: merged,
+      credentialPublicKey: publicKey,
+    };
   });
 }

@@ -1,10 +1,30 @@
 "use server";
 
 import { createHmac } from "node:crypto";
+import {
+  generateAuthenticationOptions,
+  generateRegistrationOptions,
+  verifyAuthenticationResponse,
+  verifyRegistrationResponse,
+} from "@simplewebauthn/server";
+import type {
+  AuthenticationResponseJSON,
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON,
+  RegistrationResponseJSON,
+} from "@simplewebauthn/server";
 import type { ChallengeId } from "@/lib/progress";
 import { parseCompletedChallengeIds } from "@/lib/progress/payload";
-import { endSession, readSession, startSession } from "@/app/lib/session";
+import {
+  consumeChallenge,
+  endSession,
+  newChallenge,
+  readSession,
+  rememberChallenge,
+  startSession,
+} from "@/app/lib/session";
 import { getPlatformConfig } from "@/app/lib/platform-config";
+import { CEREMONY, getWebAuthnConfig } from "@/app/lib/webauthn";
 import { fetchProgress, saveProgress } from "@/app/lib/progress-repository";
 
 /**
@@ -19,54 +39,89 @@ export type SyncResult =
   | { status: "unavailable" }
   | { status: "unauthenticated" }
   | { status: "no-record" }
+  | { status: "rejected" }
   | { status: "failed" };
-
-const CLIENT_KEY = /^[0-9a-f]{64}$/;
 
 /**
  * The learner's record locator. HMAC'd rather than used raw, so the identifier stored on a
- * public chain can't be reversed into the key that opens it.
+ * public chain can't be reversed into the credential id that opens it.
  */
-function recordKey(clientKey: string, salt: string): Buffer {
-  return createHmac("sha256", salt).update(clientKey).digest();
+function recordKey(credentialId: string, salt: string): Buffer {
+  return createHmac("sha256", salt).update(credentialId).digest();
 }
 
-function configured() {
-  const config = getPlatformConfig();
-  return config && process.env.DASH_SESSION_SECRET ? config : null;
+function ready() {
+  const platform = getPlatformConfig();
+  const webauthn = getWebAuthnConfig();
+  return platform && webauthn && process.env.DASH_SESSION_SECRET ? { platform, webauthn } : null;
 }
 
 export async function getSessionState(): Promise<SessionState> {
-  if (!configured()) return "unavailable";
+  if (!ready()) return "unavailable";
   return (await readSession()) ? "signed-in" : "anonymous";
 }
 
-/**
- * Opens a session from a passkey-derived key. Nothing is verified: only the learner's own
- * passkey can produce that key, so holding it is the proof. See lib/passkey.ts for the
- * limits of that.
- *
- * `create` false means "restore an existing record". If none is found, that's almost always
- * the wrong passkey, so it fails rather than silently starting a second empty record.
- */
-export async function openSession(
-  clientKey: string,
-  completed: ChallengeId[],
-  create: boolean,
-): Promise<SyncResult> {
-  const config = configured();
-  if (!config) return { status: "unavailable" };
-  if (!CLIENT_KEY.test(clientKey)) return { status: "failed" };
+export async function registrationOptions(): Promise<PublicKeyCredentialCreationOptionsJSON | null> {
+  const config = ready();
+  if (!config) return null;
+  const options = await generateRegistrationOptions({
+    rpID: config.webauthn.rpId,
+    rpName: config.webauthn.rpName,
+    // Anonymous by design: no email, no username. The credential is the account, so the
+    // label only has to be unique-ish for the authenticator's own list.
+    userName: `learner-${Date.now().toString(36)}`,
+    challenge: newChallenge(),
+    ...CEREMONY,
+    supportedAlgorithmIDs: [...CEREMONY.supportedAlgorithmIDs],
+  });
+  await rememberChallenge(options.challenge);
+  return options;
+}
 
-  const key = recordKey(clientKey, config.learnerKeySalt);
-  const existing = await fetchProgress(key).catch(() => null);
-  if (!existing && !create) return { status: "no-record" };
+export async function authenticationOptions(): Promise<PublicKeyCredentialRequestOptionsJSON | null> {
+  const config = ready();
+  if (!config) return null;
+  const options = await generateAuthenticationOptions({
+    rpID: config.webauthn.rpId,
+    challenge: newChallenge(),
+    // No allowCredentials: with no user table the server can't name the credential, so the
+    // browser discovers it. That's why registration insists on a resident key.
+    userVerification: "preferred",
+  });
+  await rememberChallenge(options.challenge);
+  return options;
+}
+
+/** Verifies a registration and stores current progress under the new credential. */
+export async function register(
+  response: RegistrationResponseJSON,
+  completed: ChallengeId[],
+): Promise<SyncResult> {
+  const config = ready();
+  if (!config) return { status: "unavailable" };
+  const expectedChallenge = await consumeChallenge();
+  if (!expectedChallenge) return { status: "rejected" };
+
+  let credential;
+  try {
+    const verification = await verifyRegistrationResponse({
+      response,
+      expectedChallenge,
+      expectedOrigin: config.webauthn.origin,
+      expectedRPID: config.webauthn.rpId,
+    });
+    if (!verification.verified || !verification.registrationInfo) return { status: "rejected" };
+    credential = verification.registrationInfo.credential;
+  } catch {
+    return { status: "rejected" };
+  }
 
   // Whatever was done as a guest comes along; opting in saves rather than resets.
   const local = parseCompletedChallengeIds(completed);
+  const key = recordKey(credential.id, config.platform.learnerKeySalt);
 
   try {
-    const stored = await saveProgress(key, local);
+    const stored = await saveProgress(key, local, credential.publicKey);
     await startSession(key.toString("hex"));
     return { status: "ok", completed: [...(stored?.completed ?? local)] };
   } catch {
@@ -74,8 +129,56 @@ export async function openSession(
   }
 }
 
+/**
+ * Verifies an assertion and opens a session on the record it belongs to.
+ *
+ * The assertion names its own credential, which is what makes the record findable without a
+ * database: credential id -> learner key -> document -> the key to verify against.
+ */
+export async function authenticate(
+  response: AuthenticationResponseJSON,
+  completed: ChallengeId[],
+): Promise<SyncResult> {
+  const config = ready();
+  if (!config) return { status: "unavailable" };
+  const expectedChallenge = await consumeChallenge();
+  if (!expectedChallenge) return { status: "rejected" };
+
+  const key = recordKey(response.id, config.platform.learnerKeySalt);
+  const stored = await fetchProgress(key).catch(() => null);
+  if (!stored?.credentialPublicKey.length) return { status: "no-record" };
+
+  try {
+    const verification = await verifyAuthenticationResponse({
+      response,
+      expectedChallenge,
+      expectedOrigin: config.webauthn.origin,
+      expectedRPID: config.webauthn.rpId,
+      credential: {
+        id: response.id,
+        publicKey: new Uint8Array(stored.credentialPublicKey),
+        // Synced passkeys don't maintain a signature counter, so there is nothing to compare
+        // against and no clone detection to be had here.
+        counter: 0,
+      },
+    });
+    if (!verification.verified) return { status: "rejected" };
+  } catch {
+    return { status: "rejected" };
+  }
+
+  const local = parseCompletedChallengeIds(completed);
+  try {
+    const merged = await saveProgress(key, local);
+    await startSession(key.toString("hex"));
+    return { status: "ok", completed: [...(merged?.completed ?? stored.completed)] };
+  } catch {
+    return { status: "failed" };
+  }
+}
+
 export async function pullProgress(): Promise<SyncResult> {
-  if (!configured()) return { status: "unavailable" };
+  if (!ready()) return { status: "unavailable" };
   const learnerKeyHex = await readSession();
   if (!learnerKeyHex) return { status: "unauthenticated" };
 
@@ -84,7 +187,7 @@ export async function pullProgress(): Promise<SyncResult> {
 }
 
 export async function pushProgress(completed: ChallengeId[]): Promise<SyncResult> {
-  if (!configured()) return { status: "unavailable" };
+  if (!ready()) return { status: "unavailable" };
   const learnerKeyHex = await readSession();
   if (!learnerKeyHex) return { status: "unauthenticated" };
 

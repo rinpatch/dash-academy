@@ -16,12 +16,12 @@ export function SaveProgress() {
   const { status, failure, enable, restore, signOut } = useProgressSync();
 
   const message =
-    failure === "no-prf"
-      ? "This device's passkey can't derive a key. Try a different browser or device."
-      : failure === "cancelled"
-        ? "Cancelled. Try again when you're ready."
-        : failure === "no-record"
-          ? "No saved progress found for that passkey."
+    failure === "cancelled"
+      ? "Cancelled. Try again when you're ready."
+      : failure === "no-record"
+        ? "No saved progress found for that passkey."
+        : failure === "rejected"
+          ? "That passkey couldn't be verified. Try again."
           : failure === "unavailable"
             ? "Progress sync isn't configured on this server."
             : failure
