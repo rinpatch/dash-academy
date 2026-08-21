@@ -11,7 +11,9 @@
     "lessons": "node scripts/lessons.mjs",
     "lessons:validate": "node scripts/lessons.mjs validate",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "platform:register-contract": "node scripts/platform/register-contract.mjs",
+    "platform:measure-fees": "node scripts/platform/measure-fees.mjs"
   },
   "dependencies": {
     "@dashevo/evo-sdk": "4.1.1",
