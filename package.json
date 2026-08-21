@@ -11,6 +11,7 @@
     "lessons": "node scripts/lessons.mjs",
     "lessons:validate": "node scripts/lessons.mjs validate",
     "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.mts",
     "test:watch": "vitest",
     "platform:create-identity": "node --env-file-if-exists=.env.local scripts/platform/create-identity.mjs",
     "platform:register-contract": "node --env-file-if-exists=.env.local scripts/platform/register-contract.mjs",

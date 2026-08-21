@@ -2,14 +2,19 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
+    alias: { "server-only": new URL("./scripts/test-support/server-only-stub.ts", import.meta.url).pathname },
     // Resolves the "@/" alias from tsconfig.json rather than restating it here, so the two
     // cannot drift.
     tsconfigPaths: true,
   },
   test: {
-    // Both suites are pure logic over local files — no DOM, no network. Component tests
-    // would need an environment set per-file or a projects entry.
     environment: "node",
-    include: ["lib/**/*.test.ts", "contracts/**/*.test.ts", "scripts/**/*.test.mjs"],
+    // The integration test talks to testnet and waits on blocks.
+    testTimeout: 120_000,
+    setupFiles: ["./scripts/test-support/load-env.ts"],
+    include: ["lib/**/*.test.ts", "app/**/*.test.ts", "contracts/**/*.test.ts", "scripts/**/*.test.mjs"],
+    // Integration tests hit the live network and cost credits, so they are opt-in via
+    // `npm run test:integration` rather than part of the default run.
+    exclude: ["**/node_modules/**", "**/*.integration.test.ts"],
   },
 });
