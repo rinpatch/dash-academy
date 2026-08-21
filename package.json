@@ -15,6 +15,7 @@
   "dependencies": {
     "@dashevo/evo-sdk": "4.1.1",
     "@dashevo/wasm-sdk": "4.1.1",
+    "@radix-ui/react-scroll-area": "^1.2.18",
     "@types/mdx": "^2.0.14",
     "fumadocs-core": "^16.11.4",
     "fumadocs-mdx": "^15.1.1",
@@ -28,11 +29,11 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "agent-browser": "0.34.0",
     "@tailwindcss/postcss": "4.3.2",
     "@types/node": "^20.19.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "agent-browser": "0.34.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.2.10",
     "portless": "0.15.5",

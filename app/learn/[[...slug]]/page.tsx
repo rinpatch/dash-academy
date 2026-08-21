@@ -8,6 +8,7 @@ import { CourseTrackCard } from "@/components/lesson/course-track-card";
 import { LessonNavList, type LessonSummary } from "@/components/lesson/lesson-nav-list";
 import { LessonTabs } from "@/components/lesson/lesson-tabs";
 import { NotesPanel } from "@/components/lesson/notes-panel";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PageProps = { params: Promise<{ slug?: string[] }> };
 
@@ -34,9 +35,13 @@ export default async function AcademyLesson({ params }: PageProps) {
   return (
     <AnchorProvider toc={page.data.toc}>
       <div className="mx-auto grid max-w-[1360px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[224px_1fr_288px] lg:gap-10 lg:py-12">
-        <aside className="order-2 flex flex-col gap-4 lg:sticky lg:top-28 lg:order-1 lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
-          <CourseTrackCard totalLessons={lessons.length} />
-          <LessonNavList lessons={lessons} currentUrl={page.url} toc={page.data.toc} />
+        <aside className="order-2 lg:sticky lg:top-28 lg:order-1 lg:h-[calc(100vh-8rem)] lg:self-start">
+          <ScrollArea className="lg:h-full" viewportClassName="lg:pr-3">
+            <div className="flex flex-col gap-4">
+              <CourseTrackCard totalLessons={lessons.length} />
+              <LessonNavList lessons={lessons} currentUrl={page.url} toc={page.data.toc} />
+            </div>
+          </ScrollArea>
         </aside>
 
         <main className="order-1 flex min-w-0 flex-col gap-6 lg:order-2">
