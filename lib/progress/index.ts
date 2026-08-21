@@ -57,9 +57,20 @@ export function withCompletedChallenge<K extends ChallengeId>(
   };
 }
 
-export function getCompletedLessonIds(completed: CompletedChallenges): Set<string> {
+/**
+ * Lessons the learner has finished.
+ *
+ * `syncedIds` carries completions restored from Platform, which arrive as bare ids: the
+ * on-chain bitfield records that a challenge was completed, not how. They count toward
+ * lesson completion just the same, they simply have no evidence attached.
+ */
+export function getCompletedLessonIds(
+  completed: CompletedChallenges,
+  syncedIds: Iterable<ChallengeId> = [],
+): Set<string> {
+  const ids = new Set<ChallengeId>([...(Object.keys(completed) as ChallengeId[]), ...syncedIds]);
   return new Set(
-    (Object.keys(completed) as ChallengeId[])
+    [...ids]
       .filter((id) => challengeSpecs[id]?.completesLesson)
       .map((id) => challengeSpecs[id].lessonId),
   );

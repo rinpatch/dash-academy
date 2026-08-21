@@ -5,8 +5,7 @@ import { Circle, CircleCheckBig, CirclePlay } from "lucide-react";
 import { useActiveAnchor } from "fumadocs-core/toc";
 import type { TableOfContents } from "fumadocs-core/toc";
 import { Card } from "@/components/ui/card";
-import { useCompletedChallenges } from "@/components/providers/progress-provider";
-import { getCompletedLessonIds } from "@/lib/progress";
+import { useCompletedLessonIds } from "@/components/providers/progress-provider";
 
 export type LessonSummary = {
   slug: string;
@@ -25,8 +24,7 @@ export function LessonNavList({
   currentUrl: string;
   toc: TableOfContents;
 }) {
-  const { completedChallenges, isHydrated } = useCompletedChallenges();
-  const completedSlugs = getCompletedLessonIds(completedChallenges);
+  const { lessonIds: completedSlugs, isHydrated } = useCompletedLessonIds();
 
   return (
     <div className="flex flex-col gap-3">

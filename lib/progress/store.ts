@@ -3,10 +3,16 @@ import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 import {
   ChallengeEvidenceMap,
   ChallengeId,
+  challengeSpecs,
   CompletedChallenges,
   parseCompletedChallenges,
   withCompletedChallenge,
 } from "@/lib/progress";
+
+function parseChallengeIds(value: unknown): ChallengeId[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((id): id is ChallengeId => typeof id === "string" && id in challengeSpecs);
+}
 
 export const PROGRESS_STORAGE_KEY = "dash-academy.progress.v2";
 
@@ -36,11 +42,14 @@ const safeBrowserStorage: StateStorage = {
 
 export type ProgressStore = {
   completedChallenges: CompletedChallenges;
+  /** Ids restored from Platform, which carry completion but no evidence. */
+  syncedChallenges: ChallengeId[];
   hasHydrated: boolean;
   completeChallenge<K extends ChallengeId>(
     challengeId: K,
     evidence: ChallengeEvidenceMap[K],
   ): void;
+  mergeSyncedChallenges(ids: Iterable<ChallengeId>): void;
   setHasHydrated(hasHydrated: boolean): void;
 };
 
@@ -49,6 +58,7 @@ export function createProgressStore() {
     persist(
       (set) => ({
         completedChallenges: {},
+        syncedChallenges: [],
         hasHydrated: false,
         completeChallenge: (challengeId, evidence) =>
           set((state) => ({
@@ -57,6 +67,10 @@ export function createProgressStore() {
               challengeId,
               evidence,
             ),
+          })),
+        mergeSyncedChallenges: (ids) =>
+          set((state) => ({
+            syncedChallenges: [...new Set([...state.syncedChallenges, ...ids])],
           })),
         setHasHydrated: (hasHydrated) => set({ hasHydrated }),
       }),
@@ -67,12 +81,17 @@ export function createProgressStore() {
         skipHydration: true,
         partialize: (state) => ({
           completedChallenges: state.completedChallenges,
+          syncedChallenges: state.syncedChallenges,
         }),
         merge: (persisted, current) => {
-          const stored = persisted as { completedChallenges?: unknown } | null;
+          const stored = persisted as {
+            completedChallenges?: unknown;
+            syncedChallenges?: unknown;
+          } | null;
           return {
             ...current,
             completedChallenges: parseCompletedChallenges(stored?.completedChallenges),
+            syncedChallenges: parseChallengeIds(stored?.syncedChallenges),
           };
         },
         onRehydrateStorage: (state) => () => {

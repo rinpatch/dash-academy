@@ -6,10 +6,11 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useStore } from "zustand";
-import { ChallengeEvidenceMap, ChallengeId } from "@/lib/progress";
+import { ChallengeEvidenceMap, ChallengeId, getCompletedLessonIds } from "@/lib/progress";
 import {
   createProgressStore,
   ProgressStoreApi,
@@ -60,14 +61,30 @@ export function useChallengeProgress<K extends ChallengeId>(challengeId: K) {
 }
 
 export function useCompletedChallenges() {
-  const store = useContext(ProgressStoreContext);
-
-  if (!store) {
-    throw new Error("useCompletedChallenges must be used within ProgressProvider");
-  }
+  const store = useProgressStore();
 
   return {
     completedChallenges: useStore(store, (state) => state.completedChallenges),
+    syncedChallenges: useStore(store, (state) => state.syncedChallenges),
     isHydrated: useStore(store, (state) => state.hasHydrated),
   };
+}
+
+/**
+ * Lessons the learner has finished, counting both locally evidenced completions and any
+ * restored from Platform.
+ */
+export function useCompletedLessonIds(): { lessonIds: Set<string>; isHydrated: boolean } {
+  const { completedChallenges, syncedChallenges, isHydrated } = useCompletedChallenges();
+  const lessonIds = useMemo(
+    () => (isHydrated ? getCompletedLessonIds(completedChallenges, syncedChallenges) : new Set<string>()),
+    [completedChallenges, syncedChallenges, isHydrated],
+  );
+  return { lessonIds, isHydrated };
+}
+
+export function useProgressStore(): ProgressStoreApi {
+  const store = useContext(ProgressStoreContext);
+  if (!store) throw new Error("Progress hooks must be used within ProgressProvider");
+  return store;
 }
