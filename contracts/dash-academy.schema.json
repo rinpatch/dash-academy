@@ -1,0 +1,119 @@
+{
+  "progress": {
+    "type": "object",
+    "documentsMutable": true,
+    "canBeDeleted": true,
+    "creationRestrictionMode": 1,
+    "indices": [
+      {
+        "name": "learner",
+        "properties": [
+          {
+            "learnerKey": "asc"
+          }
+        ],
+        "unique": true
+      }
+    ],
+    "properties": {
+      "learnerKey": {
+        "type": "array",
+        "byteArray": true,
+        "minItems": 32,
+        "maxItems": 32,
+        "description": "HMAC-SHA256 of the learner's passkey-derived key under a server-side salt. The passkey's PRF output never leaves the browser, and the salt keeps this public identifier from being reversed to the key that opens it.",
+        "position": 0
+      },
+      "version": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 255,
+        "description": "Wire format version of the completion bitfield. See PROGRESS_DOCUMENT_VERSION in lib/progress/slots.ts.",
+        "position": 1
+      },
+      "completed": {
+        "type": "array",
+        "byteArray": true,
+        "minItems": 4,
+        "maxItems": 4,
+        "description": "Fixed-width completion bitfield, one bit per challenge slot. Fixed width is deliberate: a document that never changes size costs no storage on update, only processing.",
+        "position": 2
+      }
+    },
+    "required": [
+      "learnerKey",
+      "version",
+      "completed",
+      "$createdAt",
+      "$updatedAt"
+    ],
+    "additionalProperties": false
+  },
+  "certificate": {
+    "type": "object",
+    "documentsMutable": false,
+    "canBeDeleted": false,
+    "transferable": 1,
+    "creationRestrictionMode": 1,
+    "indices": [
+      {
+        "name": "recipient",
+        "properties": [
+          {
+            "recipientId": "asc"
+          }
+        ],
+        "unique": true
+      },
+      {
+        "name": "issuedAt",
+        "properties": [
+          {
+            "$createdAt": "asc"
+          }
+        ]
+      }
+    ],
+    "properties": {
+      "recipientId": {
+        "type": "array",
+        "byteArray": true,
+        "minItems": 32,
+        "maxItems": 32,
+        "contentMediaType": "application/x.dash.dpp.identifier",
+        "description": "Identity the certificate was issued to. Recorded as well as transferred, so the original recipient stays provable after any later transfer.",
+        "position": 0
+      },
+      "courseId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "description": "Matches courseId in curriculum/lessons.json, e.g. \"dash-platform\".",
+        "position": 1
+      },
+      "curriculumVersion": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 65535,
+        "description": "schemaVersion of the curriculum manifest the learner completed, so a certificate stays interpretable after the syllabus changes.",
+        "position": 2
+      },
+      "completed": {
+        "type": "array",
+        "byteArray": true,
+        "minItems": 4,
+        "maxItems": 4,
+        "description": "Completion bitfield snapshot at the moment of issuance.",
+        "position": 3
+      }
+    },
+    "required": [
+      "recipientId",
+      "courseId",
+      "curriculumVersion",
+      "completed",
+      "$createdAt"
+    ],
+    "additionalProperties": false
+  }
+}
