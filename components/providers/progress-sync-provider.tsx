@@ -4,6 +4,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, u
 import { useStore } from "zustand";
 import type { ChallengeId } from "@/lib/progress";
 import * as sync from "@/lib/progress/sync";
+import { SyncError, type SyncFailure } from "@/lib/progress/sync";
 import { passkeySupport } from "@/lib/passkey";
 import { useCompletedChallenges, useProgressStore } from "@/components/providers/progress-provider";
 
@@ -11,6 +12,8 @@ type SyncStatus = "checking" | "unsupported" | "anonymous" | "busy" | "signed-in
 
 type SyncContextValue = {
   status: SyncStatus;
+  /** Why the last attempt failed, when status is "error". */
+  failure: SyncFailure | null;
   enable: () => Promise<void>;
   restore: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -30,6 +33,7 @@ export function ProgressSyncProvider({ children }: { children: ReactNode }) {
   const { completedChallenges, syncedChallenges, isHydrated } = useCompletedChallenges();
   const mergeSynced = useStore(store, (state) => state.mergeSyncedChallenges);
   const [status, setStatus] = useState<SyncStatus>("checking");
+  const [failure, setFailure] = useState<SyncFailure | null>(null);
   const lastPushed = useRef<string>("");
 
   const localIds = useCallback(
@@ -74,38 +78,36 @@ export function ProgressSyncProvider({ children }: { children: ReactNode }) {
     void sync.push(ids).then((merged) => merged && mergeSynced(merged)).catch(() => undefined);
   }, [status, isHydrated, localIds, mergeSynced]);
 
-  const enable = useCallback(async () => {
-    setStatus("busy");
-    try {
-      const merged = await sync.register(localIds());
-      if (!merged) throw new Error("registration failed");
-      mergeSynced(merged);
-      setStatus("signed-in");
-    } catch {
-      setStatus("error");
-    }
-  }, [localIds, mergeSynced]);
+  const attempt = useCallback(
+    async (run: (ids: ChallengeId[]) => Promise<ChallengeId[]>) => {
+      setStatus("busy");
+      setFailure(null);
+      try {
+        mergeSynced(await run(localIds()));
+        setStatus("signed-in");
+      } catch (error) {
+        // Surfaced rather than swallowed: without a reason, a failed ceremony is
+        // indistinguishable from a button that does nothing.
+        console.error("progress sync failed", error);
+        setFailure(error instanceof SyncError ? error.reason : "failed");
+        setStatus("error");
+      }
+    },
+    [localIds, mergeSynced],
+  );
 
-  const restore = useCallback(async () => {
-    setStatus("busy");
-    try {
-      const merged = await sync.restore(localIds());
-      if (!merged) throw new Error("authentication failed");
-      mergeSynced(merged);
-      setStatus("signed-in");
-    } catch {
-      setStatus("error");
-    }
-  }, [localIds, mergeSynced]);
+  const enable = useCallback(() => attempt(sync.register), [attempt]);
+  const restore = useCallback(() => attempt(sync.restore), [attempt]);
 
   const handleSignOut = useCallback(async () => {
     await sync.signOut();
     lastPushed.current = "";
+    setFailure(null);
     setStatus("anonymous");
   }, []);
 
   return (
-    <SyncContext.Provider value={{ status, enable, restore, signOut: handleSignOut }}>
+    <SyncContext.Provider value={{ status, failure, enable, restore, signOut: handleSignOut }}>
       {children}
     </SyncContext.Provider>
   );

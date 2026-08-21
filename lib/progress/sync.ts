@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChallengeId } from "@/lib/progress";
-import { authenticatePasskey, createPasskey } from "@/lib/passkey";
+import { authenticatePasskey, createPasskey, PasskeyError } from "@/lib/passkey";
 import {
   getSessionState,
   openSession,
@@ -22,8 +22,33 @@ import {
 
 export type { SessionState };
 
-function completedOf(result: SyncResult): ChallengeId[] | null {
-  return result.status === "ok" ? result.completed : null;
+/** Why sync couldn't proceed, in words a person can act on. */
+export type SyncFailure =
+  | "no-prf"
+  | "cancelled"
+  | "no-record"
+  | "unavailable"
+  | "unauthenticated"
+  | "failed";
+
+export class SyncError extends Error {
+  constructor(readonly reason: SyncFailure) {
+    super(reason);
+  }
+}
+
+function completedOf(result: SyncResult): ChallengeId[] {
+  if (result.status !== "ok") throw new SyncError(result.status);
+  return result.completed;
+}
+
+/** Turns a passkey ceremony failure into the same vocabulary as a server failure. */
+async function derive(ceremony: () => Promise<string>): Promise<string> {
+  try {
+    return await ceremony();
+  } catch (error) {
+    throw new SyncError(error instanceof PasskeyError ? error.reason : "failed");
+  }
 }
 
 export function status(): Promise<SessionState> {
@@ -31,27 +56,27 @@ export function status(): Promise<SessionState> {
 }
 
 /** Creates a passkey and stores current progress under it. */
-export async function register(completed: ChallengeId[]): Promise<ChallengeId[] | null> {
-  const clientKey = await createPasskey();
-  if (!clientKey) return null;
+export async function register(completed: ChallengeId[]): Promise<ChallengeId[]> {
+  const clientKey = await derive(createPasskey);
   return completedOf(await openSession(clientKey, completed, true));
 }
 
 /** Restores progress saved under an existing passkey. */
-export async function restore(completed: ChallengeId[]): Promise<ChallengeId[] | null> {
-  const clientKey = await authenticatePasskey();
-  if (!clientKey) return null;
+export async function restore(completed: ChallengeId[]): Promise<ChallengeId[]> {
+  const clientKey = await derive(authenticatePasskey);
   return completedOf(await openSession(clientKey, completed, false));
 }
 
 /** Pulls stored progress for an already-open session. */
 export async function pull(): Promise<ChallengeId[] | null> {
-  return completedOf(await pullProgress());
+  const result = await pullProgress();
+  return result.status === "ok" ? result.completed : null;
 }
 
 /** Pushes local progress. Returns the merged set, or null if not signed in. */
 export async function push(completed: ChallengeId[]): Promise<ChallengeId[] | null> {
-  return completedOf(await pushProgress(completed));
+  const result = await pushProgress(completed);
+  return result.status === "ok" ? result.completed : null;
 }
 
 export function signOut(): Promise<void> {

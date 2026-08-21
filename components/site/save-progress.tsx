@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CloudOff, LoaderCircle, Save } from "lucide-react";
+import { Check, CloudOff, LoaderCircle, Save, TriangleAlert } from "lucide-react";
 import { useProgressSync } from "@/components/providers/progress-sync-provider";
 
 const BUTTON =
@@ -13,7 +13,20 @@ const BUTTON =
  * not be nagged, and progress keeps working locally either way.
  */
 export function SaveProgress() {
-  const { status, enable, restore, signOut } = useProgressSync();
+  const { status, failure, enable, restore, signOut } = useProgressSync();
+
+  const message =
+    failure === "no-prf"
+      ? "This device's passkey can't derive a key. Try a different browser or device."
+      : failure === "cancelled"
+        ? "Cancelled. Try again when you're ready."
+        : failure === "no-record"
+          ? "No saved progress found for that passkey."
+          : failure === "unavailable"
+            ? "Progress sync isn't configured on this server."
+            : failure
+              ? "Couldn't save progress. Try again."
+              : null;
 
   if (status === "checking" || status === "unsupported") return null;
 
@@ -42,6 +55,16 @@ export function SaveProgress() {
 
   return (
     <div className="flex items-center gap-2">
+      {message ? (
+        <span
+          role="status"
+          title={message}
+          className="hidden max-w-[22ch] items-center gap-1.5 text-xs text-warning lg:flex"
+        >
+          <TriangleAlert size={13} className="shrink-0" aria-hidden="true" />
+          <span className="truncate">{message}</span>
+        </span>
+      ) : null}
       <button type="button" onClick={() => void enable()} className={BUTTON}>
         <Save size={14} aria-hidden="true" />
         <span className="hidden whitespace-nowrap sm:inline">Save progress</span>

@@ -16,15 +16,31 @@ const PRF_CONTEXT = new TextEncoder().encode("dash-academy/progress/v1");
 
 export type PasskeySupport = "supported" | "unsupported";
 
+/** Why a ceremony produced no key. */
+export type PasskeyFailure = "no-prf" | "cancelled";
+
+export class PasskeyError extends Error {
+  constructor(readonly reason: PasskeyFailure) {
+    super(reason);
+  }
+}
+
 export async function passkeySupport(): Promise<PasskeySupport> {
   if (typeof window === "undefined" || typeof window.PublicKeyCredential !== "function") {
     return "unsupported";
   }
-  // Without a platform authenticator, PRF prompts and then fails. Better not to offer it.
+  // Without a platform authenticator, a ceremony prompts and then fails.
   const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(
     () => false,
   );
-  return available ? "supported" : "unsupported";
+  if (!available) return "unsupported";
+
+  // Ask about PRF up front where the browser can tell us. Everything here derives from the
+  // PRF output, so without it the ceremony is two prompts followed by nothing.
+  const capabilities = await PublicKeyCredential.getClientCapabilities?.().catch(() => null);
+  if (capabilities && capabilities["extension:prf"] === false) return "unsupported";
+
+  return "supported";
 }
 
 async function digestToHex(bytes: ArrayBuffer): Promise<string> {
@@ -40,12 +56,13 @@ function prfResult(credential: PublicKeyCredential): ArrayBuffer | null {
 const PRF_EVAL = { eval: { first: PRF_CONTEXT } } as const;
 
 /**
- * Creates a passkey and returns the derived key, or null if the authenticator can't do PRF.
+ * Creates a passkey and returns the derived key. Throws PasskeyError if the authenticator
+ * can't do PRF, or the person dismissed the prompt.
  *
  * Many authenticators say PRF is enabled at creation but only hand over the value during an
  * assertion, hence the get() fallback.
  */
-export async function createPasskey(): Promise<string | null> {
+export async function createPasskey(): Promise<string> {
   const userId = crypto.getRandomValues(new Uint8Array(32));
   const credential = (await navigator.credentials.create({
     publicKey: {
@@ -69,16 +86,22 @@ export async function createPasskey(): Promise<string | null> {
     },
   })) as PublicKeyCredential | null;
 
-  if (!credential) return null;
-  if (credential.getClientExtensionResults().prf?.enabled === false) return null;
+  if (!credential) throw new PasskeyError("cancelled");
 
   const direct = prfResult(credential);
   if (direct) return digestToHex(direct);
+
+  // Some authenticators report PRF at creation but only hand the value over during an
+  // assertion, so one extra prompt is expected. If PRF is flatly unsupported, stop here
+  // rather than prompting again for a value that will never arrive.
+  if (credential.getClientExtensionResults().prf?.enabled === false) {
+    throw new PasskeyError("no-prf");
+  }
   return authenticatePasskey();
 }
 
-/** Reads the derived key from an existing passkey. Returns null if unusable. */
-export async function authenticatePasskey(): Promise<string | null> {
+/** Reads the derived key from an existing passkey. Throws PasskeyError if unusable. */
+export async function authenticatePasskey(): Promise<string> {
   const assertion = (await navigator.credentials.get({
     publicKey: {
       challenge: crypto.getRandomValues(new Uint8Array(32)),
@@ -88,7 +111,8 @@ export async function authenticatePasskey(): Promise<string | null> {
     },
   })) as PublicKeyCredential | null;
 
-  if (!assertion) return null;
+  if (!assertion) throw new PasskeyError("cancelled");
   const result = prfResult(assertion);
-  return result ? digestToHex(result) : null;
+  if (!result) throw new PasskeyError("no-prf");
+  return digestToHex(result);
 }
