@@ -97,8 +97,7 @@ export async function saveProgress(
 
   const pending = getAcademySigner();
   if (!pending) return null;
-  const { sdk, signer, identityKey, config } = await pending;
-  const { Document } = await import("@dashevo/evo-sdk");
+  const { sdk, signer, identityKey, Document, config } = await pending;
 
   return withRetry(async () => {
     const existing = await fetchProgress(key);

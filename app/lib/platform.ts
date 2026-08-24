@@ -14,15 +14,21 @@ export type AcademySigner = {
   sdk: EvoSDK;
   signer: IdentitySigner;
   identityKey: IdentityPublicKey;
+  Document: typeof import("@dashevo/evo-sdk").Document;
   config: PlatformConfig;
 };
 
+const PLATFORM_CACHE_VERSION = 2;
+
 const globalForPlatform = globalThis as unknown as {
-  dashAcademyPlatform?: Promise<AcademySigner>;
+  dashAcademyPlatform?: {
+    version: number;
+    signer: Promise<AcademySigner>;
+  };
 };
 
 async function build(config: PlatformConfig): Promise<AcademySigner> {
-  const { EvoSDK, IdentitySigner, PrivateKey } = await import("@dashevo/evo-sdk");
+  const { Document, EvoSDK, IdentitySigner, PrivateKey } = await import("@dashevo/evo-sdk");
 
   // Trusted mode fetches quorum keys over HTTPS, then verifies every response against them.
   // Needed anywhere without a full node, which means any web host.
@@ -43,14 +49,20 @@ async function build(config: PlatformConfig): Promise<AcademySigner> {
     );
   }
 
-  return { sdk, signer, identityKey, config };
+  return { sdk, signer, identityKey, Document, config };
 }
 
 /** Resolves null when sync is not configured, so callers can degrade instead of failing. */
 export function getAcademySigner(): Promise<AcademySigner> | null {
   const config = getPlatformConfig();
   if (!config) return null;
-  return (globalForPlatform.dashAcademyPlatform ??= build(config));
+  if (globalForPlatform.dashAcademyPlatform?.version !== PLATFORM_CACHE_VERSION) {
+    globalForPlatform.dashAcademyPlatform = {
+      version: PLATFORM_CACHE_VERSION,
+      signer: build(config),
+    };
+  }
+  return globalForPlatform.dashAcademyPlatform.signer;
 }
 
 /** Drops the cached client. Testnet quorums rotate and stale the trusted context. */
