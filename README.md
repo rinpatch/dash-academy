@@ -10,6 +10,10 @@ npm ci
 npm run dev
 ```
 
+For an HTTPS portless origin, use `npm run dev:isolated`. The app reads the `PORTLESS_URL`
+injected by Portless for WebAuthn and Next's development-origin allowlist, including worktree
+prefixes and custom TLDs.
+
 Repository checks:
 
 ```sh
@@ -44,6 +48,9 @@ these are set — see [`docs/progress-sync.md`](docs/progress-sync.md) for what 
 | `DASH_ACADEMY_CONTRACT_ID` | from `npm run platform:register-contract` |
 | `DASH_LEARNER_KEY_SALT` | ≥16 chars. Change it and every record is orphaned. |
 | `DASH_SESSION_SECRET` | ≥16 chars. Change it and everyone is signed out. |
+| `WEBAUTHN_RP_ID` | Browser-visible hostname only. Default local development uses `localhost`. |
+| `WEBAUTHN_RP_NAME` | Name shown by the passkey prompt. |
+| `WEBAUTHN_ORIGIN` | Exact browser-visible origin. Default local development uses `http://localhost:3000`. |
 
 Copy `.env.example` to `.env.local`, then run these once per network, filling in what each
 one prints as you go:

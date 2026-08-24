@@ -17,10 +17,21 @@ const schema = z.object({
 export type WebAuthnConfig = z.infer<typeof schema>;
 
 export function getWebAuthnConfig(): WebAuthnConfig | null {
+  let portlessUrl: URL | null = null;
+  if (process.env.NODE_ENV === "development" && process.env.PORTLESS_URL) {
+    try {
+      portlessUrl = new URL(process.env.PORTLESS_URL);
+    } catch {
+      // Fall through to the explicit config, which reports invalid values as unavailable.
+    }
+  }
+
   const parsed = schema.safeParse({
-    rpId: process.env.WEBAUTHN_RP_ID,
+    // Portless injects the browser-visible URL into its child process. It takes precedence in
+    // development so a stale localhost value cannot scope a ceremony to the wrong host.
+    rpId: portlessUrl?.hostname ?? process.env.WEBAUTHN_RP_ID,
     rpName: process.env.WEBAUTHN_RP_NAME,
-    origin: process.env.WEBAUTHN_ORIGIN,
+    origin: portlessUrl?.origin ?? process.env.WEBAUTHN_ORIGIN,
   });
   return parsed.success ? parsed.data : null;
 }
