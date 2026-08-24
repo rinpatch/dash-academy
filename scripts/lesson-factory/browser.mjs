@@ -32,7 +32,7 @@ async function runBrowserTest({ lesson, worktree, runId, lessonDir }) {
   await mkdir(artifactDir, { recursive: true });
   const serverLog = path.join(artifactDir, "server.log");
   const logHandle = await import("node:fs").then(({ openSync }) => openSync(serverLog, "a", 0o600));
-  const server = spawn("npm", ["run", "dev:isolated"], { cwd: worktree, env: secretlessEnv(), stdio: ["ignore", logHandle, logHandle] });
+  const server = spawn("npm", ["run", "dev"], { cwd: worktree, env: secretlessEnv(), stdio: ["ignore", logHandle, logHandle] });
   const sessions = ["desktop", "isolated", "mobile"].map((role) => `${runId}-m${lesson.module}-${role}`.replace(/[^a-zA-Z0-9_-]/g, "-"));
   try {
     const urlResult = await command(portless, ["get", "dash-academy"], { cwd: worktree, env: secretlessEnv() });
