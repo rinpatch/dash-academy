@@ -6,7 +6,6 @@ import { useTheme } from "next-themes";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { DashAcademyLogo } from "@/components/site/dash-academy-logo";
 import { SaveProgress } from "@/components/site/save-progress";
-import { WalletConnect } from "@/components/site/wallet-connect";
 
 const navLinks = [
   { label: "Lessons", href: "/learn/what-is-dash" },
@@ -63,7 +62,6 @@ export function SiteHeader() {
             <Moon size={16} aria-hidden="true" className="dark:hidden" />
           </button>
           <SaveProgress />
-          <WalletConnect />
         </div>
       </div>
     </header>
