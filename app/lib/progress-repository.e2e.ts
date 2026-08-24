@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { ChallengeId } from "@/lib/progress";
-import type { StoredProgress } from "@/app/lib/progress-repository";
+import type { ProgressWriteStrategy, StoredProgress } from "@/app/lib/progress-repository";
 
 // A file survives Next.js development reloads and server worker boundaries.
 
@@ -61,6 +61,7 @@ export async function saveE2EProgress(
   key: Uint8Array,
   completed: Iterable<ChallengeId>,
   credentialPublicKey?: Uint8Array,
+  strategy: ProgressWriteStrategy = "merge",
 ): Promise<StoredProgress | undefined> {
   const file = storePath();
   if (!file) return undefined;
@@ -75,11 +76,23 @@ export async function saveE2EProgress(
     throw new Error("Cannot create a progress document without the passkey public key");
   }
 
-  const merged = new Set<ChallengeId>([...(existing?.completed ?? []), ...completed]);
+  const incoming = new Set(completed);
+  const next =
+    strategy === "merge"
+      ? new Set<ChallengeId>([...(existing?.completed ?? []), ...incoming])
+      : incoming;
+  if (
+    existing &&
+    next.size === existing.completed.length &&
+    [...next].every((id) => existing.completed.includes(id))
+  ) {
+    return fromRecord(existing);
+  }
+
   const record: E2ERecord = {
     documentId: existing?.documentId ?? randomBytes(32).toString("hex"),
     revision: (BigInt(existing?.revision ?? "0") + BigInt(1)).toString(),
-    completed: [...merged],
+    completed: [...next],
     credentialPublicKey: Buffer.from(publicKey).toString("base64"),
   };
   store.records[keyHex] = record;

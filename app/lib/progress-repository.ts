@@ -20,6 +20,8 @@ export type StoredProgress = {
   credentialPublicKey: Uint8Array;
 };
 
+export type ProgressWriteStrategy = "merge" | "replace";
+
 /**
  * byteArray fields are asymmetric, and neither direction is what the SDK examples suggest:
  * writes go through Document.fromObject with raw bytes (`new Document({ properties })`
@@ -81,14 +83,16 @@ export async function fetchProgress(key: Uint8Array): Promise<StoredProgress | n
  * Writes the completion set: creates on first sync, replaces after. The bitfield is fixed
  * width, so a replace changes no bytes and pays processing but no storage.
  *
- * Unions rather than overwrites — a stale client can't erase progress made elsewhere.
+ * Normal background writes union so a stale client cannot erase progress made elsewhere.
+ * Replacing is reserved for the explicit conflict choice made during passkey sign-in.
  */
 export async function saveProgress(
   key: Uint8Array,
   completed: Iterable<ChallengeId>,
   credentialPublicKey?: Uint8Array,
+  strategy: ProgressWriteStrategy = "merge",
 ): Promise<StoredProgress | null> {
-  const local = await saveE2EProgress(key, completed, credentialPublicKey);
+  const local = await saveE2EProgress(key, completed, credentialPublicKey, strategy);
   if (local !== undefined) return local;
 
   const pending = getAcademySigner();
@@ -98,7 +102,18 @@ export async function saveProgress(
 
   return withRetry(async () => {
     const existing = await fetchProgress(key);
-    const merged = new Set<ChallengeId>([...(existing?.completed ?? []), ...completed]);
+    const incoming = new Set(completed);
+    const next =
+      strategy === "merge"
+        ? new Set<ChallengeId>([...(existing?.completed ?? []), ...incoming])
+        : incoming;
+    if (
+      existing &&
+      next.size === existing.completed.size &&
+      [...next].every((id) => existing.completed.has(id))
+    ) {
+      return existing;
+    }
     const now = BigInt(Date.now());
 
     const publicKey = existing?.credentialPublicKey ?? credentialPublicKey;
@@ -117,7 +132,7 @@ export async function saveProgress(
       $updatedAt: now,
       learnerKey: key,
       version: PROGRESS_DOCUMENT_VERSION,
-      completed: encodeCompletion(merged),
+      completed: encodeCompletion(next),
       credentialPublicKey: publicKey,
     };
 
@@ -137,7 +152,7 @@ export async function saveProgress(
       return {
         documentId: document.id.toString(),
         revision: BigInt(1),
-        completed: merged,
+        completed: next,
         credentialPublicKey: publicKey,
       };
     }
@@ -151,7 +166,7 @@ export async function saveProgress(
     return {
       documentId: existing.documentId,
       revision,
-      completed: merged,
+      completed: next,
       credentialPublicKey: publicKey,
     };
   });

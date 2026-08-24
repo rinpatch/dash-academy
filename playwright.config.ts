@@ -41,7 +41,8 @@ export default defineConfig({
       DASH_ACADEMY_CONTRACT_ID: "e2e-contract",
       DASH_LEARNER_KEY_SALT: "dash-academy-e2e-learner-key-salt",
       DASH_SESSION_SECRET: "dash-academy-e2e-session-secret",
-      DASH_ACADEMY_E2E_STORE: path.resolve("test-results/e2e/progress.json"),
+      // Outside outputDir, which Playwright empties at the start of every run.
+      DASH_ACADEMY_E2E_STORE: path.resolve("test-results/e2e-store/progress.json"),
       WEBAUTHN_RP_ID: "localhost",
       WEBAUTHN_RP_NAME: "Dash Academy E2E",
       WEBAUTHN_ORIGIN: baseURL,

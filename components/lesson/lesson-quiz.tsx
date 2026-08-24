@@ -339,7 +339,7 @@ function QuizResults({
           {restored
             ? `Your saved score is ${score} of ${total}.`
             : passed
-              ? `You answered ${score} of ${total} correctly. Your progress has been saved.`
+              ? `You answered ${score} of ${total} correctly. Saved on this device.`
               : `You answered ${score} of ${total} correctly. You need ${passingScore} correct answers to pass.`}
         </p>
 

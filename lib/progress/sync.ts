@@ -8,6 +8,7 @@ import {
   getSessionState,
   pullProgress,
   pushProgress,
+  replaceProgress,
   register as registerAction,
   registrationOptions,
   signOut as signOutAction,
@@ -27,15 +28,19 @@ export type { SessionState };
 
 export type SyncFailure =
   | "cancelled"
+  | "credential-exists"
+  | "misconfigured"
   | "no-record"
+  | "passkey-failed"
   | "rejected"
   | "unavailable"
+  | "unsupported-authenticator"
   | "unauthenticated"
   | "failed";
 
 export class SyncError extends Error {
-  constructor(readonly reason: SyncFailure) {
-    super(reason);
+  constructor(readonly reason: SyncFailure, cause?: unknown) {
+    super(reason, { cause });
   }
 }
 
@@ -49,7 +54,11 @@ async function ceremony<T>(run: () => Promise<T>): Promise<T> {
   try {
     return await run();
   } catch (error) {
-    throw new SyncError(error instanceof PasskeyError ? error.reason : "failed");
+    const reason =
+      error instanceof PasskeyError && error.reason !== "failed"
+        ? error.reason
+        : "passkey-failed";
+    throw new SyncError(reason, error);
   }
 }
 
@@ -65,12 +74,12 @@ export async function register(completed: ChallengeId[]): Promise<ChallengeId[]>
   return completedOf(await registerAction(response, completed));
 }
 
-/** Restores progress saved under an existing passkey. */
-export async function restore(completed: ChallengeId[]): Promise<ChallengeId[]> {
+/** Authenticates an existing passkey without deciding which progress state wins. */
+export async function restore(): Promise<ChallengeId[]> {
   const options = await authenticationOptions();
   if (!options) throw new SyncError("unavailable");
   const response = await ceremony(() => authenticatePasskey(options));
-  return completedOf(await authenticate(response, completed));
+  return completedOf(await authenticate(response));
 }
 
 /** Pulls stored progress for an already-open session. */
@@ -83,6 +92,11 @@ export async function pull(): Promise<ChallengeId[] | null> {
 export async function push(completed: ChallengeId[]): Promise<ChallengeId[] | null> {
   const result = await pushProgress(completed);
   return result.status === "ok" ? result.completed : null;
+}
+
+/** Overwrites remote progress after the learner explicitly chooses this device. */
+export async function replace(completed: ChallengeId[]): Promise<ChallengeId[]> {
+  return completedOf(await replaceProgress(completed));
 }
 
 export function signOut(): Promise<void> {

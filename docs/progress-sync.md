@@ -30,6 +30,16 @@ up in, so the browser has to find the credential on its own and tell us which on
 
 Lose the passkey and the record is gone. There's no recovery path.
 
+The passkey dialog is available from the profile button. When a signed-out learner completes
+progress, a session-scoped toast offers to open it; the header never gains a separate Save
+button. After sign-in, the session cookie carries every later completion on its own — a push
+needs the cookie, never the authenticator — so saving happens automatically.
+
+Sign-in authenticates before it writes. If only this device has progress, that state is saved
+to the passkey record. If only the passkey has progress, it replaces the empty local state. If
+both sides contain different progress, the dialog shows both counts and asks which copy should
+replace the other.
+
 ## What's stored
 
 One `progress` document per learner, in the academy's data contract. The academy identity owns
@@ -84,9 +94,16 @@ upgrade.
 | `app/lib/platform.ts` | write-capable Evo SDK client |
 | `contracts/dash-academy.schema.json` | the contract |
 
-Progress is unioned rather than overwritten, so a stale tab can't roll someone back.
+Background saves are unioned so a stale tab can't roll someone back. Replacement is only used
+after the learner chooses a side during sign-in reconciliation.
 
 ## Configuration and deployment
 
 See [the README](../README.md#deploy). Nothing here runs without
 `DASH_ACADEMY_CONTRACT_ID`, and the contract has to be registered once per network first.
+
+WebAuthn is scoped to the URL in the browser. `npm run dev` uses the localhost values in
+`.env.example`. `npm run dev:isolated` derives the RP ID, origin, and Next development-origin
+allowlist from the `PORTLESS_URL` that Portless injects into the child process. This also covers
+worktree prefixes and custom TLDs. The RP ID has no scheme, port, or trailing slash; the origin
+includes the scheme and must otherwise match exactly. Restart Next after changing either value.

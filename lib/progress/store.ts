@@ -50,6 +50,8 @@ export type ProgressStore = {
     evidence: ChallengeEvidenceMap[K],
   ): void;
   mergeSyncedChallenges(ids: Iterable<ChallengeId>): void;
+  /** Replaces every local completion with the chosen passkey's progress. */
+  replaceWithSyncedChallenges(ids: Iterable<ChallengeId>): void;
   setHasHydrated(hasHydrated: boolean): void;
 };
 
@@ -72,6 +74,11 @@ export function createProgressStore() {
           set((state) => ({
             syncedChallenges: [...new Set([...state.syncedChallenges, ...ids])],
           })),
+        replaceWithSyncedChallenges: (ids) =>
+          set({
+            completedChallenges: {},
+            syncedChallenges: [...new Set(parseChallengeIds([...ids]))],
+          }),
         setHasHydrated: (hasHydrated) => set({ hasHydrated }),
       }),
       {

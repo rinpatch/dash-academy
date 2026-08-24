@@ -14,11 +14,16 @@ import type {
  */
 
 /** Why a ceremony produced nothing. */
-export type PasskeyFailure = "cancelled" | "failed";
+export type PasskeyFailure =
+  | "cancelled"
+  | "credential-exists"
+  | "misconfigured"
+  | "unsupported-authenticator"
+  | "failed";
 
 export class PasskeyError extends Error {
-  constructor(readonly reason: PasskeyFailure) {
-    super(reason);
+  constructor(readonly reason: PasskeyFailure, cause?: unknown) {
+    super(reason, { cause });
   }
 }
 
@@ -36,9 +41,26 @@ export async function passkeySupport(): Promise<PasskeySupport> {
 }
 
 /** A dismissed prompt is ordinary and shouldn't read as an error. */
+function passkeyFailure(error: unknown): PasskeyFailure {
+  const { name, code } = (error as { name?: string; code?: string }) ?? {};
+  if (code === "ERROR_INVALID_RP_ID" || code === "ERROR_INVALID_DOMAIN") {
+    return "misconfigured";
+  }
+  if (code === "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED") {
+    return "credential-exists";
+  }
+  if (
+    code === "ERROR_AUTHENTICATOR_MISSING_DISCOVERABLE_CREDENTIAL_SUPPORT" ||
+    code === "ERROR_AUTHENTICATOR_MISSING_USER_VERIFICATION_SUPPORT" ||
+    code === "ERROR_AUTHENTICATOR_NO_SUPPORTED_PUBKEYCREDPARAMS_ALG"
+  ) {
+    return "unsupported-authenticator";
+  }
+  return name === "NotAllowedError" || name === "AbortError" ? "cancelled" : "failed";
+}
+
 function toPasskeyError(error: unknown): PasskeyError {
-  const name = (error as { name?: string })?.name;
-  return new PasskeyError(name === "NotAllowedError" || name === "AbortError" ? "cancelled" : "failed");
+  return new PasskeyError(passkeyFailure(error), error);
 }
 
 export async function createPasskey(

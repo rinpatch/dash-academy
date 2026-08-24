@@ -56,6 +56,11 @@ function ready() {
   return platform && webauthn && process.env.DASH_SESSION_SECRET ? { platform, webauthn } : null;
 }
 
+function failed(operation: string, error: unknown): SyncResult {
+  console.error(`progress sync ${operation} failed`, error);
+  return { status: "failed" };
+}
+
 export async function getSessionState(): Promise<SessionState> {
   if (!ready()) return "unavailable";
   return (await readSession()) ? "signed-in" : "anonymous";
@@ -124,8 +129,8 @@ export async function register(
     const stored = await saveProgress(key, local, credential.publicKey);
     await startSession(key.toString("hex"));
     return { status: "ok", completed: [...(stored?.completed ?? local)] };
-  } catch {
-    return { status: "failed" };
+  } catch (error) {
+    return failed("registration write", error);
   }
 }
 
@@ -137,7 +142,6 @@ export async function register(
  */
 export async function authenticate(
   response: AuthenticationResponseJSON,
-  completed: ChallengeId[],
 ): Promise<SyncResult> {
   const config = ready();
   if (!config) return { status: "unavailable" };
@@ -145,7 +149,14 @@ export async function authenticate(
   if (!expectedChallenge) return { status: "rejected" };
 
   const key = recordKey(response.id, config.platform.learnerKeySalt);
-  const stored = await fetchProgress(key).catch(() => null);
+  let stored;
+  try {
+    stored = await fetchProgress(key);
+  } catch (error) {
+    // A network or Platform failure is retryable; reporting it as a missing credential would
+    // send the learner down the wrong recovery path.
+    return failed("authentication read", error);
+  }
   if (!stored?.credentialPublicKey.length) return { status: "no-record" };
 
   try {
@@ -167,13 +178,31 @@ export async function authenticate(
     return { status: "rejected" };
   }
 
+  try {
+    await startSession(key.toString("hex"));
+    return { status: "ok", completed: [...stored.completed] };
+  } catch (error) {
+    return failed("session start", error);
+  }
+}
+
+/** Replaces the signed-in record after the learner chooses this device in a conflict. */
+export async function replaceProgress(completed: ChallengeId[]): Promise<SyncResult> {
+  if (!ready()) return { status: "unavailable" };
+  const learnerKeyHex = await readSession();
+  if (!learnerKeyHex) return { status: "unauthenticated" };
+
   const local = parseCompletedChallengeIds(completed);
   try {
-    const merged = await saveProgress(key, local);
-    await startSession(key.toString("hex"));
-    return { status: "ok", completed: [...(merged?.completed ?? stored.completed)] };
-  } catch {
-    return { status: "failed" };
+    const stored = await saveProgress(
+      Buffer.from(learnerKeyHex, "hex"),
+      local,
+      undefined,
+      "replace",
+    );
+    return { status: "ok", completed: [...(stored?.completed ?? local)] };
+  } catch (error) {
+    return failed("progress replace", error);
   }
 }
 
@@ -182,8 +211,12 @@ export async function pullProgress(): Promise<SyncResult> {
   const learnerKeyHex = await readSession();
   if (!learnerKeyHex) return { status: "unauthenticated" };
 
-  const stored = await fetchProgress(Buffer.from(learnerKeyHex, "hex")).catch(() => null);
-  return { status: "ok", completed: stored ? [...stored.completed] : [] };
+  try {
+    const stored = await fetchProgress(Buffer.from(learnerKeyHex, "hex"));
+    return { status: "ok", completed: stored ? [...stored.completed] : [] };
+  } catch (error) {
+    return failed("progress pull", error);
+  }
 }
 
 export async function pushProgress(completed: ChallengeId[]): Promise<SyncResult> {
@@ -196,8 +229,8 @@ export async function pushProgress(completed: ChallengeId[]): Promise<SyncResult
     // Unions with what is stored, so a stale tab can't roll anyone back.
     const stored = await saveProgress(Buffer.from(learnerKeyHex, "hex"), local);
     return { status: "ok", completed: [...(stored?.completed ?? local)] };
-  } catch {
-    return { status: "failed" };
+  } catch (error) {
+    return failed("progress push", error);
   }
 }
 
