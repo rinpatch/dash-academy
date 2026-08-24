@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:isolated": "portless run --name dash-academy next dev",
+    "dev": "portless run --name dash-academy next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
