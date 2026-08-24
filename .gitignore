@@ -1,8 +1,10 @@
 # build/dep artifacts
+.DS_Store
 node_modules/
 .next/
 .source/
 *.tsbuildinfo
+.impeccable/live/
 verify-demo/.identity-wallet.json
 
 # local secrets
@@ -13,6 +15,7 @@ verify-demo/.identity-wallet.json
 lesson-sources/*.draft.json
 test-results/lesson-factory/
 test-results/e2e/
+test-results/e2e-store/
 playwright-report/
 
 # Ad-hoc key dumps from the platform scripts
