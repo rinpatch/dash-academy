@@ -23,32 +23,31 @@ if (network === "mainnet" && !process.argv.includes("--yes-mainnet")) {
 }
 
 const balance = async () => (await sdk.identities.balance(identityId)) ?? 0n;
+const learnerKey = new Uint8Array(randomBytes(32));
 const properties = {
-  learnerKey: new Uint8Array(randomBytes(32)),
   version: 1,
   completed: new Uint8Array(4),
+  // A typical ES256 COSE public key. The contract stores it verbatim.
+  credentialPublicKey: new Uint8Array(randomBytes(77)),
 };
 
 console.log(`Network: ${network}\nIdentity: ${identityId}\n`);
-
-const now = BigInt(Date.now());
-const entropy = new Uint8Array(randomBytes(32));
 
 // Document.fromObject with raw bytes, not `new Document({ properties })`: the latter mangles
 // byteArray fields into an integer array and fails deep in storage.
 const asDocument = (fields, id, revision, extra = {}) =>
   Document.fromObject({
     $formatVersion: "0", $id: id, $ownerId: identityId, $dataContractId: contractId,
-    $type: "progress", $revision: revision, $createdAt: now, $updatedAt: now,
+    $type: "progress", $revision: revision,
     ...extra, ...fields,
   }, null);
 
 const beforeCreate = await balance();
 const document = asDocument(
   properties,
-  Document.generateId("progress", identityId, contractId, entropy),
+  Document.generateId("progress", identityId, contractId, learnerKey),
   1n,
-  { $entropy: entropy },
+  { $entropy: learnerKey },
 );
 await sdk.documents.create({ document, identityKey, signer });
 const afterCreate = await balance();
@@ -67,7 +66,9 @@ const afterUpdate = await balance();
 const updateCost = afterCreate - afterUpdate;
 console.log(`update: ${formatCredits(updateCost)}`);
 
-const lifetime = createCost + updateCost * 25n;
-console.log(`\nProjected lifetime (1 create + 25 updates): ${formatCredits(lifetime)}`);
+// Registration normally includes the first of today's 23 challenge completions.
+const projectedUpdates = 22n;
+const lifetime = createCost + updateCost * projectedUpdates;
+console.log(`\nProjected lifetime (1 create + ${projectedUpdates} updates): ${formatCredits(lifetime)}`);
 console.log(`Per 10,000 learners: ${formatCredits(lifetime * 10000n)}`);
 console.log(`\nUpdate is ${(Number(createCost) / Number(updateCost)).toFixed(1)}x cheaper than create.`);

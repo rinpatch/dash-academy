@@ -1,5 +1,4 @@
 import "server-only";
-import { randomBytes } from "node:crypto";
 import type { ChallengeId } from "@/lib/progress";
 import {
   PROGRESS_BITFIELD_BYTES,
@@ -22,16 +21,6 @@ export type StoredProgress = {
 
 export type ProgressWriteStrategy = "merge" | "replace";
 
-/**
- * byteArray fields are asymmetric, and neither direction is what the SDK examples suggest:
- * writes go through Document.fromObject with raw bytes (`new Document({ properties })`
- * silently mangles them into an integer array and fails deep in storage), while `where`
- * clauses match on base64. Reads come back as Uint8Array.
- */
-function toQueryValue(bytes: Uint8Array): string {
-  return Buffer.from(bytes).toString("base64");
-}
-
 /** Runs `operation`, retrying once on a retriable failure with a rebuilt client. */
 async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
   try {
@@ -49,33 +38,29 @@ export async function fetchProgress(key: Uint8Array): Promise<StoredProgress | n
 
   const pending = getAcademySigner();
   if (!pending) return null;
-  const { sdk, config } = await pending;
+  const { sdk, Document, config } = await pending;
 
   return withRetry(async () => {
-    const results = await sdk.documents.query({
-      dataContractId: config.contractId,
-      documentTypeName: DOCUMENT_TYPE,
-      where: [["learnerKey", "==", toQueryValue(key)]],
-      limit: 1,
-    });
+    const documentId = Document.generateId(
+      DOCUMENT_TYPE,
+      config.identityId,
+      config.contractId,
+      key,
+    );
+    const document = await sdk.documents.get(config.contractId, DOCUMENT_TYPE, documentId);
+    if (!document) return null;
 
-    for (const document of results.values()) {
-      if (!document) continue;
-      // Read $id off the Document rather than toObject(), which hands back raw bytes whose
-      // toString() is a list of numbers, not the base58 id.
-      const object = document.toObject() as unknown as {
-        $revision?: bigint;
-        completed?: Uint8Array;
-        credentialPublicKey?: Uint8Array;
-      };
-      return {
-        documentId: document.id.toString(),
-        revision: object.$revision ?? BigInt(1),
-        completed: decodeCompletion(object.completed ?? new Uint8Array(PROGRESS_BITFIELD_BYTES)),
-        credentialPublicKey: object.credentialPublicKey ?? new Uint8Array(),
-      };
-    }
-    return null;
+    const object = document.toObject() as unknown as {
+      $revision?: bigint;
+      completed?: Uint8Array;
+      credentialPublicKey?: Uint8Array;
+    };
+    return {
+      documentId: document.id.toString(),
+      revision: object.$revision ?? BigInt(1),
+      completed: decodeCompletion(object.completed ?? new Uint8Array(PROGRESS_BITFIELD_BYTES)),
+      credentialPublicKey: object.credentialPublicKey ?? new Uint8Array(),
+    };
   });
 }
 
@@ -113,37 +98,29 @@ export async function saveProgress(
     ) {
       return existing;
     }
-    const now = BigInt(Date.now());
-
     const publicKey = existing?.credentialPublicKey ?? credentialPublicKey;
     if (!publicKey?.length) {
       // Without it the learner could never authenticate again, stranding the record.
       throw new Error("Cannot create a progress document without the passkey public key");
     }
 
-    // The contract requires both timestamps, so they have to be set explicitly or the
-    // document fails to serialize before it ever reaches the network.
     const base = {
       $formatVersion: "0",
       $ownerId: config.identityId,
       $dataContractId: config.contractId,
       $type: DOCUMENT_TYPE,
-      $updatedAt: now,
-      learnerKey: key,
       version: PROGRESS_DOCUMENT_VERSION,
       completed: encodeCompletion(next),
       credentialPublicKey: publicKey,
     };
 
     if (!existing) {
-      const entropy = new Uint8Array(randomBytes(32));
       const document = Document.fromObject(
         {
           ...base,
-          $id: Document.generateId(DOCUMENT_TYPE, config.identityId, config.contractId, entropy),
-          $entropy: entropy,
+          $id: Document.generateId(DOCUMENT_TYPE, config.identityId, config.contractId, key),
+          $entropy: key,
           $revision: BigInt(1),
-          $createdAt: now,
         } as never,
         null as never,
       );
@@ -158,7 +135,7 @@ export async function saveProgress(
 
     const revision = existing.revision + BigInt(1);
     const document = Document.fromObject(
-      { ...base, $id: existing.documentId, $revision: revision, $createdAt: now } as never,
+      { ...base, $id: existing.documentId, $revision: revision } as never,
       null as never,
     );
     await sdk.documents.replace({ document, identityKey, signer });

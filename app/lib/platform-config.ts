@@ -11,8 +11,8 @@ const schema = z.object({
   privateKeyWif: z.string().min(1),
   contractId: z.string().min(1),
   /**
-   * Salt for learner keys. The derived key is a bearer token and documents are public, so
-   * this stops the on-chain identifier being reversed back into the key that opens it.
+   * Salt for the credential-derived document locator. It prevents a public document ID from
+   * becoming a lookup table for WebAuthn credential IDs.
    */
   learnerKeySalt: z.string().min(16),
 });

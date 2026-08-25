@@ -4,32 +4,13 @@
     "documentsMutable": true,
     "canBeDeleted": true,
     "creationRestrictionMode": 1,
-    "indices": [
-      {
-        "name": "learner",
-        "properties": [
-          {
-            "learnerKey": "asc"
-          }
-        ],
-        "unique": true
-      }
-    ],
     "properties": {
-      "learnerKey": {
-        "type": "array",
-        "byteArray": true,
-        "minItems": 32,
-        "maxItems": 32,
-        "description": "HMAC-SHA256 of the learner's passkey-derived key under a server-side salt. The passkey's PRF output never leaves the browser, and the salt keeps this public identifier from being reversed to the key that opens it.",
-        "position": 0
-      },
       "version": {
         "type": "integer",
         "minimum": 1,
         "maximum": 255,
         "description": "Wire format version of the completion bitfield. See PROGRESS_DOCUMENT_VERSION in lib/progress/slots.ts.",
-        "position": 1
+        "position": 0
       },
       "completed": {
         "type": "array",
@@ -37,24 +18,21 @@
         "minItems": 4,
         "maxItems": 4,
         "description": "Fixed-width completion bitfield, one bit per challenge slot. Fixed width is deliberate: a document that never changes size costs no storage on update, only processing.",
-        "position": 2
+        "position": 1
       },
       "credentialPublicKey": {
         "type": "array",
         "byteArray": true,
         "minItems": 32,
         "maxItems": 512,
-        "description": "COSE public key of the learner's passkey. Stored here because the academy keeps no database: an assertion carries its credential id, which derives learnerKey, which finds this document and the key to verify the signature against. Written once and never changed, so updates still carry no storage delta.",
-        "position": 3
+        "description": "COSE public key of the learner's passkey. An assertion carries the credential id but not this key, so the server retrieves it from the deterministic progress document before verifying the signature. Written once and never changed.",
+        "position": 2
       }
     },
     "required": [
-      "learnerKey",
       "version",
       "completed",
-      "credentialPublicKey",
-      "$createdAt",
-      "$updatedAt"
+      "credentialPublicKey"
     ],
     "additionalProperties": false
   },

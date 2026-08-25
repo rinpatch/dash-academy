@@ -43,8 +43,8 @@ export type SyncResult =
   | { status: "failed" };
 
 /**
- * The learner's record locator. HMAC'd rather than used raw, so the identifier stored on a
- * public chain can't be reversed into the credential id that opens it.
+ * The learner's record locator. HMAC'd before it becomes document entropy, so a public
+ * document id cannot be used to test candidate WebAuthn credential ids.
  */
 function recordKey(credentialId: string, salt: string): Buffer {
   return createHmac("sha256", salt).update(credentialId).digest();
