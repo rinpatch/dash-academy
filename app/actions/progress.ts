@@ -39,7 +39,7 @@ export type SyncResult =
   | { status: "unavailable" }
   | { status: "unauthenticated" }
   | { status: "no-record" }
-  | { status: "rejected" }
+  | { status: "rejected"; diagnostic: string }
   | { status: "failed" };
 
 /**
@@ -59,6 +59,17 @@ function ready() {
 function failed(operation: string, error: unknown): SyncResult {
   console.error(`progress sync ${operation} failed`, error);
   return { status: "failed" };
+}
+
+function rejected(operation: string, reason: string, error?: unknown): SyncResult {
+  const message = `progress sync ${operation} rejected: ${reason}`;
+  if (error === undefined) console.error(message);
+  else console.error(message, error);
+  const detail =
+    process.env.NODE_ENV === "development" && error instanceof Error
+      ? `${reason} (${error.name}: ${error.message})`
+      : reason;
+  return { status: "rejected", diagnostic: `${operation}: ${detail}` };
 }
 
 export async function getSessionState(): Promise<SessionState> {
@@ -105,7 +116,7 @@ export async function register(
   const config = ready();
   if (!config) return { status: "unavailable" };
   const expectedChallenge = await consumeChallenge();
-  if (!expectedChallenge) return { status: "rejected" };
+  if (!expectedChallenge) return rejected("registration", "challenge missing or expired");
 
   let credential;
   try {
@@ -115,10 +126,12 @@ export async function register(
       expectedOrigin: config.webauthn.origin,
       expectedRPID: config.webauthn.rpId,
     });
-    if (!verification.verified || !verification.registrationInfo) return { status: "rejected" };
+    if (!verification.verified || !verification.registrationInfo) {
+      return rejected("registration", "WebAuthn verification returned unverified");
+    }
     credential = verification.registrationInfo.credential;
-  } catch {
-    return { status: "rejected" };
+  } catch (error) {
+    return rejected("registration", "WebAuthn verification threw", error);
   }
 
   // Whatever was done as a guest comes along; opting in saves rather than resets.
@@ -146,7 +159,7 @@ export async function authenticate(
   const config = ready();
   if (!config) return { status: "unavailable" };
   const expectedChallenge = await consumeChallenge();
-  if (!expectedChallenge) return { status: "rejected" };
+  if (!expectedChallenge) return rejected("authentication", "challenge missing or expired");
 
   const key = recordKey(response.id, config.platform.learnerKeySalt);
   let stored;
@@ -173,9 +186,11 @@ export async function authenticate(
         counter: 0,
       },
     });
-    if (!verification.verified) return { status: "rejected" };
-  } catch {
-    return { status: "rejected" };
+    if (!verification.verified) {
+      return rejected("authentication", "WebAuthn verification returned unverified");
+    }
+  } catch (error) {
+    return rejected("authentication", "WebAuthn verification threw", error);
   }
 
   try {

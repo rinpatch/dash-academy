@@ -209,7 +209,8 @@ export function ProgressSyncProvider({ children }: { children: ReactNode }) {
     const unexpected =
       !(error instanceof SyncError) ||
       error.reason === "failed" ||
-      error.reason === "passkey-failed";
+      error.reason === "passkey-failed" ||
+      error.reason === "rejected";
     if (unexpected) {
       console.error("progress sync failed", rootCause(error));
     }

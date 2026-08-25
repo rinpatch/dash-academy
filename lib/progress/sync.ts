@@ -45,7 +45,9 @@ export class SyncError extends Error {
 }
 
 function completedOf(result: SyncResult): ChallengeId[] {
-  if (result.status !== "ok") throw new SyncError(result.status);
+  if (result.status !== "ok") {
+    throw new SyncError(result.status, result.status === "rejected" ? result.diagnostic : undefined);
+  }
   return result.completed;
 }
 
