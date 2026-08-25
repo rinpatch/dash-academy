@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { DashAcademyLogo } from "@/components/site/dash-academy-logo";
 import { SaveProgress } from "@/components/site/save-progress";
+import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { label: "Lessons", href: "/learn/what-is-dash" },
@@ -41,26 +42,28 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => setOpenSearch(true)}
             aria-label="Search lessons"
-            className="flex size-10 items-center justify-center rounded-xl border border-foreground/24 text-foreground/64 transition-colors hover:bg-foreground/5"
+            className="rounded-xl"
           >
             <Search size={16} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             aria-label="Toggle color theme"
-            className="flex size-10 items-center justify-center rounded-xl border border-foreground/24 text-foreground/64 transition-colors hover:bg-foreground/5"
+            className="rounded-xl"
           >
             {/* Both icons ship in the HTML and CSS picks one. next-themes only resolves the
                 theme after mount, so branching on it here renders a different icon on the
                 server than on the client. */}
             <Sun size={16} aria-hidden="true" className="hidden dark:block" />
             <Moon size={16} aria-hidden="true" className="dark:hidden" />
-          </button>
+          </Button>
           <SaveProgress />
         </div>
       </div>

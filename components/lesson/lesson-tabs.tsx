@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 const TABS = ["Overview", "Resources", "Discussion"] as const;
 type Tab = (typeof TABS)[number];
@@ -12,20 +13,20 @@ export function LessonTabs({ overview }: { overview: ReactNode }) {
     <div className="flex flex-col gap-6">
       <div role="tablist" aria-label="Lesson sections" className="flex items-center gap-2">
         {TABS.map((tab) => (
-          <button
+          <Button
             key={tab}
-            type="button"
+            variant="ghost"
             role="tab"
             aria-selected={active === tab}
             onClick={() => setActive(tab)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={`h-9 rounded-full px-4 ${
               active === tab
                 ? "bg-foreground/4 text-foreground"
                 : "text-foreground/35 hover:text-foreground/60"
             }`}
           >
             {tab}
-          </button>
+          </Button>
         ))}
       </div>
 

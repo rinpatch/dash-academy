@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useChallengeProgress } from "@/components/providers/progress-provider";
+import { Button } from "@/components/ui/button";
 import type { TestnetChallengeId } from "@/lib/progress";
 
 type VerifiedResponse = { status: "verified"; reference: string; facts: { label: string; value: string }[] };
@@ -100,13 +101,13 @@ export function TestnetVerifier({
             aria-invalid={result?.status === "invalid" || result?.status === "not_found"}
             className="h-10 min-w-0 flex-1 rounded-xl border border-foreground/24 bg-background px-3 font-mono text-sm text-foreground outline-none placeholder:text-foreground/48 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive"
           />
-          <button
+          <Button
             type="submit"
             disabled={loading || reference.trim().length === 0}
-            className="h-10 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl disabled:opacity-60"
           >
             {loading ? "Checking testnet…" : "Verify"}
-          </button>
+          </Button>
         </div>
         <p id={descriptionId} className="mt-2 text-sm text-foreground/48">
           This is public testnet data. Never paste a mnemonic or private key.
@@ -147,13 +148,13 @@ export function TestnetVerifier({
           >
             <p className="font-extrabold">{FAILURE_TITLE[result.status]}</p>
             <p className="mt-1">{result.message}</p>
-            <button
-              type="button"
-              className="mt-3 rounded-sm font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            <Button
+              variant="link"
+              className="mt-3"
               onClick={() => setResult(null)}
             >
               Edit and try again
-            </button>
+            </Button>
           </div>
         )}
 

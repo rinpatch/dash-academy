@@ -9,15 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { messageFor } from "@/lib/progress/sync-messages";
 import { useProgressSync } from "@/components/providers/progress-sync-provider";
 
-const PRIMARY =
-  "flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45";
-const SECONDARY =
-  "flex h-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-45";
-
-/** One passkey surface for registration, sign-in, conflict resolution, and sign-out. */
 export function SaveProgressDialog() {
   const {
     status,
@@ -61,25 +56,19 @@ export function SaveProgressDialog() {
             {message && <FailureMessage message={message} />}
 
             <DialogFooter>
-              <button type="button" onClick={dismissPrompt} disabled={busy} className={SECONDARY}>
+              <Button variant="ghost" onClick={dismissPrompt} disabled={busy}>
                 Cancel
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={() => void choosePasskey()}
                 disabled={busy}
-                className={SECONDARY}
               >
                 Use passkey progress
-              </button>
-              <button
-                type="button"
-                onClick={() => void chooseLocal()}
-                disabled={busy}
-                className={PRIMARY}
-              >
+              </Button>
+              <Button onClick={() => void chooseLocal()} disabled={busy}>
                 {busy ? <BusyLabel /> : "Use this device"}
-              </button>
+              </Button>
             </DialogFooter>
           </>
         ) : status === "signed-in" ? (
@@ -97,10 +86,10 @@ export function SaveProgressDialog() {
             </p>
 
             <DialogFooter>
-              <button type="button" onClick={() => void signOut()} className={SECONDARY}>
+              <Button variant="ghost" onClick={() => void signOut()}>
                 <LogOut size={14} aria-hidden="true" />
                 Sign out on this device
-              </button>
+              </Button>
             </DialogFooter>
           </>
         ) : (
@@ -121,27 +110,26 @@ export function SaveProgressDialog() {
             {message && <FailureMessage message={message} />}
 
             <DialogFooter className="grid grid-cols-2 gap-2 sm:flex sm:flex-nowrap sm:justify-start">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={dismissPrompt}
                 disabled={busy}
-                className={`${SECONDARY} justify-self-start sm:mr-auto`}
+                className="justify-self-start sm:mr-auto"
               >
                 Not now
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={() => void restore()}
                 disabled={busy}
-                className={`${SECONDARY} justify-self-end`}
+                className="justify-self-end"
               >
                 Sign in with a passkey
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
                 onClick={() => void enable()}
                 disabled={busy}
-                className={`${PRIMARY} col-span-2 w-full sm:w-auto`}
+                className="col-span-2 w-full sm:w-auto"
               >
                 {busy ? (
                   <BusyLabel />
@@ -151,7 +139,7 @@ export function SaveProgressDialog() {
                     {failure === "no-record" ? "Create new passkey" : "Create a passkey"}
                   </>
                 )}
-              </button>
+              </Button>
             </DialogFooter>
           </>
         )}

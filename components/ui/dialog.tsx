@@ -4,12 +4,8 @@ import * as React from "react";
 import { XIcon } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-/**
- * shadcn's dialog, restyled to the card system in DESIGN.md and trimmed to the parts this app
- * uses. The generated version pulls in the shadcn Button, which this codebase doesn't have.
- */
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -50,7 +46,11 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute right-5 top-5 flex size-8 items-center justify-center rounded-xl text-foreground/48 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={buttonVariants({
+              variant: "ghost",
+              size: "icon-sm",
+              className: "absolute right-5 top-5 rounded-xl text-foreground/48",
+            })}
           >
             <XIcon size={16} aria-hidden="true" />
             <span className="sr-only">Close</span>

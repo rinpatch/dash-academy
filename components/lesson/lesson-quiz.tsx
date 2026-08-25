@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useChallengeProgress } from "@/components/providers/progress-provider";
+import { Button } from "@/components/ui/button";
 import type { QuizChallengeId } from "@/lib/progress";
 
 type QuizQuestion = {
@@ -268,35 +269,30 @@ export function LessonQuiz({
         </div>
 
         <footer className="flex items-center justify-between gap-4 border-t border-foreground/12 bg-background px-5 py-4 sm:px-7">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={goBack}
             disabled={currentIndex === 0}
-            className="h-10 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-35"
+            className="px-3 disabled:opacity-35"
           >
             Back
-          </button>
+          </Button>
 
           {isGraded ? (
-            <button
-              type="button"
-              onClick={continueQuiz}
-              className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
+            <Button onClick={continueQuiz}>
               {currentIndex === questions.length - 1
                 ? isReview
                   ? "Finish review"
                   : "See results"
                 : "Next question"}
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               type="submit"
               disabled={!selectedOptionId}
-              className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45"
             >
               Check answer
-            </button>
+            </Button>
           )}
         </footer>
       </form>
@@ -346,31 +342,19 @@ function QuizResults({
         <div className="mt-7 flex flex-wrap items-center gap-3">
           {passed ? (
             <>
-              <button
-                type="button"
-                onClick={onRetake}
-                className="h-10 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
+              <Button variant="ghost" onClick={onRetake} className="px-3">
                 Try again
-              </button>
+              </Button>
               {onReview && (
-                <button
-                  type="button"
-                  onClick={onReview}
-                  className="h-10 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
+                <Button variant="ghost" onClick={onReview} className="px-3">
                   Review answers
-                </button>
+                </Button>
               )}
             </>
           ) : (
-            <button
-              type="button"
-              onClick={onRetake}
-              className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
+            <Button onClick={onRetake}>
               Retake quiz
-            </button>
+            </Button>
           )}
         </div>
       </div>

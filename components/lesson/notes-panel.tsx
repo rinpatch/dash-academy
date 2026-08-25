@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Bookmark, Trash2 } from "lucide-react";
 import { useStore } from "zustand";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { createNotesStore, type Note } from "@/lib/notes-store";
 
@@ -51,14 +52,14 @@ export function NotesPanel({ lessonSlug, lessonTitle }: { lessonSlug: string; le
               <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
               Draft Saved
             </div>
-            <button
-              type="button"
+            <Button
+              size="sm"
               onClick={saveDraft}
               disabled={!draft.trim()}
-              className="rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/85 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl px-4"
             >
               Add Note
-            </button>
+            </Button>
           </div>
         </div>
       </Card>
@@ -71,14 +72,15 @@ export function NotesPanel({ lessonSlug, lessonTitle }: { lessonSlug: string; le
               <li key={note.id} className="flex items-start gap-2 text-sm">
                 <Bookmark size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
                 <p className="flex-1 text-foreground/64">{note.text}</p>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => removeNote(lessonSlug, note.id)}
                   aria-label="Delete note"
-                  className="shrink-0 rounded-md p-1 text-foreground/35 transition-colors hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="-m-1 text-foreground/35 hover:bg-transparent hover:text-destructive"
                 >
-                  <Trash2 size={14} />
-                </button>
+                  <Trash2 size={14} aria-hidden="true" />
+                </Button>
               </li>
             ))}
           </ul>
