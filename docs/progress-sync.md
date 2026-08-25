@@ -12,18 +12,25 @@ itself.
 ## How it works
 
 ```
-server challenge ──▶ passkey signs ──▶ server verifies against the stored public key
-                          │
-                    credential id ──HMAC(salt)──▶ learnerKey (on-chain index)
+authentication assertion
+    ├─ credential id ──HMAC(salt)──▶ learnerKey ──query──▶ progress document
+    └─ signature ────────────────────────────────▶ verify with credentialPublicKey
 ```
 
 The server issues a challenge, the passkey signs it, and the server verifies that signature
 against the public key it stored when the passkey was registered. Ordinary WebAuthn — no
 extensions, so it works on every authenticator.
 
-The credential id becomes the record locator, HMAC'd with `DASH_LEARNER_KEY_SALT` first. So
-scraping the contract gets you a pile of 32-byte keys that can't be reversed into anything
-that opens a record.
+`learnerKey` is a record locator, not a signing or encryption key. A WebAuthn assertion contains
+the credential id and a signature, but not the credential's public key. The server HMACs the id
+with `DASH_LEARNER_KEY_SALT` to derive `learnerKey`, queries the Platform document by that index,
+then uses the document's `credentialPublicKey` to verify the signature. Both fields are needed:
+without `learnerKey` there is no database mapping that can find the document, and without
+`credentialPublicKey` the server cannot prove that the assertion came from the registered
+passkey.
+
+The HMAC also means scraping the contract yields 32-byte lookup values that cannot be reversed
+into the credential ids that select them.
 
 Credentials are discoverable (`residentKey: required`). There's no user table to look anyone
 up in, so the browser has to find the credential on its own and tell us which one it used.
@@ -47,10 +54,10 @@ and signs it — learners never hold Platform keys.
 
 | Field | Size | Notes |
 |---|---|---|
-| `learnerKey` | 32 B | unique index, and the only way to find a record |
+| `learnerKey` | 32 B | HMAC-derived lookup value; despite the name, not a cryptographic signing key |
 | `version` | int | wire format version of the bitfield |
 | `completed` | 4 B | one bit per challenge |
-| `credentialPublicKey` | ~77 B | verifies the learner's assertions; there's no database to keep it in |
+| `credentialPublicKey` | ~77 B | WebAuthn verification key, fetched from the document after lookup |
 
 The bitfield is fixed width, and that's the whole cost model: a document that never changes
 size pays storage once when it's created, then only processing on every update after. Bit
