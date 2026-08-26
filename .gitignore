@@ -10,10 +10,8 @@ verify-demo/.identity-wallet.json
 # local secrets
 .env.local
 *.local.json
-.lesson-runs/
-.lesson-worktrees/
-lesson-sources/*.draft.json
-test-results/lesson-factory/
+lesson-factory/.runs/
+lesson-factory/lessons/*/*.draft.json
 test-results/e2e/
 test-results/e2e-store/
 playwright-report/

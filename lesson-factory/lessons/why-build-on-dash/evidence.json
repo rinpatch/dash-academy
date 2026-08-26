@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "slug": "why-build-on-dash",
+  "module": 3,
+  "title": "Why build on Dash?",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Dash Academy curriculum — module 2 manifest row",
+      "kind": "curriculum manifest",
+      "locator": "lesson-factory/curriculum.json, module 3",
+      "version": "schemaVersion 1"
+    },
+    {
+      "id": "S2",
+      "title": "What is Dash Platform",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S3",
+      "title": "What is Dash",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S4",
+      "title": "Platform Comparison",
+      "kind": "vendored authoritative Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/platform-comparison.md",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "S5",
+      "title": "Shielded Transaction Fees",
+      "kind": "vendored authoritative Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/fees/shielded-fees.md",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "S6",
+      "title": "Identity",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S7",
+      "title": "Fees",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/fees.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S8",
+      "title": "Name Service (DPNS)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S9",
+      "title": "Non-Fungible Tokens (NFTs)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/nft.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S10",
+      "title": "Tokens",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S11",
+      "title": "Protocol Constants",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/protocol-constants.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S12",
+      "title": "State Transition (protocol reference)",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/state-transition.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S13",
+      "title": "DAPI Endpoints",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S14",
+      "title": "CoinJoin (core guide)",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-coinjoin.md",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S15",
+      "title": "Governance (core guide)",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-governance.md",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S16",
+      "title": "Glossary",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md",
+      "version": "Dash Platform Docs 3.1.0"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Dash is organized into two layers: Core (layer 1) settles Dash payments and provides governance, while Platform (layer 2) stores and verifies structured application data via data contracts, documents, identities, and signed state transitions.",
+      "sourceIds": [
+        "S2",
+        "S3"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "A Dash payment reaches confirmation in about a second, at no extra cost, because every transaction is InstantSend-locked and blocks are ChainLocked — practical for checkout and user-facing payment flows.",
+      "sourceIds": [
+        "S3"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "Dash has no general-purpose smart-contract VM today: developers declare data with JSON-Schema data contracts instead of deploying code, which removes whole classes of smart-contract vulnerabilities; a VM is planned for Platform v4.0.",
+      "sourceIds": [
+        "S4"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C4",
+      "text": "Dash's clearest non-fit is arbitrary on-chain computation — anything that needs a Turing-complete VM or heavy custom code per node — while its clear fits are payments, verifiable app data with proofs, identities/usernames, tokens, and digital assets.",
+      "sourceIds": [
+        "S4"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C5",
+      "text": "DPNS registers human-readable .dash names (e.g. alice.dash) and ties them to a Platform identity, giving name-based interaction; premium names go through a masternode vote, ordinary names register immediately.",
+      "sourceIds": [
+        "S8"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "NFTs on Dash are documents, not a separate token standard: each document has a unique ID analogous to an ERC-721 token ID, plus built-in transfer, set-price purchase, mutation, deletion, and creation-restriction options.",
+      "sourceIds": [
+        "S9"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "Fungible tokens are first-class protocol objects declared in a data contract (no smart contract): minting, max supply, freeze/pause, burning, scheduled and perpetual distribution, and groups with voting thresholds are configured declaratively and enforced by the protocol.",
+      "sourceIds": [
+        "S10",
+        "S4"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C8",
+      "text": "Credits are a distinct unit of account from Dash: they are created at exactly 1000 credits per duff (1 DASH = 100,000,000,000 credits) by locking Dash on Core via an asset lock, and are spent on layer-2 fees.",
+      "sourceIds": [
+        "S11",
+        "S6"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C9",
+      "text": "Platform fees are storage fees plus processing fees, scaled by a network-governed fee multiplier, with a refund when stored data is deleted and a user fee increase to prioritize inclusion during congestion.",
+      "sourceIds": [
+        "S7"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C10",
+      "text": "Credits can be converted back to Dash through the identity credit withdrawal state transition, subject to a network-wide daily limit; anyone may top up any identity, so apps can subsidize user fees.",
+      "sourceIds": [
+        "S6"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C11",
+      "text": "Layer-1 transaction privacy comes from CoinJoin (formerly PrivateSend), a non-custodial mixing service coordinated by masternodes, so a user shuffles their Dash with others without trusting a third party.",
+      "sourceIds": [
+        "S14",
+        "S16"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C12",
+      "text": "Platform defines a shielded pool using Orchard/Halo2 zero-knowledge proofs for credits and tokens, with shield/unshield/shielded-transfer state transitions; however the shielded DAPI endpoints are defined in the protocol but not yet available on public nodes.",
+      "sourceIds": [
+        "S12",
+        "S13",
+        "S5"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C13",
+      "text": "Dash is the world's first and longest-running DAO: a treasury funded by a portion of the block subsidy pays approved proposals, and masternodes — which hold 1000 DASH as collateral — vote on how treasury funds are spent.",
+      "sourceIds": [
+        "S3",
+        "S16"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C14",
+      "text": "Platform clients verify query responses with cryptographic proofs rather than trusting the node that served them, giving a light client full-node-equivalent security guarantees.",
+      "sourceIds": [
+        "S2",
+        "S4"
+      ],
+      "support": "direct"
+    }
+  ],
+  "apiExamples": [],
+  "conflicts": [],
+  "uncertainties": [
+    {
+      "id": "U1",
+      "topic": "How to frame the Platform shielded pool given its DAPI endpoints are not yet public",
+      "blocking": false,
+      "resolution": "The lesson names the effect and defers the machinery: CoinJoin is live on layer 1 for Dash, and Platform adds a zero-knowledge shielded pool that is protocol-defined and rolling out, without asserting it is usable on public nodes today."
+    },
+    {
+      "id": "U2",
+      "topic": "Whether to cite the exact credits-per-duff ratio for Dash versus Credits",
+      "blocking": false,
+      "resolution": "The lesson states the distinction (Dash is money, credits are the fee unit) and cites the exact conversion 1,000 credits per duff / 1 DASH = 100,000,000,000 credits, since the ratio is citable from protocol constants and is the kind of concrete fact the quiz can test."
+    },
+    {
+      "id": "U3",
+      "topic": "How deep to go on token/NFT/identity content without duplicating later modules",
+      "blocking": false,
+      "resolution": "The lesson keeps to effects — configurable tokens, document-based NFTs, .dash usernames — in one or two sentences each and defers configuration and action mechanics to modules 15 and 16."
+    }
+  ],
+  "executableExamples": []
+}

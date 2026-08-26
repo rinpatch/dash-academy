@@ -2,7 +2,7 @@
 
 Read `.agents/skills/dash-docs/SKILL.md` before researching or changing Dash technical content. Read `.agents/skills/write-dash-lesson/SKILL.md` before running a lesson stage.
 
-The fixed curriculum is `curriculum/lessons.json`. Do not renumber, split, merge, or silently broaden lessons. If the requested scope is technically unsound, write a blocking question to the run report instead.
+The fixed curriculum is `lesson-factory/curriculum.json`. Do not renumber, split, merge, or silently broaden lessons. If the requested scope is technically unsound, write a blocking question to the run report instead.
 
 Treat Git MDX and committed evidence ledgers as the source of truth. Notion is reference input only. Never write to Notion.
 

@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "slug": "what-is-dash",
+  "module": 1,
+  "title": "What is Dash?",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Dash Academy curriculum — module 1 manifest row",
+      "kind": "curriculum manifest",
+      "locator": "lesson-factory/curriculum.json, module 1",
+      "version": "schemaVersion 1"
+    },
+    {
+      "id": "S2",
+      "title": "Blockchain Overview",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/block-chain-block-chain-overview.md",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S3",
+      "title": "Transactions",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/transactions.md",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S4",
+      "title": "Dash Features",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features.md",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S5",
+      "title": "InstantSend",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S6",
+      "title": "What is Dash?",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/introduction/about.rst",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S7",
+      "title": "Features",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/introduction/features.rst",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S8",
+      "title": "Glossary",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/resources/glossary.md",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S9",
+      "title": "What is Dash",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S10",
+      "title": "What is Dash Platform",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
+      "version": "Dash Platform Docs 3.1.0"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "A blockchain is an append-only chain of blocks where each block stores the hash of the previous block, so altering an earlier transaction requires rewriting that block and every block after it; copies are spread across many independent nodes that agree without a central administrator.",
+      "sourceIds": ["S2", "S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "Value moves from transaction to transaction: a transaction's inputs spend the outputs of earlier transactions, and an output may be spent only once — a second spend is rejected as a double spend.",
+      "sourceIds": ["S2", "S3"],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "A key pair uses 256-bit private keys: a private key signs and derives a public key, and the common P2PKH form pays to the hash of the public key, encoded for sharing as a base58check address with a checksum.",
+      "sourceIds": ["S3", "S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C4",
+      "text": "Dash value is denominated in duffs; one dash equals 100,000,000 duffs.",
+      "sourceIds": ["S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C5",
+      "text": "Dash is payments-focused digital money based on Bitcoin, with a two-tier network structure that improves transaction speed, privacy, and governance.",
+      "sourceIds": ["S6", "S4", "S9"],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "Unlike Bitcoin's single tier of equally participating nodes, Dash adds a second tier of collateralized, incentivized masternodes that provide enhanced functionality in exchange for compensation.",
+      "sourceIds": ["S4", "S7"],
+      "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "A masternode is a server that holds 1,000 DASH collateral and powers the network's extra services — fast confirmation, security, and governance — making the rest of Dash's features possible.",
+      "sourceIds": ["S7", "S4", "S9"],
+      "support": "direct"
+    },
+    {
+      "id": "C8",
+      "text": "Evolution masternodes (evonodes) hold 4,000 DASH collateral and host Dash Platform in addition to Core; regular masternodes serve only Core.",
+      "sourceIds": ["S7", "S4", "S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C9",
+      "text": "Payments confirm in about a second: the masternode tier promises a transaction will be mined and prevents its inputs being spent elsewhere, reaching the effect of settled payment far faster than the roughly 2.6-minute block time.",
+      "sourceIds": ["S5", "S7", "S9"],
+      "support": "direct"
+    },
+    {
+      "id": "C10",
+      "text": "Dash has a roughly 2.6-minute block time, with no premine and no ICO.",
+      "sourceIds": ["S7", "S9"],
+      "support": "direct"
+    },
+    {
+      "id": "C11",
+      "text": "One network, two jobs: Dash Core is the payments/money layer, while Dash Platform is a decentralized data-storage and application layer whose key components are Drive (storage) and DAPI (a decentralized API).",
+      "sourceIds": ["S10", "S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C12",
+      "text": "Decentralization matters to an app builder because there is no central server to run or secure, no single point of failure, no single company to shut the app down, and no hosted backend to depend on.",
+      "sourceIds": ["S9", "S10", "S7"],
+      "support": "inference"
+    }
+  ],
+  "apiExamples": [],
+  "conflicts": [],
+  "uncertainties": [
+    {
+      "id": "U1",
+      "topic": "Payment confirmation speed wording",
+      "blocking": false,
+      "resolution": "The manifest fixes the phrasing as 'about a second'; the lesson states that effect and never names the InstantSend-vs-ChainLock locking mechanics, which are mustNotCover."
+    },
+    {
+      "id": "U2",
+      "topic": "Why decentralization matters to a builder is a pedagogical inference",
+      "blocking": false,
+      "resolution": "The lesson leads with concrete build-time benefits (no server to run or secure, no single point of failure, nobody can shut it down, no hosted backend), grounded in the docs' decentralized language."
+    },
+    {
+      "id": "U3",
+      "topic": "Glossary term usage",
+      "blocking": false,
+      "resolution": "mustCover concepts (blockchain, transaction, keys, address, masternode) are taught in prose. Incidental jargon reuses existing ids (block, node, duff, fiat, premine, ico, evonode, dapi); 'node' and 'mining' were appended, and no mustNotCover term was smuggled in."
+    },
+    {
+      "id": "U4",
+      "topic": "Describing 'one network, two jobs' without crossing the mustNotCover boundary",
+      "blocking": false,
+      "resolution": "Dash Platform is described only as the application-data layer via Drive (storage) and DAPI (the read/write API), with no mention of identities, data contracts, documents, LLMQs, quorums, or Tenderdash."
+    }
+  ],
+  "executableExamples": []
+}

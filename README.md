@@ -1,6 +1,6 @@
 # Dash Academy
 
-Dash Academy is a Next.js course application backed by a fixed 18-module curriculum. Lesson content is MDX under `content/academy/`; each lesson's committed technical evidence is under `lesson-sources/`.
+Dash Academy is a Next.js course application backed by a fixed 18-module curriculum. Lesson content is MDX under `content/academy/`; its generator, curriculum, evidence, and fixtures live under `lesson-factory/`.
 
 ## Develop the application
 
@@ -77,7 +77,7 @@ twice creates a second, unrelated contract and orphans every record written agai
 
 ## Operate the lesson factory
 
-Read [`AGENTS.md`](AGENTS.md) first. The complete setup, research/author/review workflow, status and recovery commands, isolated browser setup, artifacts, trusted testnet boundary, and integration procedure are documented in the [`lesson factory operator runbook`](scripts/lesson-factory/README.md).
+Read [`AGENTS.md`](AGENTS.md) first. The complete setup, research/author/review workflow, status and recovery commands, isolated browser setup, artifacts, trusted testnet boundary, and integration procedure are documented in the [`lesson factory operator runbook`](lesson-factory/README.md).
 
 The shortest safe entry point for a new coding session is:
 

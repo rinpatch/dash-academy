@@ -5,7 +5,7 @@ description: Research, author, review, and verify one Dash Academy lesson agains
 
 # Write Dash Lesson
 
-Work on exactly the module supplied by the runner. First read the root `AGENTS.md`, the module row in `curriculum/lessons.json`, and the `dash-docs` skill. Also read [workflow.md](references/workflow.md).
+Work on exactly the module supplied by the runner. First read the root `AGENTS.md`, the module row in `lesson-factory/curriculum.json`, and the `dash-docs` skill. Also read [workflow.md](references/workflow.md).
 
 ## Audience
 

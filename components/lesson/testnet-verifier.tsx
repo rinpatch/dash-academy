@@ -19,7 +19,7 @@ const FAILURE_TITLE: Record<FailureResponse["status"], string> = {
 /**
  * Checkpoint for a hands-on lesson: the learner pastes the public result of their work and Dash
  * Academy looks it up on testnet independently. `operation` must match the lesson's row in
- * curriculum/lessons.json; the server refuses operations it cannot actually check.
+ * lesson-factory/curriculum.json; the server refuses operations it cannot actually check.
  */
 export function TestnetVerifier({
   challengeId,

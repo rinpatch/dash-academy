@@ -97,7 +97,7 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 64,
-        "description": "Matches courseId in curriculum/lessons.json, e.g. \"dash-platform\".",
+        "description": "Matches courseId in lesson-factory/curriculum.json, e.g. \"dash-platform\".",
         "position": 1
       },
       "curriculumVersion": {

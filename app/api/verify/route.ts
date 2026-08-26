@@ -57,7 +57,7 @@ export async function POST(request: Request) {
 }
 
 /**
- * Verification for an operation named in curriculum/lessons.json. Only operations with a real check
+ * Verification for an operation named in lesson-factory/curriculum.json. Only operations with a real check
  * belong here: an operation that is not listed is reported as unsupported rather than passed, so a
  * lesson can never award progress for work nobody verified.
  */

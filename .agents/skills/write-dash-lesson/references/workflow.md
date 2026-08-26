@@ -1,6 +1,6 @@
 # Lesson workflow
 
-The runner creates a dedicated branch and worktree per lesson. Its durable state is under `.lesson-runs/`; generated reports are never committed.
+The runner creates a dedicated branch and worktree per lesson. Its durable state is under `lesson-factory/.runs/`; generated reports are never committed.
 
 Research output must distinguish directly supported claims from inference and include exact locators. Package types/runtime are authoritative for the pinned SDK API. When sources conflict, describe the conflict and either resolve it with a stronger source or block.
 
