@@ -29,7 +29,6 @@ test("lesson follows the module 2 concept contract", async () => {
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
   assert.match(mdx, /prerequisites: \[1\]/);
-  assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="what-is-dash-platform"/);
   assert.match(mdx, /## What you accomplished/);

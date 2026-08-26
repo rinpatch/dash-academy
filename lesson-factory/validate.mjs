@@ -43,7 +43,6 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   for (const key of ["title", "description", "module", "tier", "estimatedMinutes", "exp"]) {
     if (String(frontmatter[key]) !== String(lesson[key])) errors.push(`Frontmatter ${key} does not match manifest`);
   }
-  if (!mdx.includes("## Learning objectives")) errors.push("Missing ## Learning objectives");
   if (!mdx.includes("## Checkpoint")) errors.push("Missing ## Checkpoint");
   if (!mdx.includes("## What you accomplished")) errors.push("Missing ## What you accomplished");
   if (/^# /m.test(mdx.replace(/^---[\s\S]*?---/, ""))) errors.push("Lesson body must not contain an H1");

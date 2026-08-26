@@ -42,7 +42,6 @@ test("lesson follows the module 11 concept contract", async () => {
   assert.match(mdx, /tier: concepts/);
   assert.match(mdx, /estimatedMinutes: 14/);
   assert.match(mdx, /prerequisites: \[10\]/);
-  assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="data-contracts"/);
   assert.match(mdx, /## What you accomplished/);

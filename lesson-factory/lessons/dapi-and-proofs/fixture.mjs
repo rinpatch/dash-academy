@@ -27,7 +27,6 @@ test("lesson follows the module 5 concept contract", async () => {
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
   assert.match(mdx, /prerequisites: \[4\]/);
-  assert.match(mdx, /## Learning objectives/);
   assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="dapi-and-proofs"/);
   assert.match(mdx, /## What you accomplished/);

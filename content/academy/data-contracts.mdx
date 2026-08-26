@@ -9,15 +9,6 @@ verification: quiz
 prerequisites: [10]
 ---
 
-## Learning objectives
-
-By the end of this lesson, you will be able to:
-
-- choose the document types and fields that describe an application's data;
-- choose indexes so the queries your app will run are actually possible;
-- predict what a published contract commits you to, and what you can still change later; and
-- recognize what a data contract cannot express — custom server code and cross-type joins.
-
 ## A schema before any data
 
 Before your app can write a single record to Dash Platform, it must publish a **data contract**: a description of the data it will store. The contract is itself stored on chain, and the network checks every record your app submits against that description, rejecting anything that does not conform.
