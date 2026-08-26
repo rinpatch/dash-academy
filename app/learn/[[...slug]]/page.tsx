@@ -6,7 +6,6 @@ import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { CourseTrackCard } from "@/components/lesson/course-track-card";
 import { LessonNavList, type LessonSummary } from "@/components/lesson/lesson-nav-list";
-import { LessonTabs } from "@/components/lesson/lesson-tabs";
 import { NotesPanel } from "@/components/lesson/notes-panel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -63,13 +62,9 @@ export default async function AcademyLesson({ params }: PageProps) {
             )}
           </div>
 
-          <LessonTabs
-            overview={
-              <DocsBody className="text-justify hyphens-auto [&_.not-prose]:text-left [&_.not-prose]:hyphens-manual max-sm:text-left max-sm:hyphens-manual">
-                <Content components={getMDXComponents()} />
-              </DocsBody>
-            }
-          />
+          <DocsBody className="text-justify hyphens-auto [&_.not-prose]:text-left [&_.not-prose]:hyphens-manual max-sm:text-left max-sm:hyphens-manual">
+            <Content components={getMDXComponents()} />
+          </DocsBody>
         </main>
 
         <aside className="order-3 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
