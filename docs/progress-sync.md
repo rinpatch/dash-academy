@@ -13,7 +13,7 @@ itself.
 
 ```
 authentication assertion
-    ├─ credential id ──HMAC(salt)──▶ document entropy ──derive id──▶ progress document
+    ├─ credential id ──HMAC(salt)──▶ learnerKey ──query──▶ progress document
     └─ signature ────────────────────────────────────────────────▶ verify with stored public key
 ```
 
@@ -21,14 +21,15 @@ The server issues a challenge, the passkey signs it, and the server verifies tha
 against the public key it stored when the passkey was registered. Ordinary WebAuthn — no
 extensions, so it works on every authenticator.
 
-The server HMACs the credential id with `DASH_LEARNER_KEY_SALT` and uses the result as the
-document entropy. Platform derives document ids from the contract, owner, document type, and
-entropy, so the server can calculate the id and fetch the record directly without a secondary
-index. The HMAC prevents public document ids from becoming a lookup table for credential ids.
+`learnerKey` is a record locator, not a signing or encryption key. A WebAuthn assertion contains
+the credential id and a signature, but not the credential's public key. The server HMACs the id
+with `DASH_LEARNER_KEY_SALT` to derive `learnerKey`, queries the Platform document by that unique
+index, then uses the document's `credentialPublicKey` to verify the signature. Both fields are
+needed: one finds the record, and the other proves the assertion came from the registered
+passkey.
 
-A WebAuthn assertion contains the credential id and a signature, but not the credential's
-public key. That key remains in the progress document so the server can verify the assertion
-before opening a session.
+The HMAC means scraping the contract yields 32-byte lookup values that cannot be reversed into
+the credential ids that select them.
 
 Credentials are discoverable (`residentKey: required`). There's no user table to look anyone
 up in, so the browser has to find the credential on its own and tell us which one it used.
@@ -52,12 +53,10 @@ and signs it — learners never hold Platform keys.
 
 | Field | Size | Notes |
 |---|---|---|
+| `learnerKey` | 32 B | HMAC-derived unique lookup value; not a cryptographic signing key |
 | `version` | int | wire format version of the bitfield |
 | `completed` | 4 B | one bit per challenge |
-| `credentialPublicKey` | varies | COSE WebAuthn verification key, fetched with the progress |
-
-The HMAC-derived locator is not a document property. It is supplied as entropy only when the
-document is created; later reads recompute the same document id.
+| `credentialPublicKey` | varies | COSE WebAuthn verification key, fetched after lookup |
 
 The bitfield is fixed width, and that's the whole cost model: a document that never changes
 size pays storage once when it's created, then only processing on every update after. Bit
@@ -72,18 +71,9 @@ without an index.
 
 ## Costs
 
-Measured on testnet against the deterministic-id contract:
-
-| Operation | Credits | DASH |
-|---|---:|---:|
-| Create a progress record | 12,906,120 | 0.000129061 |
-| Update a progress record | 2,374,560 | 0.000023746 |
-| Learner lifetime (1 create + 22 updates) | 65,146,440 | 0.000651464 |
-| 10,000 learner lifetimes | 651,464,400,000 | 6.514644000 |
-
-The v2 contract registration cost 16,102,133,910 credits (0.161021339 DASH). Run
-`npm run platform:measure-fees` to re-measure. The harness includes the public key and uses
-the same deterministic id path as the application.
+The deterministic-id measurements do not apply to this indexed contract. Run
+`npm run platform:measure-fees` after registering it to measure the create and update costs;
+the harness includes the indexed learner key and the passkey public key.
 
 Fee constants belong to the protocol version, not the network, so these hold on mainnet only
 while both run the same version — testnet usually runs ahead. Re-measure after any Platform

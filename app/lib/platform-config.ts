@@ -11,8 +11,8 @@ const schema = z.object({
   privateKeyWif: z.string().min(1),
   contractId: z.string().min(1),
   /**
-   * Salt for the credential-derived document locator. It prevents a public document ID from
-   * becoming a lookup table for WebAuthn credential IDs.
+   * Salt for learner lookup keys. It prevents the public index from becoming a lookup table
+   * for WebAuthn credential IDs.
    */
   learnerKeySalt: z.string().min(16),
 });

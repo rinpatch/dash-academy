@@ -4,13 +4,32 @@
     "documentsMutable": true,
     "canBeDeleted": true,
     "creationRestrictionMode": 1,
+    "indices": [
+      {
+        "name": "learner",
+        "properties": [
+          {
+            "learnerKey": "asc"
+          }
+        ],
+        "unique": true
+      }
+    ],
     "properties": {
+      "learnerKey": {
+        "type": "array",
+        "byteArray": true,
+        "minItems": 32,
+        "maxItems": 32,
+        "description": "HMAC-SHA256 of the learner's WebAuthn credential ID under a server-side salt. Used as the public unique lookup key without exposing the credential ID.",
+        "position": 0
+      },
       "version": {
         "type": "integer",
         "minimum": 1,
         "maximum": 255,
         "description": "Wire format version of the completion bitfield. See PROGRESS_DOCUMENT_VERSION in lib/progress/slots.ts.",
-        "position": 0
+        "position": 1
       },
       "completed": {
         "type": "array",
@@ -18,21 +37,24 @@
         "minItems": 4,
         "maxItems": 4,
         "description": "Fixed-width completion bitfield, one bit per challenge slot. Fixed width is deliberate: a document that never changes size costs no storage on update, only processing.",
-        "position": 1
+        "position": 2
       },
       "credentialPublicKey": {
         "type": "array",
         "byteArray": true,
         "minItems": 32,
         "maxItems": 512,
-        "description": "COSE public key of the learner's passkey. An assertion carries the credential id but not this key, so the server retrieves it from the deterministic progress document before verifying the signature. Written once and never changed.",
-        "position": 2
+        "description": "COSE public key of the learner's passkey. The credential ID derives learnerKey, which locates this document and the key needed to verify the assertion signature. Written once and never changed.",
+        "position": 3
       }
     },
     "required": [
+      "learnerKey",
       "version",
       "completed",
-      "credentialPublicKey"
+      "credentialPublicKey",
+      "$createdAt",
+      "$updatedAt"
     ],
     "additionalProperties": false
   },
