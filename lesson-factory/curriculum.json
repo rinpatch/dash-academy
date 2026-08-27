@@ -11,19 +11,32 @@
   "lessons": [
     {
       "module": 1,
-      "slug": "what-is-dash",
-      "title": "What is Dash?",
+      "slug": "what-is-a-blockchain",
+      "title": "What is a blockchain?",
       "tier": "concepts",
-      "description": "Start from zero: what a blockchain is, and what makes Dash different.",
+      "description": "Start from zero: the problem every blockchain exists to solve, and how it solves it.",
       "estimatedMinutes": 12,
       "exp": 100,
       "prerequisites": [],
-      "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
-      "mustCover": ["what a blockchain is, in terms a developer already understands", "transactions, keys, and addresses", "why decentralization matters to someone building an app", "Dash as money", "masternodes as the thing that makes the rest possible", "payments confirm in about a second", "one network, two jobs: Dash Core and Dash Platform"],
-      "mustNotCover": ["LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
+      "verification": { "kind": "quiz", "challengeId": "what-is-a-blockchain" },
+      "mustCover": ["what a blockchain is, in terms a developer already understands", "transactions, keys, and addresses", "why decentralization matters to someone building an app"],
+      "mustNotCover": ["Dash's masternodes, second tier, or confirmation speed", "Dash Core versus Dash Platform", "LLMQ and quorum formation internals", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
     },
     {
       "module": 2,
+      "slug": "what-is-dash",
+      "title": "What is Dash?",
+      "tier": "concepts",
+      "description": "What makes Dash different: cash that settles in about a second, and a second job.",
+      "estimatedMinutes": 12,
+      "exp": 100,
+      "prerequisites": ["what-is-a-blockchain"],
+      "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
+      "mustCover": ["Dash as money", "masternodes as the thing that makes the rest possible", "payments confirm in about a second", "one network, two jobs: Dash Core and Dash Platform"],
+      "mustNotCover": ["re-teaching what a blockchain, transaction, key, or address is", "LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
+    },
+    {
+      "module": 3,
       "slug": "what-is-dash-platform",
       "title": "What is Dash Platform?",
       "tier": "concepts",
@@ -36,7 +49,7 @@
       "mustNotCover": ["masternode quorums and LLMQs", "InstantSend versus ChainLock mechanics", "Tenderdash and consensus internals", "re-teaching what a blockchain is"]
     },
     {
-      "module": 3,
+      "module": 4,
       "slug": "why-build-on-dash",
       "title": "Why build on Dash?",
       "tier": "concepts",
@@ -48,7 +61,7 @@
       "mustCover": ["fit and non-fit", "payments and tokens", "usernames and NFTs", "Dash versus Credits", "privacy", "DAO"]
     },
     {
-      "module": 4,
+      "module": 5,
       "slug": "environment-setup",
       "title": "Environment setup",
       "tier": "sdk",
@@ -56,12 +69,12 @@
       "estimatedMinutes": 18,
       "exp": 150,
       "prerequisites": ["why-build-on-dash"],
-      "verification": { "kind": "testnet", "challengeId": "environment-setup", "operation": "verified-read" },
+      "verification": { "kind": "testnet", "challengeId": "environment-setup" },
       "mustCover": ["install Evo SDK", "connect to testnet", "read from live DAPI"],
       "mustNotCover": ["how DAPI selects an endpoint", "how state proofs are verified"]
     },
     {
-      "module": 5,
+      "module": 6,
       "slug": "dapi-and-proofs",
       "title": "DAPI and Proofs",
       "tier": "concepts",
@@ -73,7 +86,7 @@
       "mustCover": ["decentralized API", "Core and Platform access", "endpoint selection", "state proofs", "light-client trust", "verification boundaries"]
     },
     {
-      "module": 6,
+      "module": 7,
       "slug": "identities",
       "title": "Identities",
       "tier": "concepts",
@@ -85,7 +98,7 @@
       "mustCover": ["identity versus wallet address", "identity keys", "credits and fees"]
     },
     {
-      "module": 7,
+      "module": 8,
       "slug": "wallets-keys-and-testnet",
       "title": "Wallets, keys, and testnet",
       "tier": "concepts",
@@ -98,7 +111,7 @@
       "mustNotCover": ["DIP-18 Platform address derivation"]
     },
     {
-      "module": 8,
+      "module": 9,
       "slug": "fund-a-platform-address",
       "title": "Fund a Platform address",
       "tier": "sdk",
@@ -106,11 +119,11 @@
       "estimatedMinutes": 20,
       "exp": 175,
       "prerequisites": ["wallets-keys-and-testnet"],
-      "verification": { "kind": "testnet", "challengeId": "fund-a-platform-address", "operation": "funded-address" },
+      "verification": { "kind": "testnet", "challengeId": "fund-a-platform-address" },
       "mustCover": ["DIP-18 derivation", "bech32m Platform address", "funding", "identity funding path"]
     },
     {
-      "module": 9,
+      "module": 10,
       "slug": "create-a-dash-identity",
       "title": "Create a Dash Identity",
       "tier": "sdk",
@@ -118,11 +131,11 @@
       "estimatedMinutes": 20,
       "exp": 200,
       "prerequisites": ["fund-a-platform-address"],
-      "verification": { "kind": "testnet", "challengeId": "create-a-dash-identity", "operation": "identity-create" },
+      "verification": { "kind": "testnet", "challengeId": "create-a-dash-identity" },
       "mustCover": ["identity creation", "key purposes and security levels", "credit balance"]
     },
     {
-      "module": 10,
+      "module": 11,
       "slug": "register-a-username",
       "title": "Register a Username (DPNS)",
       "tier": "sdk",
@@ -130,11 +143,11 @@
       "estimatedMinutes": 22,
       "exp": 200,
       "prerequisites": ["create-a-dash-identity"],
-      "verification": { "kind": "testnet", "challengeId": "register-a-username", "operation": "dpns-register" },
+      "verification": { "kind": "testnet", "challengeId": "register-a-username" },
       "mustCover": ["preorder and registration", "salt handling", "premium-name voting"]
     },
     {
-      "module": 11,
+      "module": 12,
       "slug": "data-contracts",
       "title": "Data Contracts",
       "tier": "concepts",
@@ -146,7 +159,7 @@
       "mustCover": ["schemas", "document types", "indexes", "contract-time decisions", "no triggers or joins"]
     },
     {
-      "module": 12,
+      "module": 13,
       "slug": "write-your-first-data-contract",
       "title": "Write your first Data Contract",
       "tier": "sdk",
@@ -154,11 +167,11 @@
       "estimatedMinutes": 28,
       "exp": 250,
       "prerequisites": ["data-contracts"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "write-your-first-data-contract:quiz", "challengeId": "write-your-first-data-contract", "operation": "contract-create" },
+      "verification": { "kind": "hybrid", "challengeId": "write-your-first-data-contract" },
       "mustCover": ["document schema", "indexes", "contract registration"]
     },
     {
-      "module": 13,
+      "module": 14,
       "slug": "documents",
       "title": "Documents",
       "tier": "concepts",
@@ -170,7 +183,7 @@
       "mustCover": ["read and write lifecycle", "ownership", "revisions", "delete refunds"]
     },
     {
-      "module": 14,
+      "module": 15,
       "slug": "submit-a-document",
       "title": "Submit a Document",
       "tier": "sdk",
@@ -178,11 +191,11 @@
       "estimatedMinutes": 22,
       "exp": 200,
       "prerequisites": ["documents"],
-      "verification": { "kind": "testnet", "challengeId": "submit-a-document", "operation": "document-create" },
+      "verification": { "kind": "testnet", "challengeId": "submit-a-document" },
       "mustCover": ["document creation", "state transition", "ownership and fees"]
     },
     {
-      "module": 15,
+      "module": 16,
       "slug": "query-documents",
       "title": "Query Documents",
       "tier": "sdk",
@@ -190,11 +203,11 @@
       "estimatedMinutes": 25,
       "exp": 225,
       "prerequisites": ["submit-a-document"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "query-documents:quiz", "challengeId": "query-documents", "operation": "document-query" },
+      "verification": { "kind": "hybrid", "challengeId": "query-documents" },
       "mustCover": ["filters", "sorting", "range constraints", "v4 aggregation"]
     },
     {
-      "module": 16,
+      "module": 17,
       "slug": "document-transfer-and-purchase",
       "title": "Document Transfer and Purchase",
       "tier": "sdk",
@@ -202,11 +215,11 @@
       "estimatedMinutes": 28,
       "exp": 250,
       "prerequisites": ["query-documents"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "document-transfer-and-purchase:quiz", "challengeId": "document-transfer-and-purchase", "operation": "document-transfer-purchase" },
+      "verification": { "kind": "hybrid", "challengeId": "document-transfer-and-purchase" },
       "mustCover": ["transfer", "purchase", "price updates", "ownership checks"]
     },
     {
-      "module": 17,
+      "module": 18,
       "slug": "tokens",
       "title": "Tokens",
       "tier": "sdk",
@@ -214,11 +227,11 @@
       "estimatedMinutes": 30,
       "exp": 275,
       "prerequisites": ["document-transfer-and-purchase"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "tokens:quiz", "challengeId": "tokens", "operation": "token-actions" },
+      "verification": { "kind": "hybrid", "challengeId": "tokens" },
       "mustCover": ["token configuration", "action set", "groups", "mint and transfer"]
     },
     {
-      "module": 18,
+      "module": 19,
       "slug": "token-paid-document-creation",
       "title": "Token-paid document creation",
       "tier": "sdk",
@@ -226,7 +239,7 @@
       "estimatedMinutes": 30,
       "exp": 300,
       "prerequisites": ["tokens"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "token-paid-document-creation:quiz", "challengeId": "token-paid-document-creation", "operation": "token-paid-documents" },
+      "verification": { "kind": "hybrid", "challengeId": "token-paid-document-creation" },
       "mustCover": ["tokenCost for six document operations", "transfer and burn effects", "sponsored gas", "flags"]
     }
   ]

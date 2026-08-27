@@ -21,7 +21,7 @@ handing work over — it catches the mistakes that are easy to make and annoying
 
 ## The curriculum is fixed
 
-The 18 lessons are defined in `lesson-factory/curriculum.json`. That file is the source of truth for each
+The 19 lessons are defined in `lesson-factory/curriculum.json`. That file is the source of truth for each
 lesson's title, description, length, and what it must cover. **You edit the lesson text; a developer
 edits the curriculum.** If a lesson needs a different title or a different scope, ask — don't change
 the frontmatter to disagree with the manifest, because validation will reject it.

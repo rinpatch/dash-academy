@@ -122,7 +122,7 @@ export function parseResult(stdout, role, stderrFile) {
 // author was spending 54 tool calls and 128K input tokens re-reading docs the research stage had
 // already distilled into its prompt.
 const trustHandoff = "The context below is your input. Do not re-derive it: the lesson files, diff, manifest, and test reports are already here in full, so do not re-read them from disk.";
-const verdictBar = "Return verdict revise only for defects in correctness, scope, the audience rule, schema, build, or tests. Report cosmetic issues (formatting, trailing newlines, wording preference) as findings without downgrading the verdict; a revision round is expensive.";
+const verdictBar = "Return verdict revise only for defects in correctness, scope, the audience rule, prose that fails the skill's through-line bar, schema, build, or tests. Report cosmetic issues (formatting, trailing newlines, a synonym you would have picked) as findings without downgrading the verdict; a revision round is expensive. A lesson that is accurate, in scope, and lifeless is not cosmetic: it is the defect the deterministic gates cannot catch, so it has to block here or it ships.";
 
 function buildPrompt(role, lesson, context) {
   const common = `Read ${skillPath} and follow it. You are the ${role} for exactly module ${lesson.module}: ${lesson.title}.\nManifest row:\n${JSON.stringify(lesson, null, 2)}\n`;

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "why-build-on-dash",
-  "module": 3,
+  "module": 4,
   "title": "Why build on Dash?",
   "targets": {
     "coreDocs": "23.0.0",

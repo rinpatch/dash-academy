@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "identities",
-  "module": 6,
+  "module": 7,
   "title": "Identities",
   "targets": {
     "coreDocs": "23.0.0",

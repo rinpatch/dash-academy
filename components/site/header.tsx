@@ -9,7 +9,7 @@ import { SaveProgress } from "@/components/site/save-progress";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
-  { label: "Lessons", href: "/learn/what-is-dash" },
+  { label: "Lessons", href: "/learn/what-is-a-blockchain" },
   // Community/Resources/My Profile have no destination yet, shown inert until those pages exist
   { label: "Community", href: null },
   { label: "Resources", href: null },
@@ -23,7 +23,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 rounded-b-3xl border-b border-foreground/12 bg-card">
       <div className="mx-auto flex max-w-[1360px] items-center justify-between gap-4 px-4 py-4 sm:px-8">
-        <Link href="/learn/what-is-dash" className="shrink-0">
+        <Link href="/learn/what-is-a-blockchain" className="shrink-0">
           <DashAcademyLogo />
         </Link>
 

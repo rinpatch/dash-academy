@@ -7,7 +7,7 @@ import { challengeSpecs } from "@/lib/progress";
  */
 export const PROGRESS_DOCUMENT_VERSION = 1;
 
-/** Bytes in the completion bitfield. 23 slots today; 4 bytes holds 32. */
+/** Bytes in the completion bitfield. 24 slots today; 4 bytes holds 32. */
 export const PROGRESS_BITFIELD_BYTES = 4;
 
 /**
@@ -48,6 +48,7 @@ export const challengeSlots = {
   tokens: 20,
   "token-paid-document-creation:quiz": 21,
   "token-paid-document-creation": 22,
+  "what-is-a-blockchain": 23,
 } as const satisfies Record<ChallengeId, number>;
 
 /** Numbers from retired challenges, kept so they're never handed out again. */

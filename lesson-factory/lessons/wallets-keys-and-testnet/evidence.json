@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "wallets-keys-and-testnet",
-  "module": 7,
+  "module": 8,
   "title": "Wallets, keys, and testnet",
   "targets": {
     "coreDocs": "23.0.0",

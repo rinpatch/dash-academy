@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function Home() {
-  redirect("/learn/what-is-dash");
+  redirect("/learn/what-is-a-blockchain");
 }

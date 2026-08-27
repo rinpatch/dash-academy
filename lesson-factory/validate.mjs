@@ -29,6 +29,35 @@ export function usesComponent(mdx, names, id) {
   return false;
 }
 
+// Measured across the written concept lessons, which sit between 95 and 105 words per claimed
+// minute regardless of topic or author. The band is wide because the number is a reading estimate,
+// not a stopwatch; it exists to catch a lesson that is twice the length it advertises.
+export const WORDS_PER_MINUTE = 100;
+export const LENGTH_TOLERANCE = 0.3;
+
+/** Prose words in a lesson body: no frontmatter, no quiz block, no JSX tags. */
+export function proseWordCount(mdx) {
+  const body = mdx.replace(/^---[\s\S]*?---/, "");
+  const withoutQuiz = body.replace(/<LessonQuiz[\s\S]*?\/>/g, " ");
+  return withoutQuiz.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * estimatedMinutes is hand-written in the manifest, often before the lesson exists, and nothing
+ * else ever revisits it — so a lesson can advertise 12 minutes and take 20. It also sets `exp`,
+ * which makes a wrong number a wrong reward. Only concept lessons are checked: an SDK lesson's
+ * time is dominated by typing and waiting on testnet, which no word count predicts.
+ */
+export function checkLength(lesson, mdx) {
+  if (lesson.tier !== "concepts") return null;
+  const words = proseWordCount(mdx);
+  const expected = lesson.estimatedMinutes * WORDS_PER_MINUTE;
+  const drift = (words - expected) / expected;
+  if (Math.abs(drift) <= LENGTH_TOLERANCE) return null;
+  const minutes = Math.round(words / WORDS_PER_MINUTE);
+  return `Lesson is ${words} words but claims ${lesson.estimatedMinutes} minutes (${drift > 0 ? "+" : ""}${Math.round(drift * 100)}%). At ${WORDS_PER_MINUTE} words a minute that reads as about ${minutes}: split the lesson or correct estimatedMinutes and exp.`;
+}
+
 export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   const errors = [];
   const mdxPath = path.join(cwd, "content/academy", `${lesson.slug}.mdx`);
@@ -44,6 +73,12 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
     if (String(frontmatter[key]) !== String(lesson[key])) errors.push(`Frontmatter ${key} does not match manifest`);
   }
   if (!mdx.includes("## Checkpoint")) errors.push("Missing ## Checkpoint");
+  else {
+    // Skipped for a stub, which already fails on the missing checkpoint above; reporting a word
+    // count for 80 words of placeholder would just bury the real error.
+    const lengthError = checkLength(lesson, mdx);
+    if (lengthError) errors.push(lengthError);
+  }
   if (!mdx.includes("## What you accomplished")) errors.push("Missing ## What you accomplished");
   if (/^# /m.test(mdx.replace(/^---[\s\S]*?---/, ""))) errors.push("Lesson body must not contain an H1");
   if (/\b(?:mnemonic|private[_ -]?key)\s*[:=]\s*["'][^"']+/i.test(mdx)) errors.push("Possible secret in MDX");

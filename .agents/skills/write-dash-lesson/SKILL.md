@@ -13,6 +13,8 @@ Learners are developers who are new to Dash **and new to blockchain**. They are 
 
 - Write for someone who wants to build an app, not for someone auditing the protocol. Answer "what does this let me do, and how do I do it" before "how does the network achieve it".
 - Cover the manifest row's `mustCover`. Treat `mustNotCover` as a hard boundary: those topics belong to a later lesson.
+- `mustCover` is a checklist of ideas, never an outline. A lesson with one section per bullet, in bullet order, under headings that restate the bullets, has failed even though every box is ticked. Find the question a developer would actually ask, and let the answer pull the required ideas in wherever they belong.
+- Each section must be *caused* by the one before it — a new question the previous section opened, not the next item on a list. If a section could be cut or reordered without the reader noticing, the lesson has no argument.
 - A protocol mechanism belongs in a lesson only when a learner cannot complete that lesson's task or quiz without it. Otherwise name the effect, not the machinery ("payments confirm in about a second" beats an InstantSend-versus-ChainLock comparison).
 - Every term of art must be explained at first use, but not necessarily in the prose. Prefer `<Term id="...">the term</Term>`, which shows a definition on click, for jargon that is incidental to this lesson — a word the reader must recognise to parse the sentence but which carries none of the lesson's learning objectives. Reuse an existing id from `lib/glossary.ts` where one fits, so the course words a term the same way everywhere. You may append a new entry to that file when your lesson needs a term it does not yet define. Never remove or reword an existing entry: other lessons depend on it, and the runner rejects a lesson that deletes one. Never use `<Term>` for a concept the manifest's `mustCover` names: that is the lesson's job, and it belongs in the prose.
 - Define a term inline instead when the sentence around it depends on the meaning. The lesson must read correctly for someone who never opens a popover.
@@ -20,6 +22,11 @@ Learners are developers who are new to Dash **and new to blockchain**. They are 
 - Analogies and short worked examples over specification tables. Comparison tables are for choices the learner has to make.
 
 Pedagogy review must return `revise` when a lesson leads with mechanism, covers a `mustNotCover` topic, or leaves a term of art both unmarked and undefined. A term wrapped in `<Term>` with a glossary entry counts as explained; do not ask for prose duplicating it.
+
+Pedagogy review must also return `revise` when the lesson has no through-line: sections that mirror the
+`mustCover` order, headings that restate the manifest, or a run of true statements with nothing making
+the reader want the next one. This is a blocking defect, not a wording preference — a lesson nobody
+finishes teaches nothing, and it is the one failure the other gates cannot see.
 
 ## Required sequence
 

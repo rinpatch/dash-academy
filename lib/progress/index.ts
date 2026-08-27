@@ -30,6 +30,7 @@ export const challengeSpecs = {
   tokens: { lessonId: "tokens", evidence: "testnet", completesLesson: true },
   "token-paid-document-creation:quiz": { lessonId: "token-paid-document-creation", evidence: "quiz", completesLesson: false },
   "token-paid-document-creation": { lessonId: "token-paid-document-creation", evidence: "testnet", completesLesson: true },
+  "what-is-a-blockchain": { lessonId: "what-is-a-blockchain", evidence: "quiz", completesLesson: true },
 } as const;
 
 export type ChallengeId = keyof typeof challengeSpecs;
