@@ -12,8 +12,13 @@ const browserWaiters = [];
 export async function browserPreflight() {
   const result = await command(portless, ["doctor"], { env: secretlessEnv() });
   const detail = `${result.stdout}\n${result.stderr}`;
-  if (result.code !== 0 || /Proxy is not running/i.test(detail) || !/port 1355/i.test(detail)) {
-    throw new Error(`Portless must be running locally with HTTPS on port 1355. Run '${portless} trust' once, then '${portless} proxy start -p 1355 --https'.\n${detail}`);
+  // Checks that the proxy answers and serves HTTPS, not which port it landed on: the port is a
+  // local choice (443 by default) and nothing below depends on it — the URL comes from
+  // `portless get`. Matching a literal port here failed every machine but the one it was written on.
+  const responding = /Proxy is responding on port \d+/i.test(detail) && !/Proxy is not running/i.test(detail);
+  const https = /Mode:\s*HTTPS/i.test(detail) && /Local CA is trusted/i.test(detail);
+  if (result.code !== 0 || !responding || !https) {
+    throw new Error(`Portless must be running locally with HTTPS. Run '${portless} trust' once, then '${portless} proxy start --https'.\n${detail}`);
   }
 }
 
