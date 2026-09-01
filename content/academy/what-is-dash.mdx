@@ -1,0 +1,125 @@
+---
+title: What is Dash?
+description: "What makes Dash different: cash that settles in about a second, and a second job."
+module: 2
+tier: concepts
+estimatedMinutes: 12
+exp: 100
+verification: quiz
+prerequisites: [1]
+---
+
+Module 1 gave you the shared vocabulary: what a blockchain is, and what a transaction, a key, and an address are for. Now meet the network Dash built on that foundation. Dash is **digital cash** first, and it adds one extra job that most blockchains never attempt. By the end of this lesson you will be able to say, in one sentence, what Dash is — and what makes it different from the chain you just met.
+
+## Digital cash, not a settlement layer
+
+Dash's first job is the one in its name: money. It grew out of Bitcoin's technology and keeps the same core idea — an append-only chain where value moves from one address to another without a bank in the middle. Its smallest unit is the <Term id="duff">duff</Term>: one Dash is 100,000,000 duffs, so a payment can be split as finely as you need.
+
+But "money" and "cash" are not the same thing, and the difference is the point. Think about what *cash* means in a shop. You hand over a note; the cashier takes it; the deal is done. Neither of you waits, and neither of you can quietly reverse it afterwards. A blockchain's native answer to "is this really settled?" is more cautious: wait for several <Term id="block">blocks</Term> to bury the transaction deep enough that undoing it becomes practically impossible. On many chains that means minutes of waiting — fine for a settlement layer between institutions, awkward at a checkout counter.
+
+## About a second
+
+Dash's answer is different. On Dash a payment is confirmed in **about a second** — fast enough that a seller can take it the way a cashier takes cash, rather than asking a customer to stand around while a network settles. There is no extra fee and nothing to opt into; every qualifying payment just confirms that quickly.
+
+That single number is what most people mean when they say Dash feels different. It is worth pausing on, because it sounds like magic and it is not. It costs Dash something real: a whole extra tier of the network that exists to make a guarantee this strong possible.
+
+## The thing that makes the rest possible
+
+A typical blockchain is one tier. <Term id="mining">Miners</Term> propose the next block, and ordinary <Term id="node">nodes</Term> relay transactions and check each one against the rules. That is enough to move value, but every extra guarantee — speed, stronger security, new services — is something a one-tier design has to bolt on awkwardly.
+
+Dash adds a **second tier**: the **masternodes**. A masternode is a server, like a normal node, with one crucial difference: the operator has to lock up **1,000 DASH as collateral** to run one. That collateral is the whole trick. An ordinary node costs almost nothing to spin up, so an attacker could throw up thousands of them to game the network at little risk. A masternode operator, by contrast, has real money on the line — misbehave and lose it — which pulls their interest into line with the network's. In exchange, masternodes are *paid* to provide the network's extra services.
+
+That is the piece this lesson (and much of the course) leans on: **masternodes are the thing that makes everything after this possible.** The about-a-second confirmation is only the first of the services this collateralized, paid second tier performs.
+
+## A second tier can be given a second job
+
+Here is the step that turns Dash from "fast cash" into something bigger. A second tier built to provide extra services is not a one-trick fix — it is *infrastructure*. Once you have servers that are committed (by collateral) and kept honest (by being paid), you can load more than one job onto them. Fast payments were the first job; they did not have to be the last.
+
+So Dash asks a question an ordinary payment chain does not: if these committed servers can confirm a payment in about a second, *what else can they do?*
+
+## One network, two jobs
+
+The answer is that one network now carries **two jobs** on the same masternode backbone.
+
+**Job one is Dash Core** — the money. It is the first-tier blockchain that moves Dash, and its extra services, like the about-a-second confirmation, are what the masternodes provide.
+
+**Job two is Dash Platform** — the data. It is a layer that lets applications store and verify their data on the network itself, rather than in a private database a single company controls. Where Core is about moving value, Platform is about letting developers build online services whose data lives on the network.
+
+The two jobs share the infrastructure. Most masternodes, with their 1,000 DASH, serve Core. A special kind — the **evonode**, which locks up 4,000 DASH — serves both: it runs Core's services *and* hosts Platform. That is the shape of Dash in one move: **one network, two jobs**, both carried by the same committed, collateralized servers.
+
+This lesson has named Platform only by its effect — a place for application data — and that is deliberate. The next lesson opens Platform up to show how its data model works and what you can build on it.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="what-is-dash"
+  passingScore={4}
+  questions={[
+    {
+      id: "cash-vs-settlement",
+      prompt: "A customer pays and wants to leave immediately rather than wait for the network to settle. What does Dash offer that a slow settlement chain does not?",
+      options: [
+        { id: "a", label: "Payments that are confirmed in about a second, at no extra cost." },
+        { id: "b", label: "A mandatory several-block wait before a payment counts." },
+        { id: "c", label: "An extra fee the customer pays to get fast confirmation." },
+        { id: "d", label: "A bank in the middle that guarantees the payment." },
+      ],
+      correctOptionId: "a",
+      explanation: "Dash's defining feature is confirmation in about a second with no extra cost — the receiver does not wait for several blocks.",
+    },
+    {
+      id: "masternode-role",
+      prompt: "What makes Dash's extra services — like about-a-second confirmation — possible at all?",
+      options: [
+        { id: "a", label: "Faster miners." },
+        { id: "b", label: "A second tier of masternodes that lock up collateral and are paid to provide services." },
+        { id: "c", label: "A private server run by one company." },
+        { id: "d", label: "A larger block size alone." },
+      ],
+      correctOptionId: "b",
+      explanation: "Masternodes are Dash's deliberate second tier: collateralized so misbehavior is costly, and paid to run the network's extra services.",
+    },
+    {
+      id: "collateral-why",
+      prompt: "Why does a masternode operator have to lock up 1,000 DASH to run the node?",
+      options: [
+        { id: "a", label: "It is an entrance fee paid to a Dash company." },
+        { id: "b", label: "The collateral is spent each block to pay the miners." },
+        { id: "c", label: "So misbehaving costs the operator real money, keeping them honest." },
+        { id: "d", label: "So the node has funds to lend to its users." },
+      ],
+      correctOptionId: "c",
+      explanation: "An ordinary node is cheap to spin up, so it is cheap to run dishonestly. Collateral puts the operator's own money at risk, aligning their interest with the network's.",
+    },
+    {
+      id: "two-jobs",
+      prompt: "Your app needs to store user records on a network rather than in your own database. Which part of Dash is that job?",
+      options: [
+        { id: "a", label: "Dash Core, the money layer." },
+        { id: "b", label: "Dash Platform, the data layer." },
+        { id: "c", label: "The miner tier." },
+        { id: "d", label: "A third, separate chain with its own coin." },
+      ],
+      correctOptionId: "b",
+      explanation: "Core is the money; Platform is the data layer, running on the same network. It is the second of Dash's two jobs, not a separate chain.",
+    },
+    {
+      id: "evonode",
+      prompt: "A masternode operator wants to help with both jobs — money and Platform. What do they run?",
+      options: [
+        { id: "a", label: "A regular masternode with 1,000 DASH." },
+        { id: "b", label: "Only a mining rig." },
+        { id: "c", label: "An evonode with 4,000 DASH, serving Core and hosting Platform." },
+        { id: "d", label: "A plain full node with no collateral." },
+      ],
+      correctOptionId: "c",
+      explanation: "Evonodes lock 4,000 DASH and carry both jobs — Core's services plus Platform. Regular masternodes (1,000 DASH) serve Core only.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now say what Dash is in one move: digital cash whose payments confirm in about a second, running alongside a data layer — one network doing two jobs, both powered by a collateralized second tier of masternodes. You can explain what a masternode is and why collateral matters, and place Dash Core (money) and Dash Platform (data) as two jobs on the same infrastructure. That frame is what the rest of the course hangs on.
