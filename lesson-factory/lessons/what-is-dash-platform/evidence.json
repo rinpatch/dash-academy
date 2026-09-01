@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "slug": "what-is-dash-platform",
+  "module": 3,
+  "title": "What is Dash Platform?",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Dash Academy curriculum — modules 3–19 manifest rows",
+      "kind": "curriculum manifest",
+      "locator": "lesson-factory/curriculum.json",
+      "version": "schemaVersion 1"
+    },
+    {
+      "id": "S2",
+      "title": "What is Dash Platform",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S3",
+      "title": "What is Dash",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S4",
+      "title": "Platform Protocol (DPP)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S5",
+      "title": "Data Contract",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-data-contract.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S6",
+      "title": "Document",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-document.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S7",
+      "title": "Identity",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S8",
+      "title": "Name Service (DPNS)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S9",
+      "title": "Tokens",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S10",
+      "title": "Non-Fungible Tokens (NFTs)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/nft.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S11",
+      "title": "Drive",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S12",
+      "title": "Decentralized API (DAPI)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S13",
+      "title": "Tutorials Introduction",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/introduction.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S14",
+      "title": "Example apps (DashMint Lab, Dashnote)",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/example-apps.md",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S15",
+      "title": "Platform Comparison",
+      "kind": "vendored authoritative Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/platform-comparison.md",
+      "version": "Dash Platform Book v4.2-dev"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Dash Platform is a layer-2 data-storage and application layer on top of Dash: developers define JSON-Schema data contracts (declarative schemas) and submit signed state transitions, rather than deploying arbitrary user-written code on-chain.",
+      "sourceIds": ["S2", "S4", "S15"],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "Platform's two core components are Drive (decentralized storage hosted by the masternode network) and DAPI (a decentralized API exposing JSON-RPC and gRPC endpoints through which applications send and retrieve data).",
+      "sourceIds": ["S2"],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "A data contract is a registered schema that declares the document types an application may store, including their fields, types, and indexes — described by upstream as analogous to creating a schema for a document-oriented database such as MongoDB — and every data write is validated against it.",
+      "sourceIds": ["S2", "S4", "S5"],
+      "support": "direct"
+    },
+    {
+      "id": "C4",
+      "text": "Application data is stored as documents — JSON records in document collections that must conform to the contract's schema — each carrying base fields such as $id, $type, $ownerId, and a $revision that increments on change.",
+      "sourceIds": ["S6", "S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C5",
+      "text": "Documents are owned by a Platform identity, and changes are expressed as signed state transitions, so only the owning identity can author changes to its records.",
+      "sourceIds": ["S7", "S4"],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "Concrete things built on Platform include DPNS usernames (.dash names tied to an identity), fungible tokens declared inside a data contract rather than written as a smart contract, and NFTs implemented as uniquely-identified document records with built-in transfer and set-price purchase.",
+      "sourceIds": ["S8", "S9", "S10"],
+      "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "The first two data contracts on Dash Platform are DashPay (the social, username-based wallet) and DPNS (the name service that supplies usernames), which together demonstrate the storage-and-schema model in production use.",
+      "sourceIds": ["S5", "S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C8",
+      "text": "Working end-to-end example apps exist in the official tutorials — DashMint Lab, an NFT marketplace exercising mint, transfer, price, purchase, and burn; and Dashnote, a notes app demonstrating the document CRUD lifecycle.",
+      "sourceIds": ["S13", "S14"],
+      "support": "direct"
+    },
+    {
+      "id": "C9",
+      "text": "Platform query responses can carry cryptographic proofs, so a client verifies an answer against committed state instead of trusting the node that served it — the difference between a decentralized backend and a hosted one.",
+      "sourceIds": ["S2", "S12"],
+      "support": "direct"
+    },
+    {
+      "id": "C10",
+      "text": "Drive stores the current state of each application data item on the masternode network rather than on the layer-1 chain (which is expensive for data), and GroveDB provides the authenticated storage that lets those queries return with proofs.",
+      "sourceIds": ["S11", "S2"],
+      "support": "direct"
+    },
+    {
+      "id": "C11",
+      "text": "What the reader will build across this course follows the real build order: connect the SDK to testnet, create an identity, register a username, design and publish a data contract, then submit, query, transfer, and purchase documents, and finally declare and operate a token — the path from install to a working decentralized application.",
+      "sourceIds": ["S1", "S13"],
+      "support": "inference"
+    }
+  ],
+  "apiExamples": [],
+  "conflicts": [],
+  "uncertainties": [
+    {
+      "id": "U1",
+      "topic": "Where the boundary between this lesson and module 4 (why-build-on-dash) should sit, since both name tokens, usernames, and NFTs",
+      "blocking": false,
+      "resolution": "Buildable items (usernames, tokens, NFTs) appear only as short illustrations of the storage model, one or two sentences each; fit-vs-non-fit judgment, the VM roadmap, and the Dash-vs-Credits detail are deferred to module 4."
+    },
+    {
+      "id": "U2",
+      "topic": "How much identity/fee detail is needed to explain storage without pulling in module 7 (identities) and module 8 (wallets/keys)",
+      "blocking": false,
+      "resolution": "Name the effect only: data is owned by an identity and changed by signed operations; credit balances and fee mechanics are deferred to module 7."
+    },
+    {
+      "id": "U3",
+      "topic": "Whether to state that Dash has no general-purpose smart-contract VM today, or leave that to module 4",
+      "blocking": false,
+      "resolution": "The lesson keeps the declarative-schema-versus-code contrast as the explanation of storage and does not foreground the VM roadmap or timing."
+    }
+  ],
+  "executableExamples": []
+}

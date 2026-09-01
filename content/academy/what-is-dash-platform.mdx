@@ -1,0 +1,138 @@
+---
+title: What is Dash Platform?
+description: See what Dash Platform lets you build, and what you will build here.
+module: 3
+tier: concepts
+estimatedMinutes: 12
+exp: 100
+verification: quiz
+prerequisites: [2]
+---
+
+Last lesson ended on a promise: one network, two jobs. Dash Core was the first job — money that settles in about a second. This lesson is the second job: Dash Platform, the layer where your application's data lives. By the end you will be able to point at a feature and say whether it is a Platform job, name a few things already built on it, and know the exact app you will assemble across the rest of this course.
+
+## A database you don't run
+
+Here is the version of this story for someone who builds web apps. Every app you write has two pieces: the code, and a database that remembers its users' state. Dash takes that second piece and moves it onto the network. Platform is a decentralized data layer — a place to store your application's structured data where no single company runs the servers.
+
+The difference is *how* you describe your data. On a normal stack you might write table schemas, migrations, and triggers. On Dash you publish one thing: a **data contract**. A data contract is a JSON Schema that declares the document types your app uses — their fields, their types, and the indexes you want to query by. It plays the same role a schema does for a document-oriented database like MongoDB. There is no program to deploy and no function the network has to run. You describe the shape of your data, and the network stores and checks it.
+
+Why does that matter? Because most security bugs in a decentralized app live in code its author wrote — the auth check, the transfer function, the owner-mint loop. When all you hand the network is a schema, there is none of that to get wrong. The network validates every write against the contract and rejects anything that does not fit. Your job shrinks to declaring what a valid record looks like.
+
+## Documents, and who may change them
+
+If the contract is the schema, the actual data is a set of **documents** — JSON records that conform to it. A document is the unit this whole course turns on: a note, a profile, a username, an asset. Every document carries a little base furniture regardless of the app: a unique id, a type naming which part of the contract it matches, the id of its owner, and a revision number that ticks up each time it changes.
+
+That owner field is the part that replaces your hiring a database administrator. Each document is owned by a Platform <Term id="identity">identity</Term> — a persistent account with its own keys. Changing a document means submitting a signed <Term id="state-transition">state transition</Term>, and only the owning identity can sign it. So ownership is not a column you remember to check inside your own code; the network enforces it before the write is accepted. "Who may change this record" is built in.
+
+And because the data lives on the network rather than in your one database, any app that knows the contract can read it. There is no silo to export from, and no single backend that can go down and take your app with it.
+
+## Where the data actually lives
+
+Two pieces run the storage. <Term id="drive">Drive</Term> is the storage component: the current state of every application's data, kept on the <Term id="masternode">masternode</Term> network. <Term id="dapi">DAPI</Term> is the front door — a decentralized API you reach over <Term id="json-rpc">JSON-RPC</Term> or <Term id="grpc">gRPC</Term>. Your app talks to DAPI, DAPI talks to Drive, and you never run or maintain a node of your own.
+
+The part worth pausing on: an answer can come back with a proof. A normal backend returns whatever it likes and you trust it. DAPI can attach a cryptographic <Term id="state-proof">state proof</Term> to a response, so your client checks the answer against the network's committed state instead of trusting the server that answered. That is what separates a database you pay someone to host from one you can actually call decentralized. Keep it as a filter for this whole course: when someone promises trustless, the real question is always "verified against what?", and here the answer is the whole network's committed state.
+
+## Proof the model works
+
+If the storage story still feels abstract, the first two contracts make it concrete. Dash Platform launched with two real products built on this exact schema-plus-documents model.
+
+**DashPay** is the social wallet: usernames, contacts, and payment profiles. **DPNS** — the Dash Platform Name Service — is the contract that supplies those usernames, registering human-readable `.dash` names and tying each one to the identity that owns it. Your users can send to `alice.dash` instead of a bare address. Notice the trick: a username is not a special kind of object, it is just a document — a record in DPNS's schema that happens to point at an identity. That is the whole storage model wearing its real-world clothes.
+
+## What this lets you build
+
+Once you trust the pattern, the things it composes into form a short but wide list.
+
+**Tokens.** On many networks an application token means writing and deploying a <Term id="smart-contract">smart contract</Term>. On Dash it is a declaration inside your data contract — a name, a supply, and the rules for minting, freezing, and burning. The network enforces them; there is no code of yours to audit.
+
+**NFTs.** Dash has no separate NFT standard. An NFT is a document with a unique id that represents one distinct thing, and the protocol gives it the behaviors you want — transfer, purchase at a set price, mutation, deletion. The same model that stores a note also stores a collectible.
+
+Both already exist as worked examples you can read and run: **DashMint Lab**, an NFT marketplace that walks through minting, transferring, pricing, purchasing, and burning; and **Dashnote**, a notes app demonstrating the full create-read-update-delete lifecycle against a real contract. These are not diagrams — they are the exact operations you will perform yourself over the coming lessons.
+
+## What you will build here
+
+So this course is not a lecture followed by a toy. It is one application, assembled in the order the platform itself requires:
+
+1. **Connect** — install the SDK pointing at <Term id="testnet">testnet</Term>, and read a real response from the network.
+2. **Prove who you are** — create a Platform identity, the owner everything else will belong to.
+3. **Get a name** — register a `.dash` username through DPNS.
+4. **Declare your data** — design and publish your own data contract.
+5. **Fill it** — submit, query, transfer, and purchase documents inside that contract.
+6. **Issue value** — declare and operate a token, and charge it for document operations.
+
+Notice the shape: every later step depends on the one before it, because on Dash you cannot write a document before you have a contract, and you cannot have a contract before you have an identity to own it. That ordering is not a teaching choice; it is how the network works. By the last lesson you will have a running decentralized application, and this lesson is where you learn what that app is made of.
+
+## Checkpoint
+
+Pass the quiz to complete the lesson.
+
+<LessonQuiz
+  challengeId="what-is-dash-platform"
+  passingScore={4}
+  questions={[
+    {
+      id: "storage-model",
+      prompt: "You are storing user records for an app. How does Dash Platform want you to describe the data?",
+      options: [
+        { id: "a", label: "Write code the network runs on every record to decide what is valid." },
+        { id: "b", label: "Publish a JSON-Schema data contract; the network validates every document against it." },
+        { id: "c", label: "Configure a hosted SQL database you rent from the network." },
+        { id: "d", label: "Store full documents in Dash transactions on the Core chain." },
+      ],
+      correctOptionId: "b",
+      explanation: "You declare a schema (a data contract) and the network stores and checks the data against it. There is no application code of yours to deploy or run.",
+    },
+    {
+      id: "trust-the-answer",
+      prompt: "Your app just read a record from Platform. Why can you trust it more than a normal API response?",
+      options: [
+        { id: "a", label: "DAPI encrypts every response so it cannot be tampered with." },
+        { id: "b", label: "The response is signed by the specific server that answered, which you choose and trust." },
+        { id: "c", label: "The response can carry a state proof your client checks against the network's committed state." },
+        { id: "d", label: "All reads are free, so a lying server has nothing to gain." },
+      ],
+      correctOptionId: "c",
+      explanation: "A proof lets your client verify the answer against committed network state instead of trusting the node that served it — the difference between hosted and decentralized.",
+    },
+    {
+      id: "ownership",
+      prompt: "Only the owner of a record may edit it. What does Dash actually give you?",
+      options: [
+        { id: "a", label: "An owner column your application code must check on every write." },
+        { id: "b", label: "Each document is owned by an identity, and changes are signed state transitions only that identity can author." },
+        { id: "c", label: "A permission system you configure per field in your own backend." },
+        { id: "d", label: "A password each document stores and your code compares." },
+      ],
+      correctOptionId: "b",
+      explanation: "Ownership and signed change are enforced by the network before a write is accepted, so you don't implement the access check yourself.",
+    },
+    {
+      id: "buildable-things",
+      prompt: "You want usernames, a reward token, and a collectible. What do those map to on Dash?",
+      options: [
+        { id: "a", label: "A username is a DPNS document, a token is a declaration in a data contract, and an NFT is a document with a unique id plus transfer and purchase." },
+        { id: "b", label: "Usernames, tokens, and NFTs are three separate smart contracts you write and deploy." },
+        { id: "c", label: "Usernames are wallet addresses, tokens are Core-layer Dash, and NFTs follow an ERC-721 standard." },
+        { id: "d", label: "All three require running your own node to store the data." },
+      ],
+      correctOptionId: "a",
+      explanation: "Everything is the same model: DPNS supplies usernames as documents, tokens are declared in a contract, and an NFT is just a uniquely-identified document with built-in behaviors.",
+    },
+    {
+      id: "course-arc",
+      prompt: "In what order does this course build its application, and why?",
+      options: [
+        { id: "a", label: "Connect to testnet, create an identity, register a username, publish a contract, then submit and trade documents, then issue a token." },
+        { id: "b", label: "Write documents first, then figure out what contract and identity they belonged to." },
+        { id: "c", label: "Issue a token first, so there is something to pay for the later steps." },
+        { id: "d", label: "Any order, because each piece works independently." },
+      ],
+      correctOptionId: "a",
+      explanation: "Each step depends on the one before: an identity must own a contract before documents can exist, and tokens come after the document lifecycle. The course follows the platform's real build order.",
+    },
+  ]}
+/>
+
+## What you accomplished
+
+You can now explain Dash Platform as the application-data layer of the Dash network: data contracts declare the shape of your data, documents are the records validated against them and signed by an owning identity, and Drive plus DAPI store and serve it with answers your client can verify. You can name what the model has already produced — DashPay and DPNS usernames, declared tokens, document-based NFTs, and the DashMint Lab and Dashnote examples — and you know the exact app you will assemble next: connect, identity, username, contract, documents, then a token.
