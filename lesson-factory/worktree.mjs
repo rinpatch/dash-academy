@@ -8,6 +8,7 @@ export async function assertPreparedBaseline() {
     "lib/progress/index.ts", "components/lesson/course-track-card.tsx", "components/lesson/lesson-nav-list.tsx",
     ".agents/skills/write-dash-lesson/SKILL.md", ".agents/skills/write-dash-lesson/agents/openai.yaml",
     ".agents/skills/write-dash-lesson/references/workflow.md",
+    ".agents/skills/anti-ai-slop-writing/SKILL.md", ".agents/skills/anti-ai-slop-writing/references/banned-words.md",
   ];
   const factory = await command("git", ["ls-files", "--", "lesson-factory"], { cwd: repoRoot });
   const factoryFiles = factory.stdout.trim().split("\n").filter(Boolean);

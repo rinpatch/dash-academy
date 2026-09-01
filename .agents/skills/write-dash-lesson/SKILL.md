@@ -28,6 +28,38 @@ Pedagogy review must also return `revise` when the lesson has no through-line: s
 the reader want the next one. This is a blocking defect, not a wording preference — a lesson nobody
 finishes teaches nothing, and it is the one failure the other gates cannot see.
 
+## Prose
+
+Read [anti-ai-slop-writing](../anti-ai-slop-writing/SKILL.md) and its banned-words reference, and
+write within them. It catches the tells this skill's pedagogy rules do not: punctuation rhythm,
+uniform sentence length, chains of short declaratives, filler vocabulary.
+
+### Anti-slop scope
+
+That skill was written for tweets, emails, and blog posts. Where it disagrees with the rules below,
+the rules below win.
+
+- **Never add a specific to satisfy it.** It asks for numbers, named things, moments in time, and
+  friction. A lesson's claims must all trace to `evidence.json`, so the only specifics available are
+  the ones research already established. Where it wants concrete detail you do not have, cut the
+  vague sentence rather than invent a replacement — facts review will catch a fabricated one, and a
+  revision round is expensive.
+- **Its formatting rules are for social media.** Lessons need `##` headings, `## What you
+  accomplished`, and the MDX components. Ignore "no markdown headers" and "no bold" entirely.
+- **Banned words are banned as filler, not as terminology.** A lesson about keys says "key", and an
+  SDK lesson about robustness of a query says what it means. The list targets words reached for to
+  sound impressive; it never overrides the correct technical term.
+- Fragments and deliberately ugly sentences are a smaller licence here than it implies. A learner
+  parsing an unfamiliar concept needs the sentence to hold together on the first read.
+
+Em dashes are the measured failure: the first three concept lessons shipped 19 to 22 apiece against
+that skill's budget of one per 500 words. At lesson length that is three or four, so it is a real
+constraint, not a rounding note. Use commas, semicolons, colons, parentheses, or a new sentence.
+
+Pedagogy review must return `revise` for anti-slop violations only where they make the lesson worse
+to read — em dash density well over budget, a run of same-length sentences, banned filler doing real
+work in a sentence. A single stray banned word is a finding, not a verdict.
+
 ## Required sequence
 
 1. Research the lesson independently. Prefer vendored Dash docs for concepts and installed package types/runtime for SDK shape.

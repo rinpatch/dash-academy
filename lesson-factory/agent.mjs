@@ -122,7 +122,7 @@ export function parseResult(stdout, role, stderrFile) {
 // author was spending 54 tool calls and 128K input tokens re-reading docs the research stage had
 // already distilled into its prompt.
 const trustHandoff = "The context below is your input. Do not re-derive it: the lesson files, diff, manifest, and test reports are already here in full, so do not re-read them from disk.";
-const verdictBar = "Return verdict revise only for defects in correctness, scope, the audience rule, prose that fails the skill's through-line bar, schema, build, or tests. Report cosmetic issues (formatting, trailing newlines, a synonym you would have picked) as findings without downgrading the verdict; a revision round is expensive. A lesson that is accurate, in scope, and lifeless is not cosmetic: it is the defect the deterministic gates cannot catch, so it has to block here or it ships.";
+const verdictBar = "Return verdict revise only for defects in correctness, scope, the audience rule, prose that fails the skill's through-line or anti-slop bar, schema, build, or tests. Report cosmetic issues (formatting, trailing newlines, a synonym you would have picked) as findings without downgrading the verdict; a revision round is expensive. A lesson that is accurate, in scope, and lifeless is not cosmetic: it is the defect the deterministic gates cannot catch, so it has to block here or it ships.";
 
 function buildPrompt(role, lesson, context) {
   const common = `Read ${skillPath} and follow it. You are the ${role} for exactly module ${lesson.module}: ${lesson.title}.\nManifest row:\n${JSON.stringify(lesson, null, 2)}\n`;
@@ -133,7 +133,7 @@ function buildPrompt(role, lesson, context) {
   // docs is the whole point of that gate. pedagogy-review has no such need.
   const scope = role === "facts-review"
     ? `${trustHandoff} You may still open authoritative Dash sources, but only to check a specific claim you actually doubt.`
-    : `${trustHandoff} Judging pedagogy needs only the manifest, the skill's audience rule, and the lesson text above, all of which are here.`;
+    : `${trustHandoff} Judging pedagogy needs only the manifest, the skill's audience and prose rules, and the lesson text above. The lesson text is here; read the skill's prose section and the anti-slop skill it links, which are not.`;
   return `${common}\nResearch, answers, diff, and tests:\n${JSON.stringify(context, null, 2)}\n${scope}\nReview independently. Do not edit files. ${verdictBar} Use block only when a missing human decision or irreconcilable source conflict makes revision impossible. Return only the schema result.`;
 }
 
