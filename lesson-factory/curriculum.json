@@ -19,7 +19,7 @@
       "exp": 100,
       "prerequisites": [],
       "verification": { "kind": "quiz", "challengeId": "what-is-a-blockchain" },
-      "mustCover": ["what a blockchain is, in terms a developer already understands", "transactions, keys, and addresses", "why decentralization matters to someone building an app"],
+      "mustCover": ["the learner can explain what a blockchain stores and why the only edit it allows is an append, by relating it to a structure they already use", "the learner can trace a single payment through the outputs it consumes and the ones it creates, and say why the same output cannot be spent twice", "the learner can say which of a private key, public key, and address they hand to someone paying them, and why the other two stay put", "the learner can state what a builder gains by having no administrator, and what they give up for it"],
       "mustNotCover": ["Dash's masternodes, second tier, or confirmation speed", "Dash Core versus Dash Platform", "LLMQ and quorum formation internals", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
     },
     {
