@@ -241,4 +241,16 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "A convention on top of BIP32 that derives addresses at a fixed path, so different wallets agree on which address is which. Dash uses a different coin type on testnet than on mainnet.",
     tag: "Protocol",
   },
+  consensus: {
+    title: "Consensus",
+    definition:
+      "Agreement among the nodes of a blockchain that a given block or transaction is valid. Nodes that hold the same validated blocks are said to be in consensus.",
+    tag: "Basics",
+  },
+  secp256k1: {
+    title: "secp256k1",
+    definition:
+      "The elliptic curve Dash uses for its public-key cryptography. A public key is a point on this curve derived from the private key, which is why it cannot be worked backwards.",
+    tag: "Protocol",
+  },
 };
