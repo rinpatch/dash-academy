@@ -37,7 +37,10 @@ async function runBrowserTest({ lesson, worktree, runId, lessonDir }) {
   await mkdir(artifactDir, { recursive: true });
   const serverLog = path.join(artifactDir, "server.log");
   const logHandle = await import("node:fs").then(({ openSync }) => openSync(serverLog, "a", 0o600));
-  const server = spawn("npm", ["run", "dev"], { cwd: worktree, env: secretlessEnv(), stdio: ["ignore", logHandle, logHandle] });
+  // dev:isolated, not dev: the URL below comes from `portless get`, and only the portless-wrapped
+  // script registers that route. Plain `next dev` serves localhost:3000 and nothing answers the
+  // proxy hostname, so the wait below burns its full 90 seconds.
+  const server = spawn("npm", ["run", "dev:isolated"], { cwd: worktree, env: secretlessEnv(), stdio: ["ignore", logHandle, logHandle] });
   const sessions = ["desktop", "isolated", "mobile"].map((role) => `${runId}-m${lesson.module}-${role}`.replace(/[^a-zA-Z0-9_-]/g, "-"));
   try {
     const urlResult = await command(portless, ["get", "dash-academy"], { cwd: worktree, env: secretlessEnv() });

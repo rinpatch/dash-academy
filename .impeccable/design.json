@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-13T09:40:52Z",
+  "title": "Design System: Dash Academy",
+  "extensions": {
+    "colorMeta": {
+      "hyperwave-blue": {
+        "role": "primary",
+        "displayName": "Hyperwave Blue",
+        "canonical": "#4C7EFF",
+        "tonalRamp": ["#0F213D", "#152B51", "#3C65CC", "#4C7EFF", "#799EFF", "#E4ECFF", "#F6F8FF", "#FFFFFF"]
+      },
+      "midnight-circuit": {
+        "role": "neutral",
+        "displayName": "Midnight Circuit",
+        "canonical": "#0C1C33",
+        "tonalRamp": ["#0C1C33", "#18283D", "#303E51", "#495566", "#C2C6CC", "#DBDDE1", "#F3F3F4", "#FFFFFF"]
+      },
+      "mint-current": {
+        "role": "tertiary",
+        "displayName": "Mint Current",
+        "canonical": "#60F6D2",
+        "tonalRamp": ["#10273A", "#183D4A", "#4BBFAA", "#60F6D2", "#88F8DD", "#E7FEF8", "#F7FEFC", "#FFFFFF"]
+      },
+      "error-red": {
+        "role": "error",
+        "displayName": "Error Red",
+        "canonical": "#CD2E00",
+        "tonalRamp": ["#151D30", "#291F2B", "#9D290D", "#CD2E00", "#DA6240", "#F8E0D9", "#FCF4F2", "#FFFFFF"]
+      },
+      "warning-orange": {
+        "role": "warning",
+        "displayName": "Warning Orange",
+        "canonical": "#F98F12",
+        "tonalRamp": ["#172231", "#2F2D2E", "#BE721A", "#F98F12", "#FBAB4D", "#FEEEDC", "#FEF9F3", "#FFFFFF"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display / H1",
+        "purpose": "Brand and milestone moments only; not routine lesson UI."
+      },
+      "headline": {
+        "displayName": "Headline / H3",
+        "purpose": "Page-level product headings on wide screens."
+      },
+      "title": {
+        "displayName": "Title / H5",
+        "purpose": "Section titles and prominent result headings."
+      },
+      "body": {
+        "displayName": "Body Base",
+        "purpose": "Default lesson prose and interface copy."
+      },
+      "label": {
+        "displayName": "Body Small Semibold",
+        "purpose": "Controls, compact metadata, tags, and statuses."
+      }
+    },
+    "shadows": [
+      {
+        "name": "raised-control",
+        "value": "0 2px 8px rgba(12, 28, 51, 0.12)",
+        "purpose": "Hovered controls, draggable nodes, and compact floating actions."
+      },
+      {
+        "name": "overlay",
+        "value": "0 8px 24px rgba(12, 28, 51, 0.18)",
+        "purpose": "Popovers and menus that must sit above the task surface."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-fast",
+        "value": "150ms cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Hover, focus, pressed, and compact status changes."
+      },
+      {
+        "name": "state-standard",
+        "value": "200ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Unlocking, expanding feedback, and progressive disclosure."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The default action for moving through a task.",
+      "html": "<button class=\"ds-btn-primary\">Continue</button>",
+      "css": ".ds-btn-primary { min-height: 48px; padding: 12px 20px; border: 0; border-radius: 12px; background: #4C7EFF; color: #FFFFFF; font: 700 16px/1.25 Manrope, Arial, sans-serif; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-primary:hover { background: #3C65CC; box-shadow: 0 2px 8px rgba(12, 28, 51, 0.12); } .ds-btn-primary:active { box-shadow: none; } .ds-btn-primary:focus-visible { outline: 3px solid #E4ECFF; outline-offset: 3px; } .ds-btn-primary:disabled { background: #DBDDE1; color: #495566; cursor: not-allowed; box-shadow: none; }"
+    },
+    {
+      "name": "Progress Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "The single high-attention action tied directly to checking or verified progress.",
+      "html": "<button class=\"ds-btn-progress\">Check my work</button>",
+      "css": ".ds-btn-progress { min-height: 48px; padding: 12px 20px; border: 0; border-radius: 12px; background: #60F6D2; color: #0C1C33; font: 700 16px/1.25 Manrope, Arial, sans-serif; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-progress:hover { background: #88F8DD; } .ds-btn-progress:active { background: #4BBFAA; } .ds-btn-progress:focus-visible { outline: 3px solid #E7FEF8; outline-offset: 3px; } .ds-btn-progress:disabled { background: #DBDDE1; color: #495566; cursor: not-allowed; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A quiet alternative that never competes with the primary task.",
+      "html": "<button class=\"ds-btn-secondary\">Review lesson</button>",
+      "css": ".ds-btn-secondary { min-height: 48px; padding: 11px 19px; border: 1px solid #DBDDE1; border-radius: 12px; background: #FFFFFF; color: #0C1C33; font: 700 16px/1.25 Manrope, Arial, sans-serif; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1), border-color 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-secondary:hover { background: #F6F8FF; border-color: #799EFF; } .ds-btn-secondary:active { background: #E4ECFF; } .ds-btn-secondary:focus-visible { outline: 3px solid #E4ECFF; outline-offset: 3px; } .ds-btn-secondary:disabled { color: #495566; background: #F3F3F4; cursor: not-allowed; }"
+    },
+    {
+      "name": "Identity Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "A readable field for usernames, identity IDs, and learner responses.",
+      "html": "<label class=\"ds-field\"><span>Dash identity or username</span><input placeholder=\"alice\" /></label>",
+      "css": ".ds-field { display: grid; gap: 8px; color: #0C1C33; font: 600 13px/18px Manrope, Arial, sans-serif; } .ds-field input { min-height: 48px; padding: 11px 15px; border: 1px solid #DBDDE1; border-radius: 12px; background: #FFFFFF; color: #0C1C33; font: 500 18px/25px Manrope, Arial, sans-serif; transition: border-color 150ms cubic-bezier(0.25, 1, 0.5, 1), outline-color 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-field input::placeholder { color: #495566; opacity: 1; } .ds-field input:hover { border-color: #799EFF; } .ds-field input:focus { border-color: #4C7EFF; outline: 3px solid #E4ECFF; outline-offset: 2px; } .ds-field input:disabled { background: #F3F3F4; color: #495566; cursor: not-allowed; }"
+    },
+    {
+      "name": "Verified Status",
+      "kind": "chip",
+      "refersTo": "status-success",
+      "description": "A color-independent confirmation for completed or on-chain verified work.",
+      "html": "<span class=\"ds-status-verified\"><svg viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path d=\"M16.7 5.8 8.6 14l-4.1-4.1 1.4-1.4 2.7 2.7 6.7-6.8 1.4 1.4Z\"/></svg>Verified</span>",
+      "css": ".ds-status-verified { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 6px 12px; border-radius: 999px; background: #E7FEF8; color: #0C1C33; font: 700 13px/16px Manrope, Arial, sans-serif; } .ds-status-verified svg { width: 16px; height: 16px; fill: #0C1C33; }"
+    },
+    {
+      "name": "Lesson Panel",
+      "kind": "card",
+      "refersTo": "lesson-panel",
+      "description": "A calm reading container with strong hierarchy and no decorative elevation.",
+      "html": "<article class=\"ds-lesson-panel\"><p class=\"ds-lesson-meta\">Module 1 · 5 min</p><h3>What is Dash?</h3><p>Understand how the Dash network fits together before you build on it.</p></article>",
+      "css": ".ds-lesson-panel { max-width: 68ch; padding: 32px; border-radius: 16px; background: #FFFFFF; color: #0C1C33; font-family: Manrope, Arial, sans-serif; } .ds-lesson-panel h3 { margin: 8px 0 16px; font-size: 32px; line-height: 34px; letter-spacing: -0.03em; font-weight: 800; text-wrap: balance; } .ds-lesson-panel p { margin: 0; font-size: 18px; line-height: 25px; font-weight: 500; text-wrap: pretty; } .ds-lesson-panel .ds-lesson-meta { color: #495566; font-size: 13px; line-height: 18px; font-weight: 600; }"
+    },
+    {
+      "name": "Current Learning Node",
+      "kind": "custom",
+      "refersTo": "learning-node-current",
+      "description": "The active location in the curriculum learning path.",
+      "html": "<button class=\"ds-learning-node\"><span class=\"ds-node-index\">09</span><span><strong>Create a Dash Identity</strong><small>Current lesson</small></span></button>",
+      "css": ".ds-learning-node { display: flex; align-items: center; gap: 16px; width: min(100%, 360px); padding: 16px; border: 0; border-radius: 12px; background: #4C7EFF; color: #FFFFFF; text-align: left; font-family: Manrope, Arial, sans-serif; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1), transform 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-learning-node:hover { background: #3C65CC; transform: translateY(-2px); } .ds-learning-node:active { transform: translateY(0); } .ds-learning-node:focus-visible { outline: 3px solid #E4ECFF; outline-offset: 3px; } .ds-node-index { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 8px; background: #FFFFFF; color: #0C1C33; font-size: 13px; font-weight: 800; } .ds-learning-node strong, .ds-learning-node small { display: block; } .ds-learning-node strong { font-size: 16px; line-height: 20px; font-weight: 800; } .ds-learning-node small { margin-top: 4px; font-size: 13px; line-height: 18px; font-weight: 500; } @media (prefers-reduced-motion: reduce) { .ds-learning-node { transition: background 150ms linear; } .ds-learning-node:hover, .ds-learning-node:active { transform: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Learning Circuit",
+    "overview": "Dash Academy should feel like a bright, guided lab inside a trustworthy network: Hyperwave Blue establishes direction, Midnight Circuit gives the interface structure, and Mint Current marks meaningful forward motion. The experience is technical without being cryptic, lively without becoming childish, and familiar enough that the interface disappears behind the learner's task.\n\nThis is a product system, so brand expression is concentrated in progress, verification, diagrams, and key teaching moments. Everyday controls remain calm and predictable. Layouts are left-aligned or deliberately centered, spacing follows an 8-point rhythm, and prose is structured for comfortable reading rather than compressed into documentation-like walls.\n\nThe visual system explicitly rejects the interchangeable course-template look and the dense, weakly structured feel of unparsable technical documentation.",
+    "keyCharacteristics": [
+      "Restrained product surfaces with confident blue direction and mint progress cues.",
+      "One highly legible geometric family—Manrope—used consistently across UI and instruction.",
+      "Clear modular hierarchy built from an 8-point spacing system.",
+      "Minimal geometric icons, concise diagrams, and selective rounded 3D artifacts for difficult concepts.",
+      "Fast, state-driven motion that explains unlocking, checking, success, and failure."
+    ],
+    "rules": [
+      { "name": "The Guided Energy Rule", "body": "Fun comes from progress, interaction, and vivid teaching artifacts—not decorative clutter or non-functional animation.", "section": "overview" },
+      { "name": "The Three-Current Rule", "body": "Blue means direction or selection, mint means verified progress, and red/orange communicate system state. Never use semantic colors as decoration.", "section": "colors" },
+      { "name": "The Contrast Rule", "body": "Use Midnight Circuit for text on white, pale blue, and pale mint. Use Pure White for text on Hyperwave Blue, Midnight Circuit, red, and orange. Status must always include an icon and text, never color alone.", "section": "colors" },
+      { "name": "The Reading-First Rule", "body": "Aim for about 60 characters per line and never exceed 80. Long-form lessons use generous paragraph spacing and a body line height of at least 120%.", "section": "typography" },
+      { "name": "The Product Scale Rule", "body": "Product screens use fixed type sizes. Responsive changes switch between defined roles; they do not continuously scale headings with the viewport.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces stay flat at rest. If every card casts a shadow, hierarchy has failed.", "section": "elevation" },
+      { "name": "The One-Separation Rule", "body": "A component uses either a boundary or a shadow for separation, never a decorative border plus a broad soft shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Hyperwave Blue, Midnight Circuit, and Mint Current as the recognizable core of every Academy surface.",
+      "Do use Manrope consistently and preserve its ExtraBold heading / Medium body contrast.",
+      "Do build layouts from multiples of 8px and vary spacing to express information hierarchy.",
+      "Do keep lesson prose near 60 characters per line and below the 80-character maximum.",
+      "Do use minimal geometric Curaft-style icons in monochrome or deliberate two-color combinations.",
+      "Do make difficult Dash concepts tangible with polished rounded 3D assets when real brand assets are available.",
+      "Do make verification, progress, prerequisites, and recovery actions explicit in both words and visuals."
+    ],
+    "donts": [
+      "Don't make Dash Academy feel like a generic tutorial assembled from interchangeable course patterns.",
+      "Don't reproduce the density, weak hierarchy, or unexplained terminology of unparsable technical documentation.",
+      "Don't use Mint Current, Error Red, or Warning Orange as ambient decoration; their semantic meaning must remain stable.",
+      "Don't create endless identical icon-card grids or nest decorative cards inside cards.",
+      "Don't use gradient text, decorative grid backgrounds, diagonal stripe backgrounds, or colored side-stripe callouts.",
+      "Don't use glassmorphism as the default surface treatment. BrandBook glass material belongs to selective 3D illustration details, not routine UI containers.",
+      "Don't invent hand-drawn or sketch-style SVG illustrations. Use approved assets, clean geometric icons, or no illustration.",
+      "Don't animate lesson content for spectacle. Motion must explain state, feedback, progress, or unlocking and must respect reduced motion."
+    ]
+  }
+}
