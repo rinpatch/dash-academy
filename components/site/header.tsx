@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Moon, Search, Sun } from "lucide-react";
+import { Menu, Moon, Search, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { DashAcademyLogo } from "@/components/site/dash-academy-logo";
 import { SaveProgress } from "@/components/site/save-progress";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 
 const navLinks = [
   { label: "Lessons", href: "/learn/what-is-dash" },
@@ -19,10 +21,12 @@ const navLinks = [
 export function SiteHeader() {
   const { setOpenSearch } = useSearchContext();
   const { resolvedTheme, setTheme } = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 rounded-b-3xl border-b border-foreground/12 bg-card">
-      <div className="mx-auto flex max-w-[1360px] items-center justify-between gap-4 px-4 py-4 sm:px-8">
+      {/* Height is fixed so the lesson bar below can stick at exactly --header-height. */}
+      <div className="mx-auto flex h-18 max-w-[1360px] items-center justify-between gap-4 px-4 sm:px-8">
         <Link href="/learn/what-is-dash" className="shrink-0">
           <DashAcademyLogo />
         </Link>
@@ -65,8 +69,37 @@ export function SiteHeader() {
             <Moon size={16} aria-hidden="true" className="dark:hidden" />
           </Button>
           <SaveProgress />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            className="rounded-xl md:hidden"
+          >
+            <Menu size={16} aria-hidden="true" />
+          </Button>
         </div>
       </div>
+
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetContent title="Menu" className="md:hidden">
+          <nav className="flex flex-col gap-1 pb-2 text-base font-medium">
+            {navLinks.map((link) =>
+              link.href ? (
+                <SheetClose asChild key={link.label}>
+                  <Link href={link.href} className="rounded-2xl px-2 py-3 font-extrabold text-primary">
+                    {link.label}
+                  </Link>
+                </SheetClose>
+              ) : (
+                <span key={link.label} className="px-2 py-3 text-foreground/48">
+                  {link.label}
+                </span>
+              ),
+            )}
+          </nav>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }

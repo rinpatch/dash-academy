@@ -39,6 +39,9 @@
 }
 
 :root {
+  /* The header row plus its 1px bottom border. The mobile lesson bar sticks directly under it. */
+  --header-height: calc(4.5rem + 1px);
+
   --background: oklch(0.98 0.012 266.5);
   --foreground: oklch(0.22 0.052 253.5);
   --card: oklch(1 0 0);
@@ -102,6 +105,17 @@
   --sidebar-ring: oklch(0.72 0.15 264.5);
 }
 
+/* Anchor jumps must clear the sticky header, plus the lesson bar that sits under it below lg. */
+html {
+  scroll-padding-top: calc(var(--header-height) + 4rem);
+}
+
+@media (min-width: 64rem) {
+  html {
+    scroll-padding-top: calc(var(--header-height) + 1rem);
+  }
+}
+
 @keyframes quiz-step-enter {
   from {
     opacity: 0;
@@ -160,6 +174,19 @@
   }
 }
 
+@keyframes sheet-content-enter {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheet-content-enter {
+  animation: sheet-content-enter 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .dialog-overlay-enter {
   animation: dialog-overlay-enter 150ms ease-out;
 }
@@ -170,7 +197,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .dialog-overlay-enter,
-  .dialog-content-enter {
+  .dialog-content-enter,
+  .sheet-content-enter {
     animation: none;
   }
 }
