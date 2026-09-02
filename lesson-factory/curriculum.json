@@ -32,7 +32,7 @@
       "exp": 100,
       "prerequisites": ["what-is-a-blockchain"],
       "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
-      "mustCover": ["Dash as money", "masternodes as the thing that makes the rest possible", "payments confirm in about a second", "one network, two jobs: Dash Core and Dash Platform"],
+      "mustCover": ["the learner can say what a payment on Dash feels like to the person receiving it, and how that differs from waiting on a block", "the learner can say what masternodes do that ordinary nodes do not, and why the rest of Dash depends on them existing", "the learner can decide which of Dash Core and Dash Platform a given feature belongs to"],
       "mustNotCover": ["re-teaching what a blockchain or a transaction is", "LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
     },
     {
@@ -45,7 +45,7 @@
       "exp": 100,
       "prerequisites": ["what-is-dash"],
       "verification": { "kind": "quiz", "challengeId": "what-is-dash-platform" },
-      "mustCover": ["how Platform stores application data", "concrete things you can build", "what you will build in this course"],
+      "mustCover": ["the learner can describe where an app's data lives on Platform and who is allowed to change it", "the learner can name something they could build on Platform that they could not build on Dash Core alone", "the learner can recognise, from a feature request, whether Platform is the right tool for it"],
       "mustNotCover": ["masternode quorums and LLMQs", "InstantSend versus ChainLock mechanics", "Tenderdash and consensus internals", "re-teaching what a blockchain is"]
     },
     {
