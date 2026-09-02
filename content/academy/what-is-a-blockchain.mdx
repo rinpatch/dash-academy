@@ -9,138 +9,109 @@ verification: quiz
 prerequisites: []
 ---
 
-This course teaches you to build on Dash, but every line of Dash code assumes you already hold one picture in your head. Here is that picture. By the end you can say what a blockchain stores, who gets to change it, how a user proves a payment is really theirs — and why putting an app's data on one isn't the same as choosing a database.
+Suppose two companies share a payment history. Your database says an invoice was paid; your partner's export says it wasn't. Which record wins?
 
-## The backend you already know
+A normal application has a ready answer: the database run by its administrator. That arrangement is useful. The administrator can correct a bad row or change the rules when the business changes. Yet everyone else must trust the same administrator not to erase a payment or quietly replace yesterday's records.
 
-Every developer already knows one kind of shared store: a database running on servers your company controls. You send it rows; it sends rows back. The deal you're making has two sides.
+A blockchain solves that dispute by changing what counts as the authoritative record. Instead of one operator keeping the accepted copy, participants share a record that independent computers check for themselves.
 
-What it buys: it's fast, private, and cheap to run, and when something goes wrong there is an administrator who can fix it.
+## A log that grows at one end
 
-What it costs: there is one administrator. That single operator can fail and take your data down with it, can refuse to serve certain users, and can quietly rewrite history — a balance changed here, a record deleted there — with nothing for you to check it against.
+A blockchain is an ordered, timestamped ledger of <Term id="transaction">transactions</Term>. It collects transactions into <Term id="block">blocks</Term>, then adds each new block after the last accepted one. The record is **append-only**: accepted entries aren't overwritten or deleted. If an entry needs correcting, the correction appears later in the log while the original remains part of its history.
 
-That is the problem every blockchain exists to solve: can a shared record of who holds what survive without a single operator you have to trust?
+You've used a structure like this in Git. Commits link backward through earlier history, so a sequence of them records how a project reached its current state. Rewriting an old commit changes its identifier and the identifiers of every commit built on top of it. You can't alter the middle and leave the rest of the history untouched.
 
-## A ledger nobody owns
+Blocks have the same backward-linking shape. A cryptographic fingerprint called a **hash** links each one to the block before it, and the block also records a hash-based summary of its own transactions. Change an old transaction and that summary changes; the block after it no longer has the right link, nor does the history built after that.
 
-A blockchain is the answer to that question. It's a **ledger** — just a record of who holds what — but it's a ledger no single party controls. Three properties do the work.
+That explains why an edit is visible, but it doesn't yet explain why anyone must care. After all, a Git repository owner can rewrite commits and force-push the result.
 
-First, it only ever grows. You append entries; you never edit or delete the ones already there. Entries are bundled into **blocks**, so the log is a chain of blocks — hence the name.
+## Why there is no force-push button
 
-Second, each block is wired to the one before it by a **hash**: a short, fixed-size fingerprint of the block's contents. Change one bit anywhere in an old block and its fingerprint changes, which changes the fingerprint of the block after it, and so on. There is no way to quietly alter the past without rewriting everything that came after it.
+Git hosting gives an owner administrative control over the copy everyone treats as official. A blockchain doesn't give that role to one operator. <Term id="node">Full nodes</Term> receive blocks from the network and independently check them against shared rules before accepting and relaying them.
 
-Third, the log is copied, not stored in one place. Many independent computers — <Term id="node">full nodes</Term> — each keep the whole chain, and each checks every new block against the same rules before accepting it. Nodes that have arrived at the same validated blocks are said to be in <Term id="consensus">consensus</Term>.
+An operator can edit a local copy, just as anyone can edit a file on their own computer. Publishing that copy doesn't make it the network's history. Other full nodes don't accept a block because an administrator says it is official; they reject blocks that fail their rules. In the baseline proof-of-work model, if more than one chain passes those checks, nodes follow the one that is most difficult to recreate. Current Dash applies additional acceptance rules, so greater accumulated work alone doesn't guarantee acceptance.
 
-You already know this shape. It's a commit log: each commit points at its parent, and the identity of every later commit depends on the ones before it. The difference is who keeps the repo. A git history can be force-pushed, rewritten, or deleted by whoever owns the machine it lives on. A blockchain's history lives on thousands of machines that each refuse an invalid entry, so nobody can quietly rewrite it.
+Hash links make a crude alteration easy to spot. But an attacker could build a self-consistent alternative in which every changed block points correctly to the changed block before it. Something else must make that replacement hard, or hashing would amount to a tamper alarm with an off switch.
 
-Computers known as <Term id="mining">miners</Term> compete to propose the next block, and whoever proposes one the network accepts is rewarded with newly issued value. That is how the chain keeps moving — and we'll leave the machinery of that competition for later.
+## What makes a rewrite costly
 
-## The entries are transactions
+Dash requires **proof of work** for its blocks. Proof of work is computational effort that must be completed before a proposed block can extend the chain. It supplies the cost that hash links alone don't provide.
 
-A ledger nobody can quietly edit only helps if its entries prove who authorized them. In a blockchain, an entry is a **transaction**, and the way it represents value is the single most important thing to get right early — because it is not how a normal database does it.
+To construct a competing history in the baseline model, an attacker has to redo the proof of work for the changed block and every descendant after it. Meanwhile, honest participants keep adding work to the history the network already accepts. The attacker isn't aiming at a fixed finish line; they must catch and overtake a chain that continues to grow.
 
-A normal app stores a balance: a row that says Alice has 10 units, which you increment and decrement. A blockchain stores no balances at all. Instead, value lives in the **outputs** of transactions, and it moves when one transaction's outputs become the inputs of the next. Alice doesn't "have 10 units"; a past transaction paid her an output worth 10 units, and to spend it she makes a new transaction whose input points back at that output.
+The farther back the target sits, the more accumulated work must be recreated. A self-consistent alternative must still pass each full node's checks, and on current Dash, more work alone need not satisfy them. Changing one node's files is cheap. Recreating the accumulated proof of work behind a competing history is expensive.
 
-Two rules make this work:
+Proof of work doesn't make a competing history mathematically impossible. It makes constructing one increasingly costly as later blocks accumulate; whether full nodes accept it remains a separate question governed by all of the network's rules.
 
-- An output can be spent exactly once. Anyone who tries to spend the same output a second time is proposing a **double spend**, and every node rejects it, so the second attempt simply doesn't happen.
-- A transaction is valid only if each of its inputs points at an output that hasn't been spent yet.
+## The bargain a builder makes
 
-Put those together and a "balance" is just the total sitting in a wallet's unspent outputs — the **UTXOs** (unspent transaction outputs). Change your mental model from "a row holding a number" to "a pile of unspent outputs." That shift is what the rest of this course is built on.
+Removing the administrator changes what your users must trust. They no longer depend on your company to preserve the only authoritative copy of a shared record. Independent participants can check the same history under the same rules, even when they don't trust one another or the application operator.
 
-On Dash, the ledger counts in <Term id="duff">duffs</Term> — the smallest unit, one hundred-millionth of a Dash, the same way a cent is a hundredth of a dollar.
+That independence is useful when the record must outlive one service or when no participant should have the power to revise past events alone. It also takes a familiar tool away from you: administrative override.
 
-## Proving a spend is yours
+If your application writes a mistaken entry, you can't silently patch or delete the accepted record. You append a correction. If you want to change the rules that nodes use to judge new blocks, deploying new code to your own server isn't enough; network participants must adopt compatible rules, or they risk following different chains.
 
-If any transaction could spend any output, the ledger would be useless — anyone could point an input at your output and walk off with it. So every output is locked to a condition, and only someone holding the right **key** can satisfy it.
-
-The key system has three moving parts, and it's worth keeping them straight:
-
-- **Private key.** A secret random number — 256 bits of randomness — that you keep to yourself. It is the authority: the thing that can unlock an output.
-- **Public key.** A value you derive from the private key with elliptic-curve cryptography, using a standard curve called <Term id="secp256k1">secp256k1</Term>. It's designed to travel in one direction only: anyone can go from private key to public key, but nobody can reverse that and recover your private key from a public one.
-- **Address.** The handle other people actually pay to. It's a shortened, checksummed encoding of a hash of the public key, so a mistyped character produces an address that is obviously wrong rather than a payment into the void.
-
-Spending works like signing a check. To spend an output, you sign the transaction with your private key. The signature proves you hold the key, but it never exposes the key itself — the network just checks the signature against the public key that matches the hash the output commits to, and the payment clears without your secret ever leaving your machine. Anyone can verify your signature; only you could have produced it.
-
-## Why any of this matters to your app
-
-We've built up three facts: the ledger is append-only, its entries are cryptographically chained, and it's copied across many computers that each validate every new block. Put them together and you get the property the whole thing was designed for, restated for someone shipping software.
-
-No single server exists to shut down, censor, or lie to you. There is no administrator who can delete your users' records, no bundle of servers whose failure takes the whole system offline, and no platform owner who can revoke your access because they changed their mind about your app. The network itself is the backend: anyone can read from it and write to it without asking permission.
-
-That's the answer to carry forward. A database is a service someone promises to keep honest. A blockchain is a record that doesn't need that promise, because thousands of strangers, each checking the same rules against the same data, collectively can't be talked into a lie by any one of them. You'll spend this course deciding, problem by problem, whether your app is better off paying the single-operator cost for the speed, or the blockchain's cost for the independence.
+The choice is therefore sharper than "blockchain or database." With your own database, users trust your administration and you keep the power to repair history unilaterally. With a blockchain, users can verify a shared history without relying on you as its keeper, while you give up the ability to edit that history or change its rules by yourself.
 
 ## Checkpoint
 
-Pass the quiz to complete the lesson.
+Pass all four questions to complete the lesson.
 
 <LessonQuiz
   challengeId="what-is-a-blockchain"
   passingScore={4}
   questions={[
     {
-      id: "define-blockchain",
-      prompt: "Which description best matches what a blockchain is, in terms a developer already knows?",
+      id: "append-only-log",
+      prompt: "An accepted payment entry needs a correction. Which action matches an append-only blockchain?",
       options: [
-        { id: "a", label: "A database run by a single company, tuned for speed." },
-        { id: "b", label: "An append-only log of blocks, each chained to the previous one by its hash, replicated across many independently validating computers." },
-        { id: "c", label: "A wallet that stores a running balance for each user." },
-        { id: "d", label: "A messaging network for sending payment requests." },
+        { id: "a", label: "Replace the old entry, then send the updated block to every node." },
+        { id: "b", label: "Append a correcting entry later, leaving the accepted entry in history." },
+        { id: "c", label: "Remove the old block, then attach its descendants to the preceding block." },
+        { id: "d", label: "Let one node choose whether the original entry should remain visible." },
       ],
       correctOptionId: "b",
-      explanation: "A blockchain is an append-only, hash-chained, replicated log whose entries are blocks, checked by many nodes so past entries can't be quietly rewritten.",
+      explanation: "A blockchain groups transactions into blocks and appends them to accepted history. It preserves an earlier entry and records any correction later in the log.",
     },
     {
-      id: "value-lives-in",
-      prompt: "Where does value actually live in a blockchain, rather than a stored balance?",
+      id: "hash-link-cascade",
+      prompt: "Why can't someone change a transaction in an old block while leaving every later block untouched?",
       options: [
-        { id: "a", label: "In a central accounts database." },
-        { id: "b", label: "In unspent transaction outputs that a later transaction spends as inputs." },
-        { id: "c", label: "In the wallet file as a single number." },
-        { id: "d", label: "In the block headers." },
+        { id: "a", label: "Shared rules allow edits only when every node receives them together." },
+        { id: "b", label: "Proof of work encrypts an accepted transaction so nobody can read it." },
+        { id: "c", label: "Every node stores the transaction in a database row that cannot change." },
+        { id: "d", label: "Changing the old data breaks the hash links through the history that follows." },
       ],
-      correctOptionId: "b",
-      explanation: "Value moves from the output of one transaction to the input of the next. A balance is just the sum of a wallet's unspent outputs, or UTXOs.",
+      correctOptionId: "d",
+      explanation: "Changing old data changes its block's fingerprint. Every descendant would then need new links, much as rewriting an old Git commit changes the commits built after it.",
     },
     {
-      id: "double-spend",
-      prompt: "What makes spending the same output twice impossible?",
+      id: "accepted-rewrite-cost",
+      prompt: "In the baseline proof-of-work model, what makes constructing a competing history expensive rather than a simple edit?",
       options: [
-        { id: "a", label: "Wallets promise not to do it." },
-        { id: "b", label: "Every node keeps the same ledger and rejects any second spend of an already-spent output." },
-        { id: "c", label: "The miner decides who is honest." },
-        { id: "d", label: "The address checksum blocks invalid spends." },
-      ],
-      correctOptionId: "b",
-      explanation: "Each output may be spent exactly once. Because every node independently checks each transaction, a second spend of the same output is rejected by the whole network.",
-    },
-    {
-      id: "what-to-share",
-      prompt: "Which of these is safe to hand out publicly so other people can pay you?",
-      options: [
-        { id: "a", label: "Your private key." },
-        { id: "b", label: "Your address, derived from your public key." },
-        { id: "c", label: "Your signature." },
-        { id: "d", label: "Your seed phrase." },
-      ],
-      correctOptionId: "b",
-      explanation: "An address is a shareable, checksummed handle derived from the public key and reveals nothing about the private key. The private key must stay secret — it is what authorizes spending.",
-    },
-    {
-      id: "why-decentralization",
-      prompt: "For someone building an app, what does decentralization buy over a database one company owns?",
-      options: [
-        { id: "a", label: "Guaranteed anonymity for every user." },
-        { id: "b", label: "Free storage and unlimited throughput." },
-        { id: "c", label: "No single server to shut down, censor, or silently rewrite records — the network itself is the backend, open to anyone." },
-        { id: "d", label: "A support desk that can restore lost keys." },
+        { id: "a", label: "The attacker must persuade every node operator before creating another chain." },
+        { id: "b", label: "The attacker must calculate a new hash for the changed block, but not for later blocks." },
+        { id: "c", label: "The attacker must redo proof of work for the changed block and its descendants while the accepted chain grows." },
+        { id: "d", label: "The attacker must wait until nodes stop checking the shared validation rules." },
       ],
       correctOptionId: "c",
-      explanation: "Decentralization removes the single operator who can fail, censor, or lie to you. The replicated, independently validated network becomes the backend, and anyone can build against it without permission.",
+      explanation: "Independent full nodes don't treat one edited copy as authoritative. Recreating enough accumulated proof of work to overtake a growing chain explains the construction cost, but current Dash acceptance also depends on other rules.",
+    },
+    {
+      id: "builder-bargain",
+      prompt: "What does a builder gain and give up by using a blockchain instead of an administrator-controlled record?",
+      options: [
+        { id: "a", label: "Users can independently check a shared history, but the builder can't silently delete accepted entries or change shared rules alone." },
+        { id: "b", label: "The builder controls every accepted copy, but users must validate each database repair." },
+        { id: "c", label: "Users can choose their own validation rules, but the builder must approve each transaction." },
+        { id: "d", label: "The builder can correct accepted history alone, but can't change future validation rules." },
+      ],
+      correctOptionId: "a",
+      explanation: "The shared record no longer depends on one operator's authoritative copy. In return, the builder loses the administrator's power to patch history or impose rule changes alone.",
     },
   ]}
 />
 
 ## What you accomplished
 
-You can now describe a blockchain in terms you already understood — an append-only, hash-chained, replicated log, like a commit history that no one operator can force-push. You know that value lives in transaction outputs rather than stored balances, that each output can be spent once, which is what makes a double spend impossible, and that a private key authorizes a spend while a public key and address let others pay you without ever exposing the secret. Finally, you can say why that independence matters to an app you build: the network itself is the backend, with no single server to shut down, censor, or silently rewrite your users' records.
+You can describe a blockchain as an ordered, append-only transaction log whose blocks point backward, much like Git commits. You can also explain where the analogy ends: a repository owner can force-push, while blockchain full nodes independently validate what they accept. Hash links expose changes; in the baseline proof-of-work model, constructing a competing history requires redoing accumulated work and catching a chain that keeps growing. Current Dash applies additional acceptance rules, so accumulated work alone doesn't guarantee acceptance. For a builder, the payoff is a shared record that doesn't depend on one administrator, and the cost is losing unilateral edits, deletions, and rule changes.

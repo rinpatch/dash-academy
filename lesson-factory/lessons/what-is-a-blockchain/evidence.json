@@ -11,134 +11,135 @@
   },
   "sources": [
     {
-      "id": "S0",
-      "title": "Dash Academy curriculum — module 1 manifest row",
-      "kind": "curriculum manifest",
-      "locator": "lesson-factory/curriculum.json, module 1",
-      "version": "schemaVersion 1"
-    },
-    {
       "id": "S1",
-      "title": "Blockchain Overview (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/block-chain-block-chain-overview.md",
+      "title": "Blockchain",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain.md, lines 7-11",
       "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S2",
-      "title": "Blockchain (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/block-chain.md",
+      "title": "Blockchain Overview",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-block-chain-overview.md, lines 7-19",
       "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S3",
-      "title": "Transactions (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/transactions.md",
+      "title": "Proof of Work",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-proof-of-work.md, lines 7-27",
       "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S4",
-      "title": "P2PKH Script Validation (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/transactions-p2pkh-script-validation.md",
+      "title": "Block Height and Forking",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-block-height-and-forking.md, lines 7-19",
       "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S5",
-      "title": "Wallets (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets.md",
+      "title": "P2P Network",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/p2p-network.md, lines 7-11",
       "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S6",
-      "title": "Avoiding Key Reuse (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/transactions-avoiding-key-reuse.md",
+      "title": "Consensus Rule Changes",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-consensus-rule-changes.md, lines 7-27",
       "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S7",
-      "title": "Glossary (Dash Core docs)",
-      "kind": "vendored authoritative Core reference",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/resources/glossary.md",
+      "title": "Dash Documentation: Security",
+      "kind": "vendored authoritative Dash user documentation",
+      "locator": ".claude/skills/dash-docs/docs/docs/user/index.rst, lines 31-39",
+      "version": "Dash Docs 23.0.0"
+    },
+    {
+      "id": "S8",
+      "title": "Blockchain Technology Overview",
+      "kind": "NIST interagency report",
+      "locator": "https://doi.org/10.6028/NIST.IR.8202, abstract",
+      "version": "NIST IR 8202 Final, October 2018"
+    },
+    {
+      "id": "S9",
+      "title": "ChainLocks",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/dash-features-chainlocks.md, lines 10-18",
       "version": "Dash Core Docs 23.0.0"
     }
   ],
   "claims": [
     {
       "id": "C1",
-      "text": "A block chain is a chain of blocks in which each block references the block before it; each block stores the hash of the previous block's header and a merkle root of its own transactions, so a transaction cannot be modified without modifying its block and every block after it.",
-      "sourceIds": ["S1", "S2", "S7"],
+      "text": "Dash's blockchain is a public ledger: an ordered, timestamped record of transactions designed to protect against double spending and modification of earlier transaction records.",
+      "sourceIds": ["S1"],
       "support": "direct"
     },
     {
       "id": "C2",
-      "text": "The block chain is Dash's public ledger: an ordered, timestamped record of transactions whose purpose is to protect against double spending and against modification of earlier transaction records.",
+      "text": "Transactions are collected into blocks, and each block header contains a commitment to that block's transactions plus the hash of the preceding block's header.",
       "sourceIds": ["S2"],
       "support": "direct"
     },
     {
       "id": "C3",
-      "text": "Each full node independently stores a chain of blocks it has itself validated against the consensus rules; nodes holding the same validated blocks are said to be in consensus.",
-      "sourceIds": ["S2"],
-      "support": "direct"
+      "text": "The accepted historical record is append-only: the chain advances by adding a block, while changing an accepted transaction would also require changing its block and every following block. A correction therefore belongs in a later entry rather than overwriting the original entry.",
+      "sourceIds": ["S1", "S2", "S8"],
+      "support": "inference"
     },
     {
       "id": "C4",
-      "text": "Value does not move wallet-to-wallet as a stored balance; it moves from the output of one transaction to the input of the next. Each output may be spent only once, so a second attempt to spend it is a forbidden double spend.",
-      "sourceIds": ["S1", "S7"],
-      "support": "direct"
+      "text": "In the baseline proof-of-work model, hash linkage makes tampering evident, but hashing alone does not make constructing a competing history economically expensive. Proof of work supplies that cost.",
+      "sourceIds": ["S2", "S3"],
+      "support": "inference"
     },
     {
       "id": "C5",
-      "text": "A wallet balance is really the total duffs held in one or more unspent transaction outputs (UTXOs). A transaction is valid only if its inputs are unspent outputs.",
-      "sourceIds": ["S1", "S3"],
+      "text": "Dash full nodes independently validate blocks against shared consensus rules before accepting and relaying them; archival nodes retain the entire chain, while pruned full nodes may retain only part of the historical block data.",
+      "sourceIds": ["S1", "S5"],
       "support": "direct"
     },
     {
       "id": "C6",
-      "text": "Dash value is denominated in duffs; one dash equals 100,000,000 duffs.",
-      "sourceIds": ["S7"],
-      "support": "direct"
+      "text": "Changing one operator's local copy does not rewrite the network's accepted record. Dash full nodes independently reject blocks that fail their rules; accumulated work is part of the baseline chain-selection model, not a complete statement of current Dash acceptance.",
+      "sourceIds": ["S1", "S4", "S5", "S9"],
+      "support": "inference"
     },
     {
       "id": "C7",
-      "text": "A private key is 256 bits of secret random data. A public key is derived from it using ECDSA on the secp256k1 curve; the public key is hashed to a 20-byte pubkey hash, which is encoded as a Dash address using base58check (a version number, the hash, and a checksum to catch typos).",
-      "sourceIds": ["S3", "S7"],
-      "support": "direct"
-    },
-    {
-      "id": "C8",
-      "text": "Spending a standard P2PKH output requires a signature script holding the full public key and an ECDSA signature; the output's pubkey script checks that the supplied public key hashes to the expected value and that the signature was made with the matching private key.",
-      "sourceIds": ["S4", "S3"],
-      "support": "direct"
-    },
-    {
-      "id": "C9",
-      "text": "The signature covers the whole transaction except the signature scripts, making it tamper-proof so it can be broadcast over the peer-to-peer network; every peer and miner validates it independently before relaying or including it.",
+      "text": "In the baseline proof-of-work model, a party constructing a competing history must redo the proof of work for the changed block and its descendants while honest participants continue extending the original chain. The required work grows as more blocks follow the target block.",
       "sourceIds": ["S3"],
       "support": "direct"
     },
     {
+      "id": "C8",
+      "text": "Proof of work makes constructing a competing historical chain expensive rather than mathematically impossible. Current Dash has additional acceptance rules that reject some competing blocks regardless of accumulated work, so a more-work chain is not guaranteed to become accepted history.",
+      "sourceIds": ["S3", "S4", "S9"],
+      "support": "inference"
+    },
+    {
+      "id": "C9",
+      "text": "Without a central repository or authority, participants can share and independently check a record without trusting the application operator to preserve the sole authoritative copy.",
+      "sourceIds": ["S1", "S5", "S7", "S8"],
+      "support": "inference"
+    },
+    {
       "id": "C10",
-      "text": "Because the ledger is replicated across many independently validating nodes with no central controller, no single server can be shut down, censored, or silently rewrite history — which is what 'decentralized' buys an application as opposed to a database one company owns.",
-      "sourceIds": ["S2", "S1"],
+      "text": "A builder gives up unilateral administration in exchange for that independence: accepted history cannot be silently patched or deleted, and changing shared validation rules requires network participants to adopt compatible rules or risk divergent chains.",
+      "sourceIds": ["S2", "S6", "S8"],
       "support": "inference"
     },
     {
       "id": "C11",
-      "text": "A wallet program creates public keys to receive duffs and uses the corresponding private keys to spend them; a wallet file stores the private keys.",
-      "sourceIds": ["S5"],
-      "support": "direct"
-    },
-    {
-      "id": "C12",
-      "text": "Reusing a public key or address lets others track a person's receiving and spending; using a fresh key for each receive and spend improves privacy and security.",
-      "sourceIds": ["S6"],
-      "support": "direct"
+      "text": "A Git commit history is a useful structural analogy because commits point backward and later identifiers depend on earlier history. Its limit teaches the main distinction: a repository owner can force-push, whereas independently validating blockchain full nodes do not accept one operator's rewritten copy merely because that operator published it.",
+      "sourceIds": ["S1", "S2", "S4", "S5"],
+      "support": "inference"
     }
   ],
   "apiExamples": [],
@@ -146,27 +147,21 @@
   "uncertainties": [
     {
       "id": "U1",
-      "topic": "The core docs describe consensus and independent validation but never state verbatim why decentralization matters to an app developer.",
+      "topic": "Should append-only be described as every node permanently storing every historical byte?",
       "blocking": false,
-      "resolution": "Derive it as an inference from the node/consensus/ledger sources, kept strictly effects-focused (no masternodes, no second tier): no single server to shut down, censor, or silently rewrite records, and the network itself is the backend. Labeled 'inference' in claim C10."
+      "resolution": "Define append-only at the ledger level: accepted records are not overwritten, and corrections arrive as later entries. Do not claim every node is archival."
     },
     {
       "id": "U2",
-      "topic": "Whether 'what a blockchain is' should mention how new blocks get proposed (mining/proof of work).",
+      "topic": "Should the lesson call blockchain history immutable?",
       "blocking": false,
-      "resolution": "Name the effect only in one sentence (computers compete to propose the next block and are rewarded for the one the network accepts), via the existing <Term id=\"mining\"> glossary term, and defer all proof-of-work machinery."
+      "resolution": "Use tamper evident and costly to rewrite because immutable can imply that revision is impossible."
     },
     {
       "id": "U3",
-      "topic": "Whether to teach only the classic base58check payment address or also Platform's bech32m addresses.",
+      "topic": "Which familiar developer structure should carry the explanation?",
       "blocking": false,
-      "resolution": "Teach only the classic base58check payment address as the standard payment-address form in this lesson; leave Platform's bech32m addresses to module 8."
-    },
-    {
-      "id": "U4",
-      "topic": "Which incidental terms need new glossary entries versus inline definition.",
-      "blocking": false,
-      "resolution": "Define transaction, key, private key, public key, and address in prose (they are mustCover and belong to the lesson). Use <Term> with new glossary entries only for incidental jargon: consensus and secp256k1."
+      "resolution": "Use Git commit history for the block-linking shape and an administrator-controlled database for the builder tradeoff. State that a repository owner can force-push, while one blockchain operator cannot impose a rewritten copy on independently validating nodes."
     }
   ],
   "executableExamples": []
