@@ -19,6 +19,7 @@ Learners are developers who are new to Dash **and new to blockchain**. They are 
 - Every term of art must be explained at first use, but not necessarily in the prose. Prefer `<Term id="...">the term</Term>`, which shows a definition on click, for jargon that is incidental to this lesson — a word the reader must recognise to parse the sentence but which carries none of the lesson's learning objectives. Reuse an existing id from `lib/glossary.ts` where one fits, so the course words a term the same way everywhere. You may append a new entry to that file when your lesson needs a term it does not yet define. Never remove or reword an existing entry: other lessons depend on it, and the runner rejects a lesson that deletes one. Never use `<Term>` for a concept the manifest's `mustCover` names: that is the lesson's job, and it belongs in the prose.
 - Define a term inline instead when the sentence around it depends on the meaning. The lesson must read correctly for someone who never opens a popover.
 - Analogies and short worked examples over specification tables. Comparison tables are for choices the learner has to make.
+- No learning objectives, in any form: not a `## Learning objectives` section, not a bulleted list, not a paragraph saying what the reader will be able to do by the end. Nothing about "this lesson" or "this course" at all. Start on the subject and let the reader find out what it teaches by reading it.
 
 Pedagogy review must return `revise` when a lesson leads with mechanism, covers a `mustNotCover` topic, or leaves a term of art both unmarked and undefined. A term wrapped in `<Term>` with a glossary entry counts as explained; do not ask for prose duplicating it.
 
@@ -48,6 +49,9 @@ the rules below win.
 - **Banned words are banned as filler, not as terminology.** A lesson about keys says "key", and an
   SDK lesson about robustness of a query says what it means. The list targets words reached for to
   sound impressive; it never overrides the correct technical term.
+- **Contractions are not optional here.** Three drafts in a row came back with "it is", "does not",
+  "you have" and nothing else, across three different models, which reads like a specification
+  rather than someone explaining. Write "it's", "doesn't", "you've" wherever you would say them.
 - Fragments and deliberately ugly sentences are a smaller licence here than it implies. A learner
   parsing an unfamiliar concept needs the sentence to hold together on the first read.
 
