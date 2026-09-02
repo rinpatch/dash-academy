@@ -6,6 +6,7 @@ import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { CourseTrackCard } from "@/components/lesson/course-track-card";
 import { LessonNavList, type LessonSummary } from "@/components/lesson/lesson-nav-list";
+import { LessonMobileBar } from "@/components/lesson/lesson-mobile-bar";
 import { NotesPanel } from "@/components/lesson/notes-panel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -33,8 +34,16 @@ export default async function AcademyLesson({ params }: PageProps) {
 
   return (
     <AnchorProvider toc={page.data.toc}>
+      <LessonMobileBar
+        lessons={lessons}
+        currentUrl={page.url}
+        toc={page.data.toc}
+        lessonSlug={lessonSlug}
+        lessonTitle={page.data.title}
+      />
+
       <div className="mx-auto grid max-w-[1360px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[224px_1fr_288px] lg:gap-10 lg:py-12">
-        <aside className="order-2 lg:sticky lg:top-28 lg:order-1 lg:h-[calc(100vh-8rem)] lg:self-start">
+        <aside className="hidden lg:sticky lg:top-28 lg:block lg:h-[calc(100vh-8rem)] lg:self-start">
           <ScrollArea className="lg:h-full" viewportClassName="lg:pr-3">
             <div className="flex flex-col gap-4">
               <CourseTrackCard totalLessons={lessons.length} />
@@ -43,7 +52,7 @@ export default async function AcademyLesson({ params }: PageProps) {
           </ScrollArea>
         </aside>
 
-        <main className="order-1 flex min-w-0 flex-col gap-6 lg:order-2">
+        <main className="flex min-w-0 flex-col gap-6">
           <div className="flex items-center gap-4">
             <span className="rounded-xl bg-foreground/4 px-4 py-2 text-sm font-medium">
               <span className="font-extrabold">{page.data.estimatedMinutes}</span> Min. Read
@@ -67,7 +76,7 @@ export default async function AcademyLesson({ params }: PageProps) {
           </DocsBody>
         </main>
 
-        <aside className="order-3 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
+        <aside className="hidden lg:sticky lg:top-28 lg:block lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
           <NotesPanel lessonSlug={lessonSlug} lessonTitle={page.data.title} />
         </aside>
       </div>

@@ -1,23 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useId, useState } from "react";
 import { Bookmark, Trash2 } from "lucide-react";
-import { useStore } from "zustand";
+import { useNotesStore } from "@/components/providers/notes-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { createNotesStore, type Note } from "@/lib/notes-store";
+import { type Note } from "@/lib/notes-store";
 
 const EMPTY_NOTES: Note[] = [];
 
-export function NotesPanel({ lessonSlug, lessonTitle }: { lessonSlug: string; lessonTitle: string }) {
-  const [store] = useState(createNotesStore);
-  useEffect(() => void store.persist.rehydrate(), [store]);
-
-  const notes = useStore(store, (state) => state.notesByLesson[lessonSlug] ?? EMPTY_NOTES);
-  const isHydrated = useStore(store, (state) => state.hasHydrated);
-  const addNote = useStore(store, (state) => state.addNote);
-  const removeNote = useStore(store, (state) => state.removeNote);
+export function NotesPanel({
+  lessonSlug,
+  lessonTitle,
+  showHeading = true,
+}: {
+  lessonSlug: string;
+  lessonTitle: string;
+  /** Off inside the mobile sheet, whose own title already says "Notes". */
+  showHeading?: boolean;
+}) {
+  const notes = useNotesStore((state) => state.notesByLesson[lessonSlug] ?? EMPTY_NOTES);
+  const isHydrated = useNotesStore((state) => state.hasHydrated);
+  const addNote = useNotesStore((state) => state.addNote);
+  const removeNote = useNotesStore((state) => state.removeNote);
   const [draft, setDraft] = useState("");
+  // The panel is on the page twice below lg (sidebar and mobile sheet), so the id cannot be fixed.
+  const noteFieldId = useId();
 
   function saveDraft() {
     const text = draft.trim();
@@ -29,17 +37,19 @@ export function NotesPanel({ lessonSlug, lessonTitle }: { lessonSlug: string; le
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <div className="flex flex-col gap-1">
-          <p className="text-xl font-extrabold">Notes</p>
-          <p className="text-sm font-medium text-foreground/48">Your notes save automatically.</p>
-        </div>
+        {showHeading && (
+          <div className="flex flex-col gap-1">
+            <p className="text-xl font-extrabold">Notes</p>
+            <p className="text-sm font-medium text-foreground/48">Your notes save automatically.</p>
+          </div>
+        )}
 
         <div className="flex flex-col gap-4 rounded-2xl bg-background p-4">
-          <label htmlFor="lesson-note" className="sr-only">
+          <label htmlFor={noteFieldId} className="sr-only">
             Note about {lessonTitle}
           </label>
           <textarea
-            id="lesson-note"
+            id={noteFieldId}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder={`Add a note about ${lessonTitle}…`}
