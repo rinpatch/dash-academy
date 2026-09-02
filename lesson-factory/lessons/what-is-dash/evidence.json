@@ -9,167 +9,170 @@
   },
   "sources": [
     {
-      "id": "s1",
-      "title": "What is Dash (Platform intro)",
+      "id": "S1",
+      "title": "What is Dash",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md:9,25-35",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s2",
-      "title": "Dash Features (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features.md",
+      "id": "S2",
+      "title": "Dash Features",
+      "kind": "vendored authoritative Core developer documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features.md:11-35",
       "version": "Dash Core Docs 23.0.0"
     },
     {
-      "id": "s3",
-      "title": "InstantSend (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "S3",
+      "title": "Integration Guide",
+      "kind": "vendored authoritative Dash user documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/developers/integration.rst:27-35,140-160",
+      "version": "Dash Docs 23.0.0"
     },
     {
-      "id": "s4",
-      "title": "ChainLocks (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-chainlocks.md",
-      "version": "Dash Core Docs 23.0.0"
-    },
-    {
-      "id": "s5",
+      "id": "S4",
       "title": "Core Glossary",
       "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/resources/glossary.md",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/resources/glossary.md:134-136,214-216,278-280,337-340",
       "version": "Dash Core Docs 23.0.0"
     },
     {
-      "id": "s6",
-      "title": "What is Dash Platform (Platform intro)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "s7",
+      "id": "S5",
       "title": "Platform Glossary",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md:35-45,67-77",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "s8",
-      "title": "Masternode Payment (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-masternode-payment.md",
+      "id": "S6",
+      "title": "What is Dash Platform",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:7-10,35-41,60-71",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S7",
+      "title": "Dash User Features",
+      "kind": "vendored authoritative Dash user documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/introduction/features.rst:37-64,79-93",
+      "version": "Dash Docs 23.0.0"
+    },
+    {
+      "id": "S8",
+      "title": "InstantSend",
+      "kind": "vendored authoritative Core developer documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md:8-24",
       "version": "Dash Core Docs 23.0.0"
     }
   ],
   "claims": [
     {
       "id": "C1",
-      "text": "Dash is a cryptocurrency designed for payments (digital cash), built on Bitcoin-derived technology.",
-      "sourceIds": ["s1", "s2"],
+      "text": "Dash Core is software for operating and interacting with the Dash blockchain, where DASH payments are recorded.",
+      "sourceIds": ["S2", "S5"],
       "support": "direct"
     },
     {
       "id": "C2",
-      "text": "Dash is a two-tier network: a layer-1 blockchain of miners, plus a second tier of masternodes providing extra services.",
-      "sourceIds": ["s2", "s1"],
+      "text": "A Dash payment recipient can receive usable assurance in about a second and safely accept or re-spend the funds before the transaction enters a block.",
+      "sourceIds": ["S1", "S3", "S4"],
       "support": "direct"
     },
     {
       "id": "C3",
-      "text": "A masternode is a collateralized node (1,000 DASH) on the second tier; unlike ordinary full nodes it is paid to provide the network's extra services.",
-      "sourceIds": ["s5", "s2"],
+      "text": "Waiting for a block is a different event: Dash's average block interval is about 2.6 minutes, and a block confirmation counts inclusion depth rather than the earlier payment assurance.",
+      "sourceIds": ["S3", "S4"],
       "support": "direct"
     },
     {
       "id": "C4",
-      "text": "Masternodes are the one addition that makes Dash's differentiating features possible, including fast confirmation of payments.",
-      "sourceIds": ["s1", "s2"],
+      "text": "The network automatically attempts to give qualifying transactions near-instant assurance; the sender does not need to request the feature explicitly.",
+      "sourceIds": ["S1", "S8"],
       "support": "direct"
     },
     {
       "id": "C5",
-      "text": "Dash payments settle/confirm in about a second, so a recipient does not wait for several block confirmations.",
-      "sourceIds": ["s1", "s3"],
+      "text": "An ordinary Dash full node downloads and validates the blockchain, but it does not provide the additional services or receive the compensation assigned to masternodes.",
+      "sourceIds": ["S2"],
       "support": "direct"
     },
     {
       "id": "C6",
-      "text": "Instant confirmation is applied automatically to qualifying transactions at no extra cost.",
-      "sourceIds": ["s1", "s3"],
+      "text": "Masternodes form Dash's second network tier and provide additional services, including the service behind fast payment assurance, in exchange for compensation.",
+      "sourceIds": ["S1", "S2", "S7"],
       "support": "direct"
     },
     {
       "id": "C7",
-      "text": "Dash's smallest unit is the duff; 1 Dash equals 100,000,000 duffs.",
-      "sourceIds": ["s5"],
+      "text": "A regular masternode requires 1,000 DASH to remain unspent while it operates and receives network compensation for providing its services.",
+      "sourceIds": ["S4", "S7"],
       "support": "direct"
     },
     {
       "id": "C8",
-      "text": "Dash Core is the layer-1 blockchain/reference client used for payments.",
-      "sourceIds": ["s7", "s2"],
+      "text": "Evolution masternodes, or evonodes, require 4,000 DASH and host both Dash Core and Dash Platform; regular masternodes serve only Core.",
+      "sourceIds": ["S2", "S4", "S7"],
       "support": "direct"
     },
     {
       "id": "C9",
-      "text": "Dash has a second job in addition to money: Dash Platform, a decentralized data/application layer built on top of the same network.",
-      "sourceIds": ["s6", "s1"],
+      "text": "Dash Platform is the application-data layer on top of Dash, used to store and query shared application data without relying on one hosted backend.",
+      "sourceIds": ["S6"],
       "support": "direct"
     },
     {
       "id": "C10",
-      "text": "Drive (storage) and DAPI (a decentralized API) are Dash Platform's core components.",
-      "sourceIds": ["s6", "s7"],
-      "support": "direct"
+      "text": "A feature whose job is to move DASH belongs to Dash Core; a feature whose job is to store or query shared application data belongs to Dash Platform.",
+      "sourceIds": ["S5", "S6"],
+      "support": "inference"
     },
     {
       "id": "C11",
-      "text": "Evonodes are masternodes with 4,000 DASH collateral that host Dash Platform in addition to Core; regular masternodes (1,000 DASH) serve only Core.",
-      "sourceIds": ["s2", "s5", "s8"],
-      "support": "direct"
+      "text": "The differentiating services covered here depend on the second tier existing: ordinary full nodes do not replace the masternode service behind fast payments, and regular masternodes do not replace the evonodes that host Platform.",
+      "sourceIds": ["S2", "S4"],
+      "support": "inference"
     },
     {
       "id": "C12",
-      "text": "Masternodes/evonodes are compensated for their work, reflecting their collateral and role.",
-      "sourceIds": ["s2", "s8"],
+      "text": "Core and Platform are two jobs on the Dash network rather than two unrelated networks: Core handles the payment chain, while Platform adds application-data services on top.",
+      "sourceIds": ["S5", "S6"],
       "support": "direct"
-    },
-    {
-      "id": "C13",
-      "text": "One network runs both jobs: the money chain (Core) and the data layer (Platform) share the same masternode/evonode infrastructure.",
-      "sourceIds": ["s2", "s6", "s7"],
-      "support": "inference"
     }
   ],
-  "conflicts": [],
+  "apiExamples": [],
+  "conflicts": [
+    {
+      "id": "X1",
+      "topic": "The Platform introduction describes traditional peer-to-peer nodes as compensated equally, while the Core guide says ordinary full nodes receive no compensation for additional services.",
+      "sourceIds": ["S1", "S2"],
+      "status": "resolved",
+      "resolution": "The lesson follows the more specific Core guide when comparing ordinary full nodes with masternodes and omits the conflicting Platform introduction statement."
+    }
+  ],
   "uncertainties": [
     {
       "id": "U1",
-      "topic": "How precisely to word the one-second confirmation given docs mix 'instant' and 'little more than a second'",
+      "topic": "What timing phrase should describe the receiver's experience?",
       "blocking": false,
-      "resolution": "Lesson uses 'about a second' to match the manifest, and names the effect only — no locking-protocol machinery."
+      "resolution": "Use the manifest's rough phrase, 'about a second,' and contrast it with the roughly 2.6-minute average block interval. Do not state an exact timing guarantee."
     },
     {
       "id": "U2",
-      "topic": "Whether to name InstantSend/ChainLocks, which are the mechanism behind one-second confirmation",
+      "topic": "Should the early payment assurance be called a block confirmation?",
       "blocking": false,
-      "resolution": "The lesson names the effect ('payments confirm in about a second') and does not name the locking protocols; the machinery is a later lesson's job."
+      "resolution": "Describe the early event as payment assurance or settlement and reserve block confirmation for inclusion depth."
     },
     {
       "id": "U3",
-      "topic": "Whether to include precise reward-split percentages or Platform fee percentages in a concepts lesson",
+      "topic": "Does every masternode host Dash Platform?",
       "blocking": false,
-      "resolution": "The lesson says masternodes/evonodes are collateralized and paid, without citing contingent reward-split percentages."
+      "resolution": "State that regular masternodes serve Core while evonodes serve both Core and Platform, without entering Platform consensus internals."
     },
     {
       "id": "U4",
-      "topic": "How far 'masternodes make the rest possible' should reach into governance/DAO/treasury",
+      "topic": "How should the lesson handle the conflicting descriptions of ordinary-node compensation?",
       "blocking": false,
-      "resolution": "Governance is left for module 4; 'the rest' is restricted to fast payments and Dash Platform."
+      "resolution": "Use the more specific Core guide for node roles and omit the conflicting sentence from the Platform introduction."
     }
   ],
   "executableExamples": []
