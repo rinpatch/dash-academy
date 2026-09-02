@@ -19,8 +19,8 @@
       "exp": 100,
       "prerequisites": [],
       "verification": { "kind": "quiz", "challengeId": "what-is-a-blockchain" },
-      "mustCover": ["the learner can explain what a blockchain stores and why the only edit it allows is an append, by relating it to a structure they already use", "the learner can trace a single payment through the outputs it consumes and the ones it creates, and say why the same output cannot be spent twice", "the learner can say which of a private key, public key, and address they hand to someone paying them, and why the other two stay put", "the learner can state what a builder gains by having no administrator, and what they give up for it"],
-      "mustNotCover": ["Dash's masternodes, second tier, or confirmation speed", "Dash Core versus Dash Platform", "LLMQ and quorum formation internals", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
+      "mustCover": ["the learner can explain what a blockchain stores and why the only edit it allows is an append, by relating it to a structure they already use", "the learner can say why no single operator can rewrite the record, and what makes that expensive rather than merely forbidden", "the learner can state what a builder gains by having no administrator, and what they give up for it"],
+      "mustNotCover": ["the UTXO model, inputs and outputs, or change", "private keys, public keys, and addresses beyond a <Term> gloss", "Dash's masternodes, second tier, or confirmation speed", "Dash Core versus Dash Platform", "LLMQ and quorum formation internals", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
     },
     {
       "module": 2,
@@ -33,7 +33,7 @@
       "prerequisites": ["what-is-a-blockchain"],
       "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
       "mustCover": ["Dash as money", "masternodes as the thing that makes the rest possible", "payments confirm in about a second", "one network, two jobs: Dash Core and Dash Platform"],
-      "mustNotCover": ["re-teaching what a blockchain, transaction, key, or address is", "LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
+      "mustNotCover": ["re-teaching what a blockchain or a transaction is", "LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
     },
     {
       "module": 3,
