@@ -8,6 +8,12 @@ const skillPath = ".agents/skills/write-dash-lesson/SKILL.md";
 // one model for every role, override with LESSON_MODEL. Split per role only if a
 // stage's quality measurably lags.
 const model = process.env.LESSON_MODEL ?? "tokenrouter-oai/deepseek/deepseek-v4-pro-0813";
+// Research is the one stage worth extra effort by default. LESSON_VARIANT raises every stage,
+// which is how a reasoning model gets its effort level: opencode takes it as a CLI flag, so it
+// cannot ride along in LESSON_MODEL.
+function variantFor(role) {
+  return process.env.LESSON_VARIANT ?? (role === "research" ? "high" : null);
+}
 
 export async function runAgent({ role, lesson, cwd, lessonDir, context = {}, attempt = 1 }) {
   const writable = role === "author" || role === "revision";
@@ -32,7 +38,7 @@ export async function runAgent({ role, lesson, cwd, lessonDir, context = {}, att
     : { edit: "deny", bash: "deny", webfetch: "allow", external_directory: docs };
   const args = [
     "run", "--dir", cwd, "--format", "json", "-m", model,
-    ...(role === "research" ? ["--variant", "high"] : []),
+    ...(variantFor(role) ? ["--variant", variantFor(role)] : []),
     ...(writable ? ["--auto"] : []),
   ];
   // opencode keeps every session in one machine-wide SQLite database with busy_timeout=0, so a
