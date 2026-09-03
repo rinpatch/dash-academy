@@ -189,7 +189,14 @@ async function testAndReview({ lesson, item, state, runDir, lessonDir, worktree 
     item.status = "reviewing";
     await saveState(runDir, state, item);
     const diff = (await command("git", ["diff", "--", ...files], { cwd: worktree })).stdout;
-    const fileContents = Object.fromEntries(await Promise.all(files.map(async (file) => [file, await readFile(path.join(worktree, file), "utf8")])));
+    // changedFiles reports deletions too, and a concept lesson rewritten without executable
+    // examples correctly drops its fixture and verifier. Reading those back crashed the stage;
+    // the diff above already shows the reviewers what went away.
+    const present = await Promise.all(files.map(async (file) => {
+      try { return [file, await readFile(path.join(worktree, file), "utf8")]; }
+      catch { return null; }
+    }));
+    const fileContents = Object.fromEntries(present.filter(Boolean));
     const context = { research: item.research, answers: item.answers ?? {}, tests: item.tests, diff, fileContents };
     const [facts, pedagogy] = await Promise.all([
       runAgent({ role: "facts-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 }),
