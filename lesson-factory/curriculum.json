@@ -58,7 +58,7 @@
       "exp": 100,
       "prerequisites": ["what-is-dash-platform"],
       "verification": { "kind": "quiz", "challengeId": "why-build-on-dash" },
-      "mustCover": ["fit and non-fit", "payments and tokens", "usernames and NFTs", "Dash versus Credits", "privacy", "DAO"]
+      "mustCover": ["the learner can decide, for an app they have in mind, whether Dash fits, and say what would make it a bad choice", "the learner can name what Dash lets them build past payments: tokens, usernames, records that change hands", "the learner can say when they are spending Dash and when they are spending Credits", "the learner can say what a public ledger means for the people using their app", "the learner can say who decides what the network builds next, and where the money for it comes from"]
     },
     {
       "module": 5,
@@ -83,7 +83,7 @@
       "exp": 100,
       "prerequisites": ["environment-setup"],
       "verification": { "kind": "quiz", "challengeId": "dapi-and-proofs" },
-      "mustCover": ["decentralized API", "Core and Platform access", "endpoint selection", "state proofs", "light-client trust", "verification boundaries"]
+      "mustCover": ["the learner can say what answered their SDK call, and why it is not one company's server", "the learner can say how the SDK picks a node to ask, and why picking a bad one does not have to hurt them", "the learner can say what a state proof gives them that an ordinary API response cannot", "the learner can separate the parts of an answer they can check themselves from the parts they still take on trust"]
     },
     {
       "module": 7,
@@ -95,7 +95,7 @@
       "exp": 100,
       "prerequisites": ["dapi-and-proofs"],
       "verification": { "kind": "quiz", "challengeId": "identities" },
-      "mustCover": ["identity versus wallet address", "identity keys", "credits and fees"]
+      "mustCover": ["the learner can say what an identity is that a wallet address is not, and why Platform asks for one", "the learner can say why an identity carries several keys rather than one, and what each is for", "the learner can work out what a Platform operation costs them and what they have to top up"]
     },
     {
       "module": 8,
