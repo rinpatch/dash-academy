@@ -45,8 +45,33 @@
       "exp": 100,
       "prerequisites": ["what-is-dash"],
       "verification": { "kind": "quiz", "challengeId": "what-is-dash-platform" },
-      "mustCover": ["the learner can describe where an app's data lives on Platform and who is allowed to change it", "the learner can name something they could build on Platform that they could not build on Dash Core alone", "the learner can recognise, from a feature request, whether Platform is the right tool for it"],
-      "mustNotCover": ["masternode quorums and LLMQs", "InstantSend versus ChainLock mechanics", "Tenderdash and consensus internals", "re-teaching what a blockchain is"]
+      "mustCover": [
+        "the learner can describe Platform as an application layer on Dash, distinguish it from Core payments, and recognise a feature that needs Platform",
+        "the learner can describe identities as accounts that own data and authorize actions, and Dash names (DPNS) as readable names associated with identities",
+        "the learner can describe Drive as shared network storage, documents as application records, and data contracts as the rules for those records",
+        "the learner can say how DAPI and SDKs connect an app to Platform, and what verifiable queries offer beyond trusting a responding server",
+        "the learner can distinguish configurable application tokens from unique transferable records or NFTs, including built-in transfer and purchase capabilities",
+        "the learner can describe shielded Dash or shielded balances as private movement of value through Platform's shielded pool, without assuming application documents become private",
+        "the learner can recognise credits as payment for Platform work, Platform addresses as funding destinations, and fee sponsorship as something an app can provide",
+        "the learner can connect several Platform features in one small application example and distinguish the app's frontend and custom logic from the network's responsibilities"
+      ],
+      "mustNotCover": [
+        "masternode quorums and LLMQs",
+        "InstantSend versus ChainLock mechanics",
+        "Tenderdash and consensus internals",
+        "re-teaching what a blockchain is",
+        "identity key purposes, security levels, or derivation paths",
+        "document metadata inventories, schema syntax, or detailed contract restrictions",
+        "SDK code, endpoint selection, proof verification steps, or shielded cryptography internals",
+        "fee conversion arithmetic, token configuration inventories, or funding instructions",
+        "a broad product-fit checklist, governance, or a detailed privacy tradeoff discussion reserved for Why build on Dash?"
+      ],
+      "teachingApproach": [
+        "This is a brief feature overview, not a deep lesson on document ownership. Give each capability a few sentences answering what it is and what someone could build with it. Short feature sections are appropriate; do not force every capability into a long worked scenario.",
+        "Start with a concise explanation of what Platform adds to Dash. End the explanation with one small hypothetical application connecting several features. Use a compact comparison table only if it helps; do not add a diagram or an objectives/recap section.",
+        "Explain enough to recognise each capability; subsequent lessons teach the mechanics. Quiz questions should test feature selection and boundaries rather than internal details or acronym recall. Keep the existing metadata unless an editorial report proposes a different reading estimate.",
+        "Check current authoritative documentation for shielded-pool behavior and any claim about public-network availability; the vendored docs and existing Why build on Dash? lesson may be stale. Distinguish documented protocol support from wallet/SDK and network deployment, and record source/version conflicts rather than repeating an unverified roadmap claim."
+      ]
     },
     {
       "module": 4,
