@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { access, mkdir, open, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import readline from "node:readline/promises";
 import { stdin, stdout } from "node:process";
@@ -8,8 +8,9 @@ import { runAgent } from "./agent.mjs";
 import { command, hash, latestRunId, lessonKey, lessonTier, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, selectIntegrationPages, writeJson } from "./lib.mjs";
 import { monitorRun } from "./monitor.mjs";
 import { liveTest, validateLiveConfiguration } from "./testnet.mjs";
-import { deterministicTests, validateLesson } from "./validate.mjs";
-import { assertAllowedChanges, assertGlossaryOnlyGrew, assertPreparedBaseline, changedFiles, cloneNodeModules, commitLesson, createWorktree } from "./worktree.mjs";
+import { checkLength, deterministicTests, validateLesson } from "./validate.mjs";
+import { assertAllowedChanges, assertDocsBaseline, assertGlossaryOnlyGrew, assertPreparedBaseline, changedFiles, commitLesson, withWorkspaceLock } from "./workspace.mjs";
+import { orderedLessons, previousLessons, runSequentially } from "./sequence.mjs";
 
 let stateWrite = Promise.resolve();
 
@@ -19,13 +20,16 @@ const action = args._[0] ?? "status";
 try {
   if (action === "preflight") await preflight();
   else if (action === "validate") await validateCommand();
-  else if (action === "run" || action === "resume") await runCommand(action === "resume");
+  else if (action === "run" || action === "resume") {
+    if (args.dry_run) await runCommand(action === "resume");
+    else await withWorkspaceLock(() => runCommand(action === "resume"));
+  }
   else if (action === "status") await statusCommand();
   else if (action === "monitor") await monitorRun({ runId: args.run_id, watch: args.watch });
   else if (action === "questions") await questionsCommand();
   else if (action === "answer") await answerCommand();
-  else if (action === "test") await testCommand();
-  else if (action === "integrate") await integrateCommand();
+  else if (action === "test") await withWorkspaceLock(testCommand);
+  else if (action === "integrate") await withWorkspaceLock(integrateCommand);
   else usage(`Unknown command ${action}`);
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);
@@ -71,53 +75,33 @@ async function validateCommand() {
 
 async function runCommand(resume) {
   const manifest = await loadManifest();
-  const selected = selectLessons(manifest);
+  const selected = orderedLessons(selectLessons(manifest));
+  if (args.concurrency && Number(args.concurrency) !== 1) throw new Error("Lessons run sequentially; omit --concurrency or use 1");
   if (args.dry_run) {
     for (const lesson of selected) console.log(`${lessonKey(lesson)}: research → question gate → author → static/fixture/build → 3 browsers → 2 reviews → commit${lesson.tier === "sdk" ? " → serialized live testnet verification" : ""}`);
     return;
   }
-  await mkdir(runRoot, { recursive: true });
-  const lockPath = path.join(runRoot, "orchestrator.lock");
-  let lock;
-  try { lock = await open(lockPath, "wx", 0o600); }
-  catch (error) { if (error.code === "EEXIST") throw new Error("Another lesson orchestrator is running"); throw error; }
-  await lock.writeFile(JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
-  try {
   const secretFiles = await readableSecretFiles();
   if (secretFiles.length) throw new Error(`Agent run refused: move secret-bearing files outside the checkout first: ${secretFiles.join(", ")}`);
   if (args.live && selected.some((lesson) => lesson.tier === "sdk")) validateLiveConfiguration();
-  const baseline = await assertPreparedBaseline();
+  const baseline = resume ? null : await assertPreparedBaseline();
   const runId = args.run_id ?? (resume ? await requireRunId() : makeRunId());
   const runDir = path.join(runRoot, runId);
   await mkdir(runDir, { recursive: true });
+  const state = await loadOrCreateRun(runDir, runId, baseline, manifest);
+  await assertDocsBaseline();
   await writeFile(path.join(runRoot, "latest"), `${runId}\n`, { mode: 0o600 });
-  let state = await loadOrCreateRun(runDir, runId, baseline, manifest);
-  for (const lesson of selected) {
-    const item = state.lessons[lesson.module];
-    if (!item.worktree) {
-      item.status = "preparing";
-      await saveState(runDir, state, item);
-      Object.assign(item, await createWorktree({ runId: state.runId, lesson, baseline }));
-      item.status = "pending";
+  await runSequentially(selected, async (lesson) => {
+    try { await processLesson({ lesson, state, runDir, manifest }); }
+    catch (error) {
+      const item = state.lessons[lesson.module];
+      item.status = "failed";
+      item.error = error instanceof Error ? error.message : String(error);
+      item.updatedAt = new Date().toISOString();
       await saveState(runDir, state, item);
     }
-  }
-  const concurrency = Math.max(1, Math.min(6, Number(args.concurrency ?? 3)));
-  const queue = selected.slice();
-  const workers = Array.from({ length: Math.min(concurrency, queue.length) }, async () => {
-    while (queue.length) {
-      const lesson = queue.shift();
-      try { await processLesson({ lesson, state, runDir, baseline }); }
-      catch (error) {
-        const item = state.lessons[lesson.module];
-        item.status = "failed";
-        item.error = error instanceof Error ? error.message : String(error);
-        item.updatedAt = new Date().toISOString();
-        await saveState(runDir, state, item);
-      }
-    }
+    return state.lessons[lesson.module].status;
   });
-  await Promise.all(workers);
   for (const lesson of args.live ? selected.filter((candidate) => candidate.tier === "sdk") : []) {
     const item = state.lessons[lesson.module];
     if (item.status !== "local-passed") continue;
@@ -138,22 +122,20 @@ async function runCommand(resume) {
   printRun(state, selected);
   if (statuses.includes("blocked")) process.exitCode = 2;
   else if (statuses.some((status) => !["passed", "local-passed"].includes(status))) process.exitCode = 1;
-  } finally {
-    await lock.close();
-    await rm(lockPath, { force: true });
-  }
 }
 
-async function processLesson({ lesson, state, runDir, baseline }) {
+async function processLesson({ lesson, state, runDir, manifest }) {
   const item = state.lessons[lesson.module];
   if (item.status === "passed") return;
   if (item.commit) { item.status = lesson.tier === "sdk" ? "local-passed" : "passed"; return; }
   delete item.error;
   const lessonDir = path.join(runDir, "lessons", lessonKey(lesson));
   await mkdir(lessonDir, { recursive: true });
-  if (!item.worktree) Object.assign(item, await createWorktree({ runId: state.runId, lesson, baseline }));
+  item.worktree = repoRoot;
   const worktree = item.worktree;
   const existingFiles = await changedFiles(worktree);
+  if (existingFiles.length) assertAllowedChanges(lesson, existingFiles, { requireAuthored: false });
+  item.previousLessons = await previousLessons(manifest, lesson, worktree);
   const hasAuthoredLesson = item.research && existingFiles.includes(`content/academy/${lesson.slug}.mdx`) && existingFiles.includes(`lesson-factory/lessons/${lesson.slug}/evidence.json`);
   if (hasAuthoredLesson) {
     await testAndReview({ lesson, item, state, runDir, lessonDir, worktree });
@@ -161,7 +143,7 @@ async function processLesson({ lesson, state, runDir, baseline }) {
   }
   item.status = "researching";
   await saveState(runDir, state, item);
-  if (!item.research) item.research = await runAgent({ role: "research", lesson, cwd: worktree, lessonDir });
+  if (!item.research) item.research = await runAgent({ role: "research", lesson, cwd: worktree, lessonDir, context: { previousLessons: item.previousLessons } });
   const blockers = item.research.uncertainties.filter((uncertainty) => uncertainty.blocking && !item.answers?.[uncertainty.id]);
   if (blockers.length || (item.research.status === "blocked" && !(item.research.uncertainties ?? []).length)) {
     item.status = "blocked";
@@ -170,7 +152,7 @@ async function processLesson({ lesson, state, runDir, baseline }) {
   }
   item.status = "authoring";
   await saveState(runDir, state, item);
-  await runAgent({ role: "author", lesson, cwd: worktree, lessonDir, context: { research: item.research, answers: item.answers ?? {} } });
+  await runAgent({ role: "author", lesson, cwd: worktree, lessonDir, context: { previousLessons: item.previousLessons, research: item.research, answers: item.answers ?? {} } });
   await testAndReview({ lesson, item, state, runDir, lessonDir, worktree });
 }
 
@@ -197,11 +179,10 @@ async function testAndReview({ lesson, item, state, runDir, lessonDir, worktree 
       catch { return null; }
     }));
     const fileContents = Object.fromEntries(present.filter(Boolean));
-    const context = { research: item.research, answers: item.answers ?? {}, tests: item.tests, diff, fileContents };
-    const [facts, pedagogy] = await Promise.all([
-      runAgent({ role: "facts-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 }),
-      runAgent({ role: "pedagogy-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 }),
-    ]);
+    const context = { previousLessons: item.previousLessons, research: item.research, answers: item.answers ?? {}, tests: item.tests, diff, fileContents,
+      readingTimeNote: checkLength(lesson, fileContents[`content/academy/${lesson.slug}.mdx`] ?? "") };
+    const facts = await runAgent({ role: "facts-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 });
+    const pedagogy = await runAgent({ role: "pedagogy-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 });
     item.reviews = { facts, pedagogy };
     const passed = deterministicPassed && browser.passed && facts.verdict === "pass" && pedagogy.verdict === "pass";
     if (passed) {
@@ -219,7 +200,7 @@ async function testAndReview({ lesson, item, state, runDir, lessonDir, worktree 
       return;
     }
     if (revision === 2) throw new Error("Lesson did not pass after two revisions");
-    await runAgent({ role: "revision", lesson, cwd: worktree, lessonDir, context: item.tests ? { tests: item.tests, reviews: item.reviews } : item.reviews, attempt: revision + 1 });
+    await runAgent({ role: "revision", lesson, cwd: worktree, lessonDir, context: { ...context, reviews: item.reviews }, attempt: revision + 1 });
   }
 }
 
@@ -271,7 +252,7 @@ async function testCommand() {
   if (!lesson) throw new Error("test requires a valid module number");
   const state = await loadCurrentRun();
   const item = state.lessons[moduleNumber];
-  if (!item?.worktree) throw new Error("Lesson has no worktree");
+  if (!item?.worktree) throw new Error("Lesson has no recorded workspace");
   const lessonDir = path.join(runRoot, state.runId, "lessons", lessonKey(lesson));
   if (args.live) {
     const active = Object.values(state.lessons).some((candidate) => ["researching", "authoring", "reviewing", "revising", "testing"].includes(candidate.status));
@@ -298,21 +279,15 @@ async function integrateCommand() {
     (await command("git", ["cat-file", "-e", `${state.baseline}:content/academy/${lesson.slug}.mdx`])).code === 0;
   const missing = [];
   for (const lesson of lessons) {
-    if (state.lessons[lesson.module]?.status === "passed") continue;
+    const item = state.lessons[lesson.module];
+    if (item?.status === "passed") continue;
+    if (item?.status !== "pending") { missing.push(lesson); continue; }
     if (!(await inBaseline(lesson))) missing.push(lesson);
   }
   if (missing.length) throw new Error(`Cannot integrate; non-passing modules: ${missing.map((lesson) => lesson.module).join(", ")}`);
-  const branch = `academy-tier-${tier}-${state.runId}`;
-  const worktree = path.resolve(repoRoot, "../.dash-academy-worktrees", state.runId, `integration-tier-${tier}`);
-  const add = await command("git", ["worktree", "add", "-b", branch, worktree, state.baseline]);
-  if (add.code !== 0) throw new Error(add.stderr);
-  await cloneNodeModules(worktree);
-  for (const lesson of lessons) {
-    const commit = state.lessons[lesson.module]?.commit;
-    if (!commit) continue;
-    const pick = await command("git", ["cherry-pick", commit], { cwd: worktree });
-    if (pick.code !== 0) throw new Error(`Cherry-pick failed for module ${lesson.module}: ${pick.stderr}`);
-  }
+  if (state.mode !== "sequential-checkout" || state.workspace !== repoRoot) throw new Error("Integration requires a sequential run in this checkout");
+  if ((await changedFiles(repoRoot)).length) throw new Error("Navigation update requires a clean checkout");
+  const worktree = repoRoot;
   const validPrerequisiteModules = new Set();
   for (const lesson of manifest.lessons.filter((candidate) => lessonTier(candidate) === 1)) {
     try {
@@ -323,8 +298,6 @@ async function integrateCommand() {
   }
   const pages = selectIntegrationPages({ lessons: manifest.lessons, runLessons: state.lessons, validPrerequisiteModules });
   await writeFile(path.join(worktree, "content/academy/meta.json"), `${JSON.stringify({ title: "Dash Academy", pages }, null, 2)}\n`);
-  await command("git", ["add", "content/academy/meta.json"], { cwd: worktree });
-  await command("git", ["commit", "-m", `content(academy): integrate tier ${tier}`], { cwd: worktree });
   for (const [program, programArgs] of [["npm", ["run", "lint"]], ["npm", ["run", "build"]]]) {
     let result = await command(program, programArgs, { cwd: worktree });
     if (result.code !== 0 && programArgs.includes("build") && /fumadocs-mdx:collections\/server/.test(`${result.stdout}\n${result.stderr}`)) {
@@ -332,7 +305,12 @@ async function integrateCommand() {
     }
     if (result.code !== 0) throw new Error(`Integration check failed: ${program} ${programArgs.join(" ")}\n${result.stdout}\n${result.stderr}`);
   }
-  console.log(`Created local integration branch ${branch} at ${worktree}`);
+  const diff = await command("git", ["diff", "--quiet", "--", "content/academy/meta.json"]);
+  if (diff.code === 1) {
+    const commit = await command("git", ["commit", "--only", "-m", `content(academy): publish tier ${tier} navigation`, "--", "content/academy/meta.json"]);
+    if (commit.code !== 0) throw new Error(commit.stderr);
+  } else if (diff.code !== 0) throw new Error(diff.stderr);
+  console.log("Navigation checked in the current checkout; lesson commits are already here.");
 }
 
 function selectLessons(manifest) {
@@ -350,8 +328,23 @@ function selectLessons(manifest) {
 }
 
 async function loadOrCreateRun(runDir, runId, baseline, manifest) {
-  try { return await readJson(path.join(runDir, "run.json")); } catch {}
-  const state = { schemaVersion: 1, runId, baseline, manifestHash: hash(await readFile(manifestPath, "utf8")), createdAt: new Date().toISOString(), lessons: {} };
+  let existing;
+  try { existing = await readJson(path.join(runDir, "run.json")); } catch (error) { if (error.code !== "ENOENT") throw error; }
+  const manifestHash = hash(await readFile(manifestPath, "utf8"));
+  if (existing) {
+    if (existing.mode !== "sequential-checkout" || existing.workspace !== repoRoot) throw new Error("This run uses an older worktree workflow; start a new sequential run");
+    if (existing.manifestHash !== manifestHash) throw new Error("Curriculum changed since this run; start a new run");
+    const ancestor = await command("git", ["merge-base", "--is-ancestor", existing.baseline, "HEAD"]);
+    if (ancestor.code !== 0) throw new Error("Run baseline is not an ancestor of the current checkout");
+    for (const item of Object.values(existing.lessons)) {
+      if (!item.commit) continue;
+      const included = await command("git", ["merge-base", "--is-ancestor", item.commit, "HEAD"]);
+      if (included.code !== 0) throw new Error(`Module ${item.module}'s commit is absent from this checkout`);
+    }
+    return existing;
+  }
+  if (!baseline) throw new Error("Cannot resume a run that does not exist");
+  const state = { schemaVersion: 2, mode: "sequential-checkout", workspace: repoRoot, runId, baseline, manifestHash, createdAt: new Date().toISOString(), lessons: {} };
   for (const lesson of manifest.lessons) state.lessons[lesson.module] = { module: lesson.module, slug: lesson.slug, status: "pending", answers: {} };
   await writeJson(path.join(runDir, "run.json"), state);
   return state;

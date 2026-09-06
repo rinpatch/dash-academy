@@ -28,6 +28,16 @@ the frontmatter to disagree with the manifest, because validation will reject it
 
 ## Anatomy of a lesson
 
+Before drafting, read the preceding lessons and make a teaching plan: what the reader already
+knows, the question to answer, a likely mistake, and one worked example. Follow the
+[lesson workflow](../.agents/skills/write-dash-lesson/references/workflow.md). Keep the plan and a
+coverage map in the evidence ledger. For every `mustCover`, point to its explanation, demonstration,
+and assessment. Drafts run sequentially in the checkout so each can build on the previous one;
+earlier files are reference context, not permission to edit them.
+
+Review reading time after writing. Word count is advisory, not a minimum: never add filler to hit
+the manifest's estimate. Propose metadata changes in the report rather than changing the manifest.
+
 Every file starts with frontmatter between `---` lines. Copy these values from the lesson's row in
 `lesson-factory/curriculum.json`; they must match exactly.
 

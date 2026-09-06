@@ -5,8 +5,10 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { glossaryIds, lessonTier, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
 import { command, repoRoot } from "./lib.mjs";
-import { formatEvent, parseResult, shouldRetryAgent } from "./agent.mjs";
-import { usesComponent, validateLesson, VERIFICATION_COMPONENTS } from "./validate.mjs";
+import { buildPrompt, formatEvent, parseResult, shouldRetryAgent, validateStageOutput } from "./agent.mjs";
+import { checkLength, usesComponent, validateLesson, VERIFICATION_COMPONENTS } from "./validate.mjs";
+import { orderedLessons, previousLessons, runSequentially } from "./sequence.mjs";
+import { assertAllowedChanges, changedFiles, commitLesson, withWorkspaceLock } from "./workspace.mjs";
 
 test("agent result parsing takes the last assistant message and surfaces provider errors", () => {
   const line = (event) => `${JSON.stringify(event)}\n`;
@@ -156,7 +158,7 @@ test("validation demands a real verification component, not the challenge id in 
   assert.equal(usesComponent(`<LessonQuiz challengeId="q" questions={[{ id: "a", label: "x > y" }]} />`, ["LessonQuiz"], "q"), true);
 });
 
-test("lesson validation accepts prose without template sections but still checks length and the quiz", async () => {
+test("lesson validation requires the quiz but leaves length to editorial review", async () => {
   const cwd = await mkdtemp(path.join(tmpdir(), "academy-validator-"));
   const lesson = {
     slug: "sample", module: 1, title: "Sample", description: "Example",
@@ -176,15 +178,105 @@ test("lesson validation accepts prose without template sections but still checks
     assert.deepEqual(await validateLesson(lesson, cwd), []);
 
     await writeFile(mdxPath, frontmatter + "Too short.\n" + quiz);
-    const lengthErrors = await validateLesson(lesson, cwd);
-    assert.equal(lengthErrors.length, 1);
-    assert.match(lengthErrors[0], /words but claims/);
+    assert.deepEqual(await validateLesson(lesson, cwd), []);
+    assert.match(checkLength(lesson, frontmatter + "Too short.\n" + quiz), /Do not pad/);
 
     await writeFile(mdxPath, frontmatter + prose);
     assert.deepEqual(await validateLesson(lesson, cwd), ['Missing <LessonQuiz challengeId="sample">']);
   } finally {
     await rm(cwd, { recursive: true, force: true });
   }
+});
+
+test("lessons finish in module order and stop at a blocked or failed draft", async () => {
+  const lessons = [{ module: 3 }, { module: 1 }, { module: 2 }, { module: 1 }];
+  assert.deepEqual(orderedLessons(lessons).map((item) => item.module), [1, 2, 3]);
+  for (const stopped of ["blocked", "failed"]) {
+    const events = [];
+    await runSequentially(lessons, async (lesson) => {
+      events.push(`start ${lesson.module}`);
+      await Promise.resolve();
+      events.push(`end ${lesson.module}`);
+      return lesson.module === 2 ? stopped : "passed";
+    });
+    assert.deepEqual(events, ["start 1", "end 1", "start 2", "end 2"]);
+  }
+});
+
+test("previous context reads the latest checkout and marks missing lessons without reading later ones", async () => {
+  const cwd = await mkdtemp(path.join(tmpdir(), "academy-context-"));
+  try {
+    await mkdir(path.join(cwd, "content/academy"), { recursive: true });
+    const file = path.join(cwd, "content/academy/first.mdx");
+    await writeFile(file, "First draft");
+    const manifest = { lessons: [{ module: 1, slug: "first" }, { module: 2, slug: "missing" }, { module: 3, slug: "current" }, { module: 4, slug: "later" }] };
+    await writeFile(file, "Reviewed rewrite");
+    const context = await previousLessons(manifest, manifest.lessons[2], cwd);
+    assert.equal(context.length, 2);
+    assert.equal(context[0].text, "Reviewed rewrite");
+    assert.equal(context[1].missing, true);
+    for (const role of ["research", "author", "revision", "facts-review", "pedagogy-review"]) {
+      assert.match(buildPrompt(role, manifest.lessons[2], { previousLessons: context }), /Reviewed rewrite/);
+    }
+  } finally { await rm(cwd, { recursive: true, force: true }); }
+});
+
+test("a pedagogy pass needs demonstrated reader reasoning, not only a verdict", () => {
+  const result = { verdict: "pass", findings: [] };
+  assert.throws(() => validateStageOutput("review", result, "pedagogy-review"), /reader reasoning/);
+  result.readerReview = { reasoningChain: ["Ownership needs authorization"], transferQuestion: "Who may edit?", answer: "The owner", supportingPassages: ["Who can change the profile?"], coverageGaps: [], continuityGaps: [] };
+  assert.doesNotThrow(() => validateStageOutput("review", result, "pedagogy-review"));
+  result.readerReview.coverageGaps.push("No worked fee calculation");
+  assert.throws(() => validateStageOutput("review", result, "pedagogy-review"), /unresolved teaching gaps/);
+});
+
+test("a partial draft can resume but cannot pass without both lesson and evidence", () => {
+  const lesson = { slug: "sample" };
+  const partial = ["content/academy/sample.mdx"];
+  assert.doesNotThrow(() => assertAllowedChanges(lesson, partial, { requireAuthored: false }));
+  assert.throws(() => assertAllowedChanges(lesson, partial), /evidence ledger/);
+  assert.throws(() => assertAllowedChanges(lesson, [...partial, "AGENTS.md"], { requireAuthored: false }), /outside its lesson/);
+});
+
+test("checkout lock excludes overlapping commands and releases after failure", async () => {
+  const cwd = await mkdtemp(path.join(tmpdir(), "academy-lock-"));
+  const lock = path.join(cwd, "orchestrator.lock");
+  try {
+    await assert.rejects(withWorkspaceLock(async () => {
+      await assert.rejects(withWorkspaceLock(async () => {}, lock), /using this checkout/);
+      throw new Error("stage failed");
+    }, lock), /stage failed/);
+    assert.equal(await withWorkspaceLock(async () => "resumed", lock), "resumed");
+  } finally { await rm(cwd, { recursive: true, force: true }); }
+});
+
+test("checkout commits leave unrelated staged changes alone and detect both rename paths", async () => {
+  const cwd = await mkdtemp(path.join(tmpdir(), "academy-workspace-"));
+  const git = async (...args) => {
+    const result = await command("git", args, { cwd });
+    assert.equal(result.code, 0, result.stderr);
+    return result.stdout;
+  };
+  try {
+    await git("init", "-q");
+    await git("config", "user.name", "Fixture");
+    await git("config", "user.email", "fixture@example.invalid");
+    await writeFile(path.join(cwd, "lesson.mdx"), "initial");
+    await writeFile(path.join(cwd, "unrelated.txt"), "initial");
+    await git("add", ".");
+    await git("commit", "-qm", "Baseline");
+    await writeFile(path.join(cwd, "lesson.mdx"), "rewrite");
+    await writeFile(path.join(cwd, "unrelated.txt"), "user edit");
+    await git("add", "unrelated.txt");
+    await commitLesson(cwd, { module: 1, slug: "sample" }, ["lesson.mdx"]);
+    assert.equal((await git("show", "HEAD:unrelated.txt")).trim(), "initial");
+    assert.match(await git("diff", "--cached"), /user edit/);
+    await git("mv", "lesson.mdx", "renamed.mdx");
+    const files = await changedFiles(cwd);
+    assert.ok(files.includes("lesson.mdx"));
+    assert.ok(files.includes("renamed.mdx"));
+    assert.ok(files.includes("unrelated.txt"));
+  } finally { await rm(cwd, { recursive: true, force: true }); }
 });
 
 test("only a locked opencode database earns another agent run", () => {

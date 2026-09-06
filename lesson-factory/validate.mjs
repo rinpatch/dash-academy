@@ -29,9 +29,7 @@ export function usesComponent(mdx, names, id) {
   return false;
 }
 
-// Measured across the written concept lessons, which sit between 95 and 105 words per claimed
-// minute regardless of topic or author. The band is wide because the number is a reading estimate,
-// not a stopwatch; it exists to catch a lesson that is twice the length it advertises.
+// A rough editorial signal, not a gate: time spent reasoning through examples and quizzes varies.
 export const WORDS_PER_MINUTE = 100;
 export const LENGTH_TOLERANCE = 0.3;
 
@@ -42,12 +40,7 @@ export function proseWordCount(mdx) {
   return withoutQuiz.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
 }
 
-/**
- * estimatedMinutes is hand-written in the manifest, often before the lesson exists, and nothing
- * else ever revisits it — so a lesson can advertise 12 minutes and take 20. It also sets `exp`,
- * which makes a wrong number a wrong reward. Only concept lessons are checked: an SDK lesson's
- * time is dominated by typing and waiting on testnet, which no word count predicts.
- */
+/** SDK time includes typing and network waits, which a prose word count cannot predict. */
 export function checkLength(lesson, mdx) {
   if (lesson.tier !== "concepts") return null;
   const words = proseWordCount(mdx);
@@ -55,7 +48,7 @@ export function checkLength(lesson, mdx) {
   const drift = (words - expected) / expected;
   if (Math.abs(drift) <= LENGTH_TOLERANCE) return null;
   const minutes = Math.round(words / WORDS_PER_MINUTE);
-  return `Lesson is ${words} words but claims ${lesson.estimatedMinutes} minutes (${drift > 0 ? "+" : ""}${Math.round(drift * 100)}%). At ${WORDS_PER_MINUTE} words a minute that reads as about ${minutes}: split the lesson or correct estimatedMinutes and exp.`;
+  return `Lesson is ${words} words but claims ${lesson.estimatedMinutes} minutes (${drift > 0 ? "+" : ""}${Math.round(drift * 100)}%). Rough prose-only estimate: ${minutes} minutes. Review reading, examples, and quiz time; report a proposed estimate if needed. Do not pad or split the lesson to hit a word count.`;
 }
 
 export async function validateLesson(lesson, cwd, { complete = false } = {}) {
@@ -72,8 +65,6 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   for (const key of ["title", "description", "module", "tier", "estimatedMinutes", "exp"]) {
     if (String(frontmatter[key]) !== String(lesson[key])) errors.push(`Frontmatter ${key} does not match manifest`);
   }
-  const lengthError = checkLength(lesson, mdx);
-  if (lengthError) errors.push(lengthError);
   if (/^# /m.test(mdx.replace(/^---[\s\S]*?---/, ""))) errors.push("Lesson body must not contain an H1");
   if (/\b(?:mnemonic|private[_ -]?key)\s*[:=]\s*["'][^"']+/i.test(mdx)) errors.push("Possible secret in MDX");
   // A substring check used to be enough, so a lesson could name its challenge in prose and pass
@@ -90,6 +81,13 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
     const sourceIds = new Set((ledger.sources ?? []).map((source) => source.id));
     for (const claim of ledger.claims ?? []) for (const id of claim.sourceIds ?? []) if (!sourceIds.has(id)) errors.push(`Claim references missing source ${id}`);
     if ((ledger.conflicts ?? []).some((conflict) => conflict.status === "blocked")) errors.push("Evidence ledger has a blocked conflict");
+    if (complete) {
+      if (!ledger.teachingPlan?.centralQuestion || !ledger.teachingPlan?.workedExample) errors.push("Evidence ledger needs a teaching plan");
+      for (const requirement of lesson.mustCover ?? []) {
+        const coverage = ledger.coverageMap?.find((entry) => entry.requirement === requirement);
+        if (!coverage?.explanation || !coverage?.demonstration || !Array.isArray(coverage.assessment) || !coverage.assessment.length) errors.push(`Missing explanation, demonstration, or assessment mapping: ${requirement}`);
+      }
+    }
   }
   if (complete && lesson.tier === "sdk") {
     try { await access(path.join(lessonFiles, "fixture.mjs")); }

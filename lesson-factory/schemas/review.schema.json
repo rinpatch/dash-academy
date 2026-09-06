@@ -1,10 +1,105 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "type":"object","additionalProperties":false,
-  "required":["verdict","summary","findings"],
-  "properties":{
-    "verdict":{"enum":["pass","revise","block"]},
-    "summary":{"type":"string"},
-    "findings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["severity","category","message","evidence","suggestedFix"],"properties":{"severity":{"enum":["error","warning","note"]},"category":{"type":"string"},"message":{"type":"string"},"evidence":{"type":"string"},"suggestedFix":{"type":"string"}}}}
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "verdict",
+    "summary",
+    "findings"
+  ],
+  "properties": {
+    "verdict": {
+      "enum": [
+        "pass",
+        "revise",
+        "block"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "severity",
+          "category",
+          "message",
+          "evidence",
+          "suggestedFix"
+        ],
+        "properties": {
+          "severity": {
+            "enum": [
+              "error",
+              "warning",
+              "note"
+            ]
+          },
+          "category": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "suggestedFix": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "readerReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reasoningChain",
+        "transferQuestion",
+        "answer",
+        "supportingPassages",
+        "coverageGaps",
+        "continuityGaps"
+      ],
+      "properties": {
+        "reasoningChain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "transferQuestion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supportingPassages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "coverageGaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "continuityGaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
   }
 }

@@ -7,6 +7,11 @@ description: Research, author, review, and verify one Dash Academy lesson agains
 
 Work on exactly the module supplied by the runner. First read the root `AGENTS.md`, the module row in `lesson-factory/curriculum.json`, and the `dash-docs` skill. Also read [workflow.md](references/workflow.md).
 
+Read earlier lessons as context, especially the direct prerequisite and any example you continue.
+They show what the reader has actually been taught, not what the manifest hoped to teach.
+Keep write access scoped to the assigned lesson. Generation is sequential in the current checkout;
+do not create parallel lesson workers, branches, or worktrees.
+
 ## Audience
 
 Learners are developers who are new to Dash **and new to blockchain**. They are not new to programming.
@@ -65,11 +70,16 @@ work in a sentence. A single stray banned word is a finding, not a verdict.
 
 ## Required sequence
 
-1. Research the lesson independently. Prefer vendored Dash docs for concepts and installed package types/runtime for SDK shape.
-2. Record claims, sources, API examples, version conflicts, and uncertainty in the structured stage output.
+1. Read the preceding lessons, then research the assigned lesson. Earlier prose is context, not technical authority. Prefer vendored Dash docs for concepts and installed package types/runtime for SDK shape.
+2. Record claims, sources, API examples, version conflicts, and uncertainty. Before prose, produce the teaching plan described in [workflow.md](references/workflow.md) and read [teaching-examples.md](references/teaching-examples.md).
 3. If a material uncertainty could change correctness, scope, safety, or pedagogy, return blocking questions. Do not guess and do not edit lesson files.
 4. After questions are answered, author only the assigned lesson MDX, evidence ledger, and lesson-scoped fixture.
-5. Review the result against the manifest, answers, evidence, and test output. Repair only the assigned files.
+5. Record a coverage map in the evidence ledger: each exact `mustCover` item, the passage that explains it, the example that demonstrates it, and the question or task that tests it. A heading or keyword is not coverage.
+6. Review the result against the manifest, preceding lessons, answers, evidence, and test output. The pedagogy review must show its reasoning as described in the workflow. Repair only the assigned files.
+
+Treat `estimatedMinutes` as a budget to review after drafting, not a minimum word count. Include
+time spent on examples and the quiz. If the estimate needs changing, propose it in the report;
+do not pad the prose, change curriculum metadata, or split a fixed lesson to fit it.
 
 Do not alter curriculum numbering or scope. Do not access secrets or run live testnet writes. A successful local stage is not proof that the live testnet stage passed.
 
