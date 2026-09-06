@@ -253,4 +253,10 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
       "The elliptic curve Dash uses for its public-key cryptography. A public key is a point on this curve derived from the private key, which is why it cannot be worked backwards.",
     tag: "Protocol",
   },
+  credits: {
+    title: "Credits",
+    definition:
+      "The fee unit for Dash Platform operations. Credits are created by locking Dash, and each identity carries a credit balance that Platform draws on for storage and processing. Because anyone can top up any identity, an app can sponsor its users' fees.",
+    tag: "Dash",
+  },
 };

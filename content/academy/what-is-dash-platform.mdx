@@ -9,131 +9,161 @@ verification: quiz
 prerequisites: [2]
 ---
 
-Suppose your app has accepted a Dash payment. Dash Core records the transfer, but the app may still need to remember a delivery status, a username, or a note. Those records aren't payments, and putting them in one company's private database would return control of the app to that company.
+Suppose your app has just accepted a Dash payment. The transfer settles on Dash Core, but the job is only half done: your app still needs to remember who paid, what they ordered, and how far along the order is. Those records aren't payments, and parking them in a database you run hands the meaningful part of the app back to a single operator to control.
 
-Dash Platform fills that gap. It gives applications a network-hosted place for structured data, with shared rules for what may be stored and signed authorization for changes. Your frontend and business logic still run where you choose; Platform takes the job of keeping the application's shared records.
+## Two layers, two jobs
+
+Dash is really two systems working as one. **Dash Core** keeps the payment ledger: moving Dash from one person to another. **Dash Platform** keeps everything an app might want to share beyond that. You still write your own frontend and business logic and run them wherever you like. Platform's share is narrower and harder: store the shared records and enforce the owners and rules that decide who may change them.
+
+That split doubles as your routing rule. A request that only moves Dash belongs on Core. A request that needs shared, queryable records owned by the people using the app, such as usernames, orders, or assets, belongs on Platform. A shop can take the payment on Core and keep the order on Platform at the same time; that's normal, not a conflict.
 
 ## The record after the payment
 
-Start with a profile that contains a display name and a short biography. In a conventional app, you might store it as a row or JSON object in a database run by the app's operator. On Platform, the current profile lives in **Drive**, Platform's storage component. Drive holds the network's current **Platform state**, the data Platform currently recognizes. Within that state, each registered data contract has a separate application state.
+In a conventional app, a customer profile is a row in your database. On Platform it's a **document**: an application record held in **Drive**, the network's storage layer. Drive keeps Platform's current state, and each app gets its own slice of that state, keyed by contract.
 
-That location changes who the app has to trust. The operator doesn't keep the only authoritative copy in a private database. Apps can read the shared state from the Platform network, so another client that understands the same application data can query it too.
-
-Platform doesn't accept an arbitrary JSON object just because a client sends one. Before the profile can exist, the application needs a **data contract**: a registered description of the record types it uses, their fields, and the rules those records must satisfy. You can think of it as the schema for the application's part of Platform state.
-
-The profile itself is a **document**, meaning an application record associated with that contract. A document carries the application's fields along with Platform fields such as its identifier, document type, revision, contract identifier, and owning identity. When a requested write doesn't match the contract's schema, Platform rejects it.
-
-This gives the storage model a useful split:
-
-- The data contract says what a valid record looks like.
-- The document is the record currently stored in Drive.
+Nothing lands in Drive just because a client asked for it. Before an app can store anything, it publishes a **data contract** describing the record types it uses, their fields, and the rules a record must satisfy. The contract is the schema; the document is a record that fits it. A write that breaks the schema is refused, whoever sends it.
 
 ## A valid record still needs an author
 
-A matching schema answers "is this shaped correctly?" It doesn't answer "who asked for this change?"
+The contract settles "is this shaped correctly?" It says nothing about "who asked for this?"
 
-A Platform **identity** is a persistent network account with public keys that Platform uses to verify its signatures. To create or change Platform state, an identity submits a signed <Term id="state-transition">state transition</Term>. The signature proves which identity authorized the request; Platform then checks that request against the existing record and its data contract.
+An **identity** answers that. An identity is a persistent account on Platform that owns data. To create or change that data, the identity submits a signed <Term id="state-transition">state transition</Term>; the network checks the signature to learn who authorized the change, then checks the change against the contract. A profile owned by one identity can't be quietly rewritten by another, even if the replacement is well formed.
 
-For an ordinary mutable document, the current owner controls replacement and deletion. The contract still sets the boundaries. It can make a document type immutable, meaning it can't be updated, or prevent deletion; even its owner can't perform an operation the contract forbids. Creation has separate contract rules and may be open to anyone, limited to the contract owner, or disabled.
+Names hang off identities too. The Dash Platform Name Service, **DPNS**, registers readable names and ties each to an identity, so a user can be addressed by a name rather than a bare identifier. Core moves money; it keeps no register of who owns which name. That register is itself an app built on Platform, the first hint that Platform's conveniences come from the same documents and identities you'll use.
 
-Return to the profile. If identity A owns it, identity B can't simply replace the biography with different text. Identity A must sign the replacement, the updated profile must still match the schema, and the contract must permit updates. Authorization and contract rules are both checked.
+## Reaching the network
 
-The contract has an owner too: the identity that registers it. Only that identity may submit compatible updates to the contract schema. Application records and the rules for those records therefore have related but distinct ownership.
+You don't run a full node just to record a profile. An app talks through **DAPI**, the decentralized API served by the masternodes that store Platform state, the kind called <Term id="evonode">evonodes</Term>. DAPI exposes Core and Platform through one interface, and the SDKs wrap it, so your code reads and writes state without hosting any of it.
 
-## Pick the layer from the request
+That convenience raises a question a private database never did: if a server hands you an answer, how do you know it's true? A Platform query can return a <Term id="state-proof">state proof</Term> alongside the data, tying the answer to the state the network has committed. Your app verifies that instead of trusting whichever node happened to reply. Without it, shared storage would just be a database run by a stranger.
 
-Once you know what Platform stores, choosing between Core and Platform becomes a question about the requested feature rather than a question about which SDK sounds more interesting.
+## Two ways to hold value
 
-| Feature request | Right tool | Reason |
-| --- | --- | --- |
-| "Let a customer pay 2 DASH at checkout." | Dash Core | The feature only sends and receives Dash. |
-| "Give each user a profile that its owner can update and other clients can query." | Dash Platform | The feature needs shared application records and identity-authorized changes. |
-| "Attach a readable name to a Platform identity." | Dash Platform | Names and identities are Platform application state, not Core payments. |
-| "Run arbitrary user-written programs on the network." | Not Platform's documented data model | Platform accepts schema-governed state changes rather than arbitrary deployed programs. |
+Platform state holds more than plain rows. An app can issue assets, and the first design choice is which kind it needs.
 
-The short routing rule is: **use Core for Dash payments alone; use Platform when the feature needs shared, queryable application records, identities, or names.** One product can use both. A shop could take payment through Core while keeping an identity-owned order record on Platform.
+A **token** is interchangeable value you configure inside your data contract: your app's own currency, say. Any two units are the same thing. Transfer is built in, as is buying units directly with credits.
 
-Don't send every backend field to Platform. A local cache, temporary UI preference, or secret that one operator alone should hold doesn't become better merely because a network stores it. Platform answers the narrower need for shared application state whose valid changes shouldn't depend on one database administrator.
+An **NFT** isn't a separate kind of object. It's a document that stands for one distinct, ownable item like a seat, a collectible, or a plot of land. Because it's a document it has a unique identity within its contract, and the ability to transfer it or sell it at a set price comes from the protocol rather than code you write. The shortcut: interchangeable value is a token; a specific thing one person can own is an NFT.
 
-## A name is application data
+## What stays private
 
-The <Term id="dpns">Dash Platform Name Service (DPNS)</Term> shows what becomes possible once records and identities share a network. DPNS registers human-readable names and associates them with Platform identities. Dash Core alone can move Dash, but it doesn't provide this shared name registry.
+Storing records on a network you don't run invites the opposite worry: is any of it private? The line that matters separates value from data.
 
-The useful part isn't only that a name looks friendlier than an identifier. Different clients can consult the same Platform state, and a name's association belongs to an identity rather than to an account row controlled by one app operator. That's a concrete application you couldn't build on Core's payment ledger alone.
+Value can be. Platform keeps a **shielded pool** where Dash and app tokens move under zero-knowledge proofs: you shield value in, transfer it privately within the pool, and bring it back out, without the movement revealing sender, receiver, or amount.
 
-Dashnote supplies another example. Its users can create, edit, and delete their own notes, while other identities can browse those notes without gaining permission to change them. The familiar app behavior comes from the same model as the profile: contract-defined documents in Drive, ownership by identities, and signed requests for changes.
+Data cannot. A document in Drive is replicated, queryable state, and shielding doesn't change that. The pool conceals value movement; the records themselves stay visible to whoever can query them. If a record is confidential, keep it off Platform or encrypt it yourself.
 
-## The build order follows ownership
+## Who pays for the work
 
-The hands-on path starts by connecting to the network, then creates and funds an identity. That identity can register a name and later own a data contract. Once the contract exists, documents can be created, queried, changed, transferred, and purchased; token work follows those document operations.
+None of this runs for free. The network meters its work in **credits**, a balance kept separate from Dash. You create credits by locking Dash, and each identity carries a credit balance that Platform draws on when it stores data or processes a change.
 
-That order isn't arbitrary. A document needs a registered contract, and the contract needs an identity to own it. Rather than inventing a single named product, the exercises build each dependency in sequence so the same pieces can later support a profile, notes app, registry, or another record-based application.
+Two choices stop every operation from starting with an empty-account dead end. A **Platform address** can hold credits, so funding exists before any identity does. And because anyone may top up any identity's balance, an app can simply cover its users' fees. Call that fee sponsorship. It isn't a special mechanism; it's a normal consequence of the open top-up rule, and it's what lets a product feel free to the user while the network still gets paid.
 
-Pass the quiz to continue.
+## One app, assembled
+
+Suppose Ada runs a small festival and sells limited-edition seat passes. Core settles each Dash payment. Ada registers a DPNS name so the sale has a readable address. Her data contract declares a pass record, and each pass in Drive is a unique, transferable document (an NFT) that a buyer purchases at a set price through the protocol's built-in purchase. The buyer's identity owns the pass afterward, and Ada's frontend tops up that identity's credits so a fee never greets the buyer. The ticket page, the pricing, the seat-inventory checks: that's Ada's own code on Ada's servers. The network's job is holding the passes, enforcing who owns each one, and running the purchase rules, the part that needed to outlive anyone's database.
+
+Pass the quiz to complete the lesson.
 
 <LessonQuiz
   challengeId="what-is-dash-platform"
-  passingScore={4}
+  passingScore={6}
   questions={[
     {
-      id: "where-data-lives",
-      prompt: "Where does an application's current Platform data live?",
+      id: "two-layers",
+      prompt: "A feature only needs to accept Dash payments and store nothing beyond the transfer itself. Which layer should handle it?",
       options: [
-        { id: "a", label: "In Drive as Platform state associated with the application's registered data contract." },
-        { id: "b", label: "Inside Dash Core payment transactions as arbitrary JSON." },
-        { id: "c", label: "Only in the application operator's private database." },
-        { id: "d", label: "Inside the frontend bundle downloaded by each user." },
+        { id: "a", label: "Dash Core, because the request only moves Dash." },
+        { id: "b", label: "Dash Platform, because every payment needs an application document." },
+        { id: "c", label: "DPNS, because every payment needs a readable name." },
+        { id: "d", label: "Drive, because payment amounts are application records." },
       ],
       correctOptionId: "a",
-      explanation: "Drive holds current Platform state. Each registered data contract has its own application state within it.",
+      explanation: "Core is enough for a payment-only request. Platform is for shared application records, identities, and names.",
     },
     {
-      id: "who-can-change",
-      prompt: "Identity A owns a mutable profile document. What must happen before Platform accepts a normal replacement?",
+      id: "names-and-identity",
+      prompt: "A user owns a profile and registers a readable name. How do the two relate on Platform?",
       options: [
-        { id: "b", label: "Any reader submits a correctly shaped record; ownership doesn't matter." },
-        { id: "a", label: "Identity A signs the request, the new record matches the contract, and the contract permits updates." },
-        { id: "c", label: "The app operator edits Drive directly with an administrator password." },
-        { id: "d", label: "Identity B signs because any Platform identity may replace any document." },
+        { id: "a", label: "The name and profile both belong to the user's identity, which signs authorized changes to what it owns." },
+        { id: "b", label: "The name lives on Core and the profile in the operator's database." },
+        { id: "c", label: "Anyone who knows the name may edit records associated with it." },
+        { id: "d", label: "Names and profiles need no authorization beyond matching a schema." },
       ],
       correctOptionId: "a",
-      explanation: "The owner's signature authorizes an ordinary replacement, while the data contract still controls validity and whether updates are allowed.",
+      explanation: "DPNS ties a name to an identity, and the identity authorizes changes to the data it owns.",
     },
     {
-      id: "platform-only-capability",
-      prompt: "Which feature can Platform provide that Dash Core alone doesn't?",
+      id: "record-and-rules",
+      prompt: "What roles do a data contract and a document play?",
       options: [
-        { id: "b", label: "Sending Dash from one address to another." },
-        { id: "c", label: "Receiving a Dash payment at checkout." },
-        { id: "a", label: "A shared registry of readable names associated with Platform identities." },
-        { id: "d", label: "Recording the amount of a Core payment." },
+        { id: "a", label: "The contract is the record stored in Drive; the document is the schema." },
+        { id: "b", label: "The document is the application record in Drive; the data contract is the set of rules it must satisfy." },
+        { id: "c", label: "Both are names for the same schema, with no stored data behind them." },
+        { id: "d", label: "The contract stores payments and the document stores names." },
       ],
-      correctOptionId: "a",
-      explanation: "DPNS names and identities are structured Platform state. Sending and receiving Dash are Core tasks.",
+      correctOptionId: "b",
+      explanation: "Drive holds documents, the actual records. A data contract declares the rules those records must satisfy before a write is accepted.",
     },
     {
-      id: "core-routing",
-      prompt: "A feature only needs to accept Dash payments. Which layer should handle it?",
+      id: "verifiable-queries",
+      prompt: "You read a record back through DAPI. What does a verifiable proof give you that a plain answer does not?",
       options: [
-        { id: "b", label: "Dash Platform, because every payment requires an application document." },
-        { id: "c", label: "DPNS, because every payment requires a readable name." },
-        { id: "d", label: "Drive, because payment balances are application records." },
-        { id: "a", label: "Dash Core, because the feature only moves Dash." },
+        { id: "a", label: "A faster connection to the node that answered." },
+        { id: "b", label: "The ability to check the answer against committed network state instead of trusting the server that replied." },
+        { id: "c", label: "A guarantee the data is encrypted in transit." },
+        { id: "d", label: "The ability to write without running a node." },
       ],
-      correctOptionId: "a",
-      explanation: "Core is enough for a payment-only request. Platform is for shared application state, identities, and names.",
+      correctOptionId: "b",
+      explanation: "DAPI and the SDKs connect you to the network. A proof lets your app verify the answer against committed state, so the responding server isn't the only authority.",
     },
     {
-      id: "platform-routing",
-      prompt: "Which request is the clearest match for Dash Platform?",
+      id: "token-or-nft",
+      prompt: "Ada sells one numbered festival seat and also mints a loyalty currency. How should she model each?",
       options: [
-        { id: "d", label: "Send Dash without storing application records." },
-        { id: "a", label: "Store queryable project notes whose owners authorize edits." },
-        { id: "b", label: "Run any program a user uploads as arbitrary network-hosted code." },
-        { id: "c", label: "Keep one device's temporary menu state." },
+        { id: "a", label: "The seat as an NFT document and the currency as a configured token." },
+        { id: "b", label: "Both as configured tokens." },
+        { id: "c", label: "The seat as a token and the currency as an NFT." },
+        { id: "d", label: "Both as NFT documents." },
       ],
       correctOptionId: "a",
-      explanation: "Shared, queryable, identity-owned records fit Platform's contract-and-document model. The other requests either need Core, local storage, or a different execution model.",
+      explanation: "Interchangeable value is a token. A specific, ownable thing is a unique document (an NFT), with transfer and purchase built into the protocol.",
+    },
+    {
+      id: "shielding",
+      prompt: "What does moving value through the shielded pool conceal?",
+      options: [
+        { id: "a", label: "Movement of value, its sender, receiver, and amount; application documents remain queryable state." },
+        { id: "b", label: "All application records and their authors." },
+        { id: "c", label: "The data contract's schema." },
+        { id: "d", label: "Nothing at all." },
+      ],
+      correctOptionId: "a",
+      explanation: "The pool privatizes value movement. Documents in Drive stay public, replicated state.",
+    },
+    {
+      id: "credits-and-sponsorship",
+      prompt: "A new buyer's identity can't afford the fee to receive a pass. What lets Ada remove that hurdle?",
+      options: [
+        { id: "a", label: "Ada tops up the buyer's credit balance, since anyone can fund any identity." },
+        { id: "b", label: "The buyer must first lock new Dash on Core." },
+        { id: "c", label: "Ada moves the fee onto Core." },
+        { id: "d", label: "Receiving a pass never costs anything." },
+      ],
+      correctOptionId: "a",
+      explanation: "Credits pay for Platform work. Because anyone may top up any identity, an app can sponsor its users' fees.",
+    },
+    {
+      id: "network-or-app",
+      prompt: "In Ada's festival app, which job is the network's rather than the developer's?",
+      options: [
+        { id: "a", label: "Rendering the ticket page and seat map." },
+        { id: "b", label: "Loading the pricing and checking inventory." },
+        { id: "c", label: "Holding the passes and enforcing who owns each one and the purchase rules." },
+        { id: "d", label: "Sending the buyer a confirmation email." },
+      ],
+      correctOptionId: "c",
+      explanation: "Ada's frontend and business logic run on her servers. The network stores the records and enforces ownership and rules.",
     },
   ]}
 />
