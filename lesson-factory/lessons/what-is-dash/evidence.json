@@ -10,169 +10,218 @@
   "sources": [
     {
       "id": "S1",
-      "title": "What is Dash",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md:9,25-35",
-      "version": "Dash Platform Docs 3.1.0"
+      "title": "Protocol Versions",
+      "kind": "vendored authoritative Core developer documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/reference/p2p-network-protocol-versions.md:29,40-44",
+      "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S2",
+      "title": "Dash, Darkcoin, InstantX, and InstantSend glossary entries",
+      "kind": "vendored authoritative Dash user documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/introduction/information.rst:479-490,800-808",
+      "version": "Dash Docs 23.0.0"
+    },
+    {
+      "id": "S3",
       "title": "Dash Features",
       "kind": "vendored authoritative Core developer documentation",
       "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features.md:11-35",
       "version": "Dash Core Docs 23.0.0"
     },
     {
-      "id": "S3",
-      "title": "Integration Guide",
-      "kind": "vendored authoritative Dash user documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/user/developers/integration.rst:27-35,140-160",
-      "version": "Dash Docs 23.0.0"
-    },
-    {
       "id": "S4",
-      "title": "Core Glossary",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/resources/glossary.md:134-136,214-216,278-280,337-340",
+      "title": "InstantSend",
+      "kind": "vendored authoritative Core developer documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md:8-24,40-78",
       "version": "Dash Core Docs 23.0.0"
     },
     {
       "id": "S5",
-      "title": "Platform Glossary",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md:35-45,67-77",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "S6",
-      "title": "What is Dash Platform",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:7-10,35-41,60-71",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "S7",
-      "title": "Dash User Features",
+      "title": "Integration Guide",
       "kind": "vendored authoritative Dash user documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/user/introduction/features.rst:37-64,79-93",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/developers/integration.rst:27-35,140-160,168-192",
       "version": "Dash Docs 23.0.0"
     },
     {
-      "id": "S8",
-      "title": "InstantSend",
+      "id": "S6",
+      "title": "ChainLocks",
       "kind": "vendored authoritative Core developer documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-instantsend.md:8-24",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-chainlocks.md:8-18",
       "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S7",
+      "title": "Core Glossary",
+      "kind": "vendored authoritative Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/resources/glossary.md:134-140,214-220,274-280,337-339",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S8",
+      "title": "Block Height and Forking",
+      "kind": "vendored authoritative Core developer documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/block-chain-block-height-and-forking.md:9-19",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S9",
+      "title": "What is Dash Platform",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:5-14",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S10",
+      "title": "CoinJoin",
+      "kind": "vendored authoritative Core developer documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-coinjoin.md:3-21,51-77",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S11",
+      "title": "Shielded Pool",
+      "kind": "current authoritative Dash Platform documentation",
+      "locator": "https://docs.dash.org/projects/platform/en/latest/docs/explanations/shielded-pool.html#overview and #what-the-pool-does-not-provide",
+      "version": "Dash Platform latest docs, accessed 2026-09-04"
     }
   ],
   "claims": [
     {
       "id": "C1",
-      "text": "Dash Core is software for operating and interacting with the Dash blockchain, where DASH payments are recorded.",
-      "sourceIds": ["S2", "S5"],
+      "text": "Dash launched in January 2014 as XCoin; its March 2014 release introduced masternodes and renamed it Darkcoin, and it was renamed Dash in February 2015.",
+      "sourceIds": ["S1", "S2"],
       "support": "direct"
     },
     {
       "id": "C2",
-      "text": "A Dash payment recipient can receive usable assurance in about a second and safely accept or re-spend the funds before the transaction enters a block.",
-      "sourceIds": ["S1", "S3", "S4"],
+      "text": "Dash is a payments-focused cryptocurrency whose name is a portmanteau of 'Digital Cash'; the February 2015 release fully implemented InstantX, which the current documentation redirects to InstantSend.",
+      "sourceIds": ["S1", "S2", "S3"],
       "support": "direct"
     },
     {
       "id": "C3",
-      "text": "Waiting for a block is a different event: Dash's average block interval is about 2.6 minutes, and a block confirmation counts inclusion depth rather than the earlier payment assurance.",
-      "sourceIds": ["S3", "S4"],
+      "text": "ChainLocks became active on Dash in June 2019.",
+      "sourceIds": ["S6"],
       "support": "direct"
     },
     {
       "id": "C4",
-      "text": "The network automatically attempts to give qualifying transactions near-instant assurance; the sender does not need to request the feature explicitly.",
-      "sourceIds": ["S1", "S8"],
+      "text": "InstantSend lets a zero-confirmation transaction be safely accepted and re-spent before it enters a block, and locks usually arrive within seconds.",
+      "sourceIds": ["S5", "S7"],
       "support": "direct"
     },
     {
       "id": "C5",
-      "text": "An ordinary Dash full node downloads and validates the blockchain, but it does not provide the additional services or receive the compensation assigned to masternodes.",
-      "sourceIds": ["S2"],
+      "text": "Dash automatically attempts to lock the inputs of qualifying transactions; the sender does not request a special transaction type or fast-payment mode.",
+      "sourceIds": ["S4", "S5"],
       "support": "direct"
     },
     {
       "id": "C6",
-      "text": "Masternodes form Dash's second network tier and provide additional services, including the service behind fast payment assurance, in exchange for compensation.",
-      "sourceIds": ["S1", "S2", "S7"],
+      "text": "An InstantSend transaction is a standard transaction with an additional status, and an integration should track that status independently of block confirmations.",
+      "sourceIds": ["S5"],
       "support": "direct"
     },
     {
       "id": "C7",
-      "text": "A regular masternode requires 1,000 DASH to remain unspent while it operates and receives network compensation for providing its services.",
-      "sourceIds": ["S4", "S7"],
+      "text": "Two miners can produce valid blocks at the same height, creating a fork; one branch can later displace the other and remove transactions that appeared in the losing block.",
+      "sourceIds": ["S7", "S8"],
       "support": "direct"
     },
     {
       "id": "C8",
-      "text": "Evolution masternodes, or evonodes, require 4,000 DASH and host both Dash Core and Dash Platform; regular masternodes serve only Core.",
-      "sourceIds": ["S2", "S4", "S7"],
+      "text": "Once a valid ChainLock reaches a node, that node rejects competing blocks at the same height and their descendants, preventing a reorganization below the locked block.",
+      "sourceIds": ["S6"],
       "support": "direct"
     },
     {
       "id": "C9",
-      "text": "Dash Platform is the application-data layer on top of Dash, used to store and query shared application data without relying on one hosted backend.",
+      "text": "A ChainLock is attempted only after every transaction in its block has an InstantSend lock; missing locks are established retroactively before the block is locked.",
       "sourceIds": ["S6"],
       "support": "direct"
     },
     {
       "id": "C10",
-      "text": "A feature whose job is to move DASH belongs to Dash Core; a feature whose job is to store or query shared application data belongs to Dash Platform.",
-      "sourceIds": ["S5", "S6"],
+      "text": "InstantSend prevents a conflicting spend and permits acceptance before mining; it does not choose a particular block to preserve. ChainLocks prevent replacement of a locked block and its preceding history, but require a mined block and cannot supply that pre-mining assurance.",
+      "sourceIds": ["S4", "S5", "S6"],
       "support": "inference"
     },
     {
       "id": "C11",
-      "text": "The differentiating services covered here depend on the second tier existing: ordinary full nodes do not replace the masternode service behind fast payments, and regular masternodes do not replace the evonodes that host Platform.",
-      "sourceIds": ["S2", "S4"],
-      "support": "inference"
+      "text": "Ordinary full nodes download and validate the blockchain but do not provide or receive compensation for the additional services assigned to masternodes.",
+      "sourceIds": ["S3"],
+      "support": "direct"
     },
     {
       "id": "C12",
-      "text": "Core and Platform are two jobs on the Dash network rather than two unrelated networks: Core handles the payment chain, while Platform adds application-data services on top.",
-      "sourceIds": ["S5", "S6"],
+      "text": "Masternodes form a compensated second tier that provides InstantSend and ChainLocks; a regular masternode must keep 1,000 DASH as collateral while it operates, making large numbers of fake service nodes costly to create.",
+      "sourceIds": ["S3", "S5", "S7"],
       "support": "direct"
+    },
+    {
+      "id": "C13",
+      "text": "Without masternode-produced transaction and block locks, ordinary full-node validation would remain but Dash would lose the additional payment assurances supplied by InstantSend and ChainLocks.",
+      "sourceIds": ["S3", "S4", "S6"],
+      "support": "inference"
+    },
+    {
+      "id": "C14",
+      "text": "Evolution masternodes host Dash Platform, an application-data layer on top of the Dash network.",
+      "sourceIds": ["S3", "S7", "S9"],
+      "support": "direct"
+    },
+    {
+      "id": "C15",
+      "text": "Dash Core offers optional, non-custodial CoinJoin mixing coordinated by masternodes; clients prepare same-denomination inputs and retain control of their funds.",
+      "sourceIds": ["S10"],
+      "support": "direct"
+    },
+    {
+      "id": "C16",
+      "text": "Dash Platform has a separate Orchard-based Shielded Pool that hides balances, senders, recipients, and amounts for transfers inside the pool, while entry and exit activity remains visible.",
+      "sourceIds": ["S11"],
+      "support": "direct"
+    },
+    {
+      "id": "C17",
+      "text": "Masternode groups produce transaction and block locks and relay them to the network; nodes verify and enforce the accepted locks. Ordinary full nodes validate the chain but do not participate in producing locks as masternodes do.",
+      "sourceIds": ["S3", "S4", "S5", "S6"],
+      "support": "direct"
+    },
+    {
+      "id": "C18",
+      "text": "Locking the original transaction inputs does not freeze the recipient's funds: the recipient can spend the received funds in a new transaction before mining. Removing a transaction's block inclusion is distinct from accepting a conflicting spend of its inputs.",
+      "sourceIds": ["S4", "S5", "S6", "S8"],
+      "support": "inference"
     }
   ],
   "apiExamples": [],
-  "conflicts": [
-    {
-      "id": "X1",
-      "topic": "The Platform introduction describes traditional peer-to-peer nodes as compensated equally, while the Core guide says ordinary full nodes receive no compensation for additional services.",
-      "sourceIds": ["S1", "S2"],
-      "status": "resolved",
-      "resolution": "The lesson follows the more specific Core guide when comparing ordinary full nodes with masternodes and omits the conflicting Platform introduction statement."
-    }
-  ],
+  "conflicts": [],
   "uncertainties": [
     {
       "id": "U1",
-      "topic": "What timing phrase should describe the receiver's experience?",
+      "topic": "What timing phrase should describe an InstantSend lock?",
       "blocking": false,
-      "resolution": "Use the manifest's rough phrase, 'about a second,' and contrast it with the roughly 2.6-minute average block interval. Do not state an exact timing guarantee."
+      "resolution": "Use 'within seconds' rather than promise an exact deadline. The integration guide describes locks as typically arriving within three seconds, while other overview material uses shorter figures."
     },
     {
       "id": "U2",
-      "topic": "Should the early payment assurance be called a block confirmation?",
+      "topic": "How much of transaction inputs should a blockchain beginner learn here?",
       "blocking": false,
-      "resolution": "Describe the early event as payment assurance or settlement and reserve block confirmation for inclusion depth."
+      "resolution": "Define inputs only as the existing sources of funds a transaction spends. The full UTXO model is not needed to understand what InstantSend prevents."
     },
     {
       "id": "U3",
-      "topic": "Does every masternode host Dash Platform?",
+      "topic": "How much quorum machinery should explain InstantSend and ChainLocks?",
       "blocking": false,
-      "resolution": "State that regular masternodes serve Core while evonodes serve both Core and Platform, without entering Platform consensus internals."
+      "resolution": "Explain the transaction-level and block-level effects without quorum sizes, selection, threshold signatures, or protocol messages, which the manifest excludes."
     },
     {
       "id": "U4",
-      "topic": "How should the lesson handle the conflicting descriptions of ordinary-node compensation?",
+      "topic": "Should the payment explanation include project history and privacy features?",
       "blocking": false,
-      "resolution": "Use the more specific Core guide for node roles and omit the conflicting sentence from the Platform introduction."
+      "resolution": "Keep a short opening history paragraph supported by C1, C2, and C3. Omit CoinJoin and Shielded Pool discussion to keep the lesson focused on the manifest's payment protections; retain their source and claim entries as prior research. Limit Platform to a brief transition. The coffee shop, competing blocks A and B, and supplier payment are explicitly hypothetical illustrations of sourced behavior, not live transactions. The comparison table summarizes C4, C8, and C10 without introducing new protocol claims."
     }
   ],
   "executableExamples": []

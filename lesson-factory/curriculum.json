@@ -27,13 +27,13 @@
       "slug": "what-is-dash",
       "title": "What is Dash?",
       "tier": "concepts",
-      "description": "What makes Dash different: cash that settles in about a second, and a second job.",
+      "description": "See how InstantSend, ChainLocks, and masternodes make Dash work as digital cash.",
       "estimatedMinutes": 12,
       "exp": 100,
       "prerequisites": ["what-is-a-blockchain"],
       "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
-      "mustCover": ["the learner can say what a payment on Dash feels like to the person receiving it, and how that differs from waiting on a block", "the learner can say what masternodes do that ordinary nodes do not, and why the rest of Dash depends on them existing", "the learner can decide which of Dash Core and Dash Platform a given feature belongs to"],
-      "mustNotCover": ["re-teaching what a blockchain or a transaction is", "LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
+      "mustCover": ["the learner can say why an InstantSend payment can be safely accepted and re-spent before it enters a block", "the learner can distinguish the transaction protection supplied by InstantSend from the block protection supplied by ChainLocks, and say why Dash uses both", "the learner can say what masternodes do that ordinary full nodes do not, and why Dash's fast, secure payment experience depends on them"],
+      "mustNotCover": ["re-teaching what a blockchain or a transaction is", "LLMQ formation, quorum selection, threshold signing, or protocol-message internals", "Tenderdash and consensus internals", "routing features between Dash Core and Dash Platform", "Platform beyond a brief transition to the next lesson"]
     },
     {
       "module": 3,
