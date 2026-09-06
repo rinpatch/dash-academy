@@ -105,8 +105,6 @@ A data contract is a description, not a program. Two limits follow directly from
 The two halves of this lesson reinforce each other. Because there are no joins, you model relationships by storing an identifier — which means that identifier must be indexed. And because updates are additive-only, you have to make that index decision when you write the contract, not when you first notice a query is slow.
 </Callout>
 
-## Checkpoint
-
 Pass the quiz to complete the lesson.
 
 <LessonQuiz
@@ -175,7 +173,3 @@ Pass the quiz to complete the lesson.
     },
   ]}
 />
-
-## What you accomplished
-
-You can now model an application's data on Dash Platform as a data contract: choose its document types and fields, declare the indexes that gate your queries, and reason about what those choices lock in. You also know the shape of the contract's limits — validation lives in JSON Schema rather than server-side triggers, and relationships live in stored identifiers rather than joins. In the next lesson you will follow a single document through its lifecycle.

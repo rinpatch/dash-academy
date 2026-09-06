@@ -72,14 +72,8 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   for (const key of ["title", "description", "module", "tier", "estimatedMinutes", "exp"]) {
     if (String(frontmatter[key]) !== String(lesson[key])) errors.push(`Frontmatter ${key} does not match manifest`);
   }
-  if (!mdx.includes("## Checkpoint")) errors.push("Missing ## Checkpoint");
-  else {
-    // Skipped for a stub, which already fails on the missing checkpoint above; reporting a word
-    // count for 80 words of placeholder would just bury the real error.
-    const lengthError = checkLength(lesson, mdx);
-    if (lengthError) errors.push(lengthError);
-  }
-  if (!mdx.includes("## What you accomplished")) errors.push("Missing ## What you accomplished");
+  const lengthError = checkLength(lesson, mdx);
+  if (lengthError) errors.push(lengthError);
   if (/^# /m.test(mdx.replace(/^---[\s\S]*?---/, ""))) errors.push("Lesson body must not contain an H1");
   if (/\b(?:mnemonic|private[_ -]?key)\s*[:=]\s*["'][^"']+/i.test(mdx)) errors.push("Possible secret in MDX");
   // A substring check used to be enough, so a lesson could name its challenge in prose and pass

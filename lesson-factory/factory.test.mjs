@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "vitest";
-import { readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { glossaryIds, lessonTier, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
 import { command, repoRoot } from "./lib.mjs";
 import { formatEvent, parseResult, shouldRetryAgent } from "./agent.mjs";
-import { usesComponent, VERIFICATION_COMPONENTS } from "./validate.mjs";
+import { usesComponent, validateLesson, VERIFICATION_COMPONENTS } from "./validate.mjs";
 
 test("agent result parsing takes the last assistant message and surfaces provider errors", () => {
   const line = (event) => `${JSON.stringify(event)}\n`;
@@ -153,6 +154,37 @@ test("validation demands a real verification component, not the challenge id in 
   // Props spanning lines, and quiz props full of braces and quotes, still parse.
   assert.equal(usesComponent(`<TestnetVerifier\n  challengeId="${id}"\n  operation="dpns-register"\n/>`, VERIFICATION_COMPONENTS, id), true);
   assert.equal(usesComponent(`<LessonQuiz challengeId="q" questions={[{ id: "a", label: "x > y" }]} />`, ["LessonQuiz"], "q"), true);
+});
+
+test("lesson validation accepts prose without template sections but still checks length and the quiz", async () => {
+  const cwd = await mkdtemp(path.join(tmpdir(), "academy-validator-"));
+  const lesson = {
+    slug: "sample", module: 1, title: "Sample", description: "Example",
+    tier: "concepts", estimatedMinutes: 1, exp: 100,
+    verification: { kind: "quiz", challengeId: "sample" },
+  };
+  const frontmatter = `---\ntitle: Sample\ndescription: Example\nmodule: 1\ntier: concepts\nestimatedMinutes: 1\nexp: 100\n---\n`;
+  const prose = "A payment arrives before a miner includes it in a block. ".repeat(8);
+  const quiz = '<LessonQuiz challengeId="sample" />';
+  const mdxPath = path.join(cwd, "content/academy/sample.mdx");
+  try {
+    await mkdir(path.dirname(mdxPath), { recursive: true });
+    await mkdir(path.join(cwd, "lesson-factory/lessons/sample"), { recursive: true });
+    await writeFile(path.join(cwd, "lesson-factory/lessons/sample/evidence.json"), JSON.stringify({ slug: "sample", module: 1 }));
+
+    await writeFile(mdxPath, frontmatter + prose + quiz);
+    assert.deepEqual(await validateLesson(lesson, cwd), []);
+
+    await writeFile(mdxPath, frontmatter + "Too short.\n" + quiz);
+    const lengthErrors = await validateLesson(lesson, cwd);
+    assert.equal(lengthErrors.length, 1);
+    assert.match(lengthErrors[0], /words but claims/);
+
+    await writeFile(mdxPath, frontmatter + prose);
+    assert.deepEqual(await validateLesson(lesson, cwd), ['Missing <LessonQuiz challengeId="sample">']);
+  } finally {
+    await rm(cwd, { recursive: true, force: true });
+  }
 });
 
 test("only a locked opencode database earns another agent run", () => {

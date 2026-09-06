@@ -53,13 +53,15 @@ prerequisites: []
 | `verification` | `quiz`, `testnet`, or `hybrid` |
 | `prerequisites` | **Module numbers, not slugs** — `[3]`, not `["identities"]` |
 
-Then the body. Open with a sentence or two saying what the lesson lets the reader do and how it
-follows from the one before it — not a heading, and not a bulleted objectives list.
+Then the body. Start on the subject, with a concrete problem or example that gives the reader a
+reason to keep reading. Omit learning-objective lists, "What you accomplished" recaps, and
+"Checkpoint" headings. The quiz and verifier components provide their own labels.
 
-Two headings are required and validation fails without them:
+Include the quiz or verifier required by the manifest. Validation checks the component and its
+challenge ID, not a heading above it.
 
-- `## Checkpoint` — where the quiz or verifier goes
-- `## What you accomplished` — a short close
+`LessonQuiz` introduces itself with "Check your understanding"; `TestnetVerifier` uses "Verify your
+work". Their built-in headings and visual separation mark the shift from reading to doing.
 
 Don't use a top-level `# Heading` in the body; the title comes from the frontmatter.
 

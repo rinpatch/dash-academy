@@ -116,8 +116,6 @@ Two sides of that boundary are worth keeping in mind:
 
 So the answer to "when can I trust a DAPI answer?" is: a Core lookup and an unproved read are trust-based, while a Platform read with a requested, verified proof is something you checked for yourself.
 
-## Checkpoint
-
 Pass the quiz to complete the lesson.
 
 <LessonQuiz
@@ -186,7 +184,3 @@ Pass the quiz to complete the lesson.
     },
   ]}
 />
-
-## What you accomplished
-
-You can now explain what answered your first Platform read — a DAPI node reading finalized, deterministic state from GroveDB — and why some answers are safer than others. You can tell Core access from Platform access by endpoint family and proof, describe how the SDK selects endpoints (seed-node discovery with rotation and ban-on-failure, or pinned addresses), and summarize how a state proof is checked against a quorum-signed AppHash. Finally, you know the exact trust boundary: Core lookups and unproved reads are taken on trust, Platform reads are proof-verifiable only when a proof is requested and quorum keys are present, and even trusted mode still trusts one thing — the key-distribution endpoint.

@@ -19,7 +19,7 @@ Learners are developers who are new to Dash **and new to blockchain**. They are 
 - Every term of art must be explained at first use, but not necessarily in the prose. Prefer `<Term id="...">the term</Term>`, which shows a definition on click, for jargon that is incidental to this lesson — a word the reader must recognise to parse the sentence but which carries none of the lesson's learning objectives. Reuse an existing id from `lib/glossary.ts` where one fits, so the course words a term the same way everywhere. You may append a new entry to that file when your lesson needs a term it does not yet define. Never remove or reword an existing entry: other lessons depend on it, and the runner rejects a lesson that deletes one. Never use `<Term>` for a concept the manifest's `mustCover` names: that is the lesson's job, and it belongs in the prose.
 - Define a term inline instead when the sentence around it depends on the meaning. The lesson must read correctly for someone who never opens a popover.
 - Analogies and short worked examples over specification tables. Comparison tables are for choices the learner has to make.
-- No learning objectives, in any form: not a `## Learning objectives` section, not a bulleted list, not a paragraph saying what the reader will be able to do by the end. Nothing about "this lesson" or "this course" at all. Start on the subject and let the reader find out what it teaches by reading it.
+- No learning objectives, in any form: not a `## Learning objectives` section, not a bulleted list, not a paragraph saying what the reader will be able to do by the end. Omit "What you accomplished" recaps and "Checkpoint" headings too; quiz and verifier components provide their own labels. Nothing about "this lesson" or "this course" at all. Start on the subject and let the reader find out what it teaches by reading it.
 
 Pedagogy review must return `revise` when a lesson leads with mechanism, covers a `mustNotCover` topic, or leaves a term of art both unmarked and undefined. A term wrapped in `<Term>` with a glossary entry counts as explained; do not ask for prose duplicating it.
 
@@ -44,8 +44,8 @@ the rules below win.
   the ones research already established. Where it wants concrete detail you do not have, cut the
   vague sentence rather than invent a replacement — facts review will catch a fabricated one, and a
   revision round is expensive.
-- **Its formatting rules are for social media.** Lessons need `##` headings, `## What you
-  accomplished`, and the MDX components. Ignore "no markdown headers" and "no bold" entirely.
+- **Its formatting rules are for social media.** Lessons need `##` headings and MDX components.
+  Ignore "no markdown headers" and "no bold" entirely.
 - **Banned words are banned as filler, not as terminology.** A lesson about keys says "key", and an
   SDK lesson about robustness of a query says what it means. The list targets words reached for to
   sound impressive; it never overrides the correct technical term.
@@ -73,9 +73,9 @@ work in a sentence. A single stray banned word is a finding, not a verdict.
 
 Do not alter curriculum numbering or scope. Do not access secrets or run live testnet writes. A successful local stage is not proof that the live testnet stage passed.
 
-## Hands-on checkpoints
+## Hands-on verification
 
-A tier 2 lesson's `## Checkpoint` must contain a registered verification component wired to the
+A tier 2 lesson must contain a registered verification component wired to the
 manifest's `challengeId`; validation rejects the id appearing only in prose. Use
 `<TestnetVerifier challengeId="..." operation="..." />`, copying both values from the manifest row.
 `<TestnetVerifier>` is the only verification component available.

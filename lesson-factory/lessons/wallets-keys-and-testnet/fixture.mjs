@@ -23,9 +23,7 @@ test("lesson follows the module 7 concept contract", async () => {
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
   assert.match(mdx, /prerequisites: \[6\]/);
-  assert.match(mdx, /## Checkpoint/);
   assert.match(mdx, /challengeId="wallets-keys-and-testnet"/);
-  assert.match(mdx, /## What you accomplished/);
   assert.doesNotMatch(mdx.replace(/^---[\s\S]*?---/, ""), /^# /m);
 });
 

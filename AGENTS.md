@@ -12,6 +12,6 @@ Do not run more than one testnet writer at a time. Never commit generated run st
 
 ## Lesson file contract
 
-Follow the manifest row for the assigned module exactly. Each lesson must have learning objectives, explanatory sections, a checkpoint matching the manifest, and a final “What you accomplished” section.
+Follow the manifest row for the assigned module exactly. Teach the required concepts and include the quiz or verifier matching the manifest. Do not add learning-objective lists, "What you accomplished" recaps, or "Checkpoint" headings. Start on the subject; the quiz and verifier components provide their own labels.
 
 Use stable challenge IDs from the manifest. Hybrid quiz IDs end in `:quiz`; they are checkpoints and do not complete the lesson. Executable examples must have a lesson-scoped fixture and evidence-ledger entry. Never invent an SDK method: verify package types/runtime for the pinned 4.1.1 SDK and cite authoritative Dash sources.

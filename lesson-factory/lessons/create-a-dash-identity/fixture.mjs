@@ -37,9 +37,7 @@ function registerTests() {
     assert.match(mdx, /exp: 200/);
     assert.match(mdx, /verification: testnet/);
     assert.match(mdx, /prerequisites: \[8\]/);
-    assert.match(mdx, /## Checkpoint/);
     assert.match(mdx, /challengeId="create-a-dash-identity"/);
-    assert.match(mdx, /## What you accomplished/);
     assert.doesNotMatch(mdx.replace(/^---[\s\S]*?---/, ""), /^# /m);
   });
 
