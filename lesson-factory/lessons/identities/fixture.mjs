@@ -16,38 +16,44 @@ const documentedPublicKeySpecs = [
   { keyId: 5, purpose: "DECRYPTION", securityLevel: "MEDIUM" },
 ];
 
-test("lesson follows the module 6 concept contract", async () => {
+test("lesson follows the module 7 concept contract", async () => {
   const mdx = await readFile(mdxUrl, "utf8");
 
   assert.match(mdx, /title: Identities/);
   assert.match(mdx, /description: Understand Platform identities, keys, credits, and their relationship to wallets\./);
-  assert.match(mdx, /module: 6/);
+  assert.match(mdx, /module: 7/);
   assert.match(mdx, /tier: concepts/);
   assert.match(mdx, /estimatedMinutes: 12/);
   assert.match(mdx, /exp: 100/);
   assert.match(mdx, /verification: quiz/);
-  assert.match(mdx, /prerequisites: \[5\]/);
+  assert.match(mdx, /prerequisites: \[6\]/);
   assert.match(mdx, /challengeId="identities"/);
   assert.doesNotMatch(mdx.replace(/^---[\s\S]*?---/, ""), /^# /m);
 });
 
-test("lesson covers object boundaries, scoped keys, credits, and fees", async () => {
+test("the teaching plan maps every required ability to explanation, example, and assessment", async () => {
+  const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
+  const manifest = JSON.parse(await readFile(new URL("../../curriculum.json", import.meta.url), "utf8"));
+  const lesson = manifest.lessons.find((item) => item.slug === "identities");
   const mdx = await readFile(mdxUrl, "utf8");
-
-  for (const required of [
-    "Core wallet",
-    "Core address",
-    "Platform address",
-    "Platform identity",
-    "master-level authentication key",
-    "Transfer",
-    "1 duff = 1,000 credits",
-    "Storage fees",
-    "Processing fees",
-    "top up",
-  ]) {
-    assert.ok(mdx.includes(required), `missing required lesson concept: ${required}`);
+  assert.deepEqual(ledger.coverageMap.map((item) => item.requirement), lesson.mustCover);
+  for (const item of ledger.coverageMap) {
+    for (const heading of item.explanation.split("; ")) assert.ok(mdx.includes(`## ${heading}`));
+    assert.ok(item.demonstration.length > 0);
+    for (const id of item.assessment) assert.ok(mdx.includes(`id: "${id}"`));
   }
+});
+
+test("illustrative fee budgets add both fee categories without claiming live prices", async () => {
+  const mdx = await readFile(mdxUrl, "utf8");
+  const worked = mdx.match(/has ([\d,]+) credits and an update costs ([\d,]+) in processing plus ([\d,]+) in storage/);
+  assert.ok(worked, "worked calculation is present");
+  const [balance, processing, storage] = worked.slice(1).map((value) => Number(value.replaceAll(",", "")));
+  assert.equal(balance - processing - storage, 70000);
+  assert.equal(balance - 2 * (processing + storage), 20000);
+  assert.ok(balance < 3 * (processing + storage));
+  assert.match(mdx, /illustrative amounts, not a network quote/);
+  assert.equal(90000 - 2 * (10000 + 30000), 10000);
 });
 
 test("the completing quiz checks ownership, key scope, and the fee model", async () => {
@@ -58,7 +64,7 @@ test("the completing quiz checks ownership, key scope, and the fee model", async
   assert.match(mdx, /id: "owns-data"/);
   assert.match(mdx, /id: "platform-address"/);
   assert.match(mdx, /id: "master-key"/);
-  assert.match(mdx, /id: "credit-conversion"/);
+  assert.match(mdx, /id: "sponsored-funding"/);
   assert.match(mdx, /id: "fees-split"/);
   assert.match(mdx, /passingScore=\{4\}/);
 });
@@ -122,7 +128,7 @@ test("evidence ledger resolves every claim and conflict", async () => {
   const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
   const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-  assert.equal(ledger.module, 6);
+  assert.equal(ledger.module, 7);
   assert.equal(ledger.slug, "identities");
   assert.equal(ledger.uncertainties.length, 0);
   for (const claim of ledger.claims) {
