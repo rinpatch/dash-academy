@@ -40,7 +40,7 @@
       "slug": "what-is-dash-platform",
       "title": "What is Dash Platform?",
       "tier": "concepts",
-      "description": "See what Dash Platform lets you build, and what you will build here.",
+      "description": "See what Dash Platform adds to Dash and what you can build with it.",
       "estimatedMinutes": 12,
       "exp": 100,
       "prerequisites": ["what-is-dash"],

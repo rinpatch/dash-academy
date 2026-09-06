@@ -1,6 +1,6 @@
 ---
 title: What is Dash Platform?
-description: See what Dash Platform lets you build, and what you will build here.
+description: See what Dash Platform adds to Dash and what you can build with it.
 module: 3
 tier: concepts
 estimatedMinutes: 12
@@ -13,7 +13,7 @@ Suppose your app has just accepted a Dash payment. The transfer settles on Dash 
 
 ## Two layers, two jobs
 
-Dash is really two systems working as one. **Dash Core** keeps the payment ledger: moving Dash from one person to another. **Dash Platform** keeps everything an app might want to share beyond that. You still write your own frontend and business logic and run them wherever you like. Platform's share is narrower and harder: store the shared records and enforce the owners and rules that decide who may change them.
+Dash is really two systems working as one. **Dash Core** keeps the payment ledger: moving Dash from one person to another. **Dash Platform** keeps everything an app might want to share beyond that. You still write your own frontend and business logic and run them wherever you like. Platform stores and validates shared state; it doesn't run arbitrary programs you upload.
 
 That split doubles as your routing rule. A request that only moves Dash belongs on Core. A request that needs shared, queryable records owned by the people using the app, such as usernames, orders, or assets, belongs on Platform. A shop can take the payment on Core and keep the order on Platform at the same time; that's normal, not a conflict.
 
@@ -49,21 +49,19 @@ An **NFT** isn't a separate kind of object. It's a document that stands for one 
 
 Storing records on a network you don't run invites the opposite worry: is any of it private? The line that matters separates value from data.
 
-Value can be. Platform keeps a **shielded pool** where Dash and app tokens move under zero-knowledge proofs: you shield value in, transfer it privately within the pool, and bring it back out, without the movement revealing sender, receiver, or amount.
+Value can be. Platform supports a **shielded pool** for privately moving value, including credits created from Dash and supported app tokens. Within the pool, zero-knowledge proofs hide the sender, receiver, and amount.
 
-Data cannot. A document in Drive is replicated, queryable state, and shielding doesn't change that. The pool conceals value movement; the records themselves stay visible to whoever can query them. If a record is confidential, keep it off Platform or encrypt it yourself.
+Documents aren't private by default. A document in Drive is replicated, queryable state, and shielding a payment doesn't shield the related app data. If a record is confidential, keep it off Platform or encrypt it before writing it.
 
 ## Who pays for the work
 
-None of this runs for free. The network meters its work in **credits**, a balance kept separate from Dash. You create credits by locking Dash, and each identity carries a credit balance that Platform draws on when it stores data or processes a change.
+None of this runs for free. The network meters its work in **<Term id="credits">credits</Term>**, a balance kept separate from Dash. You create credits by locking Dash, and each identity carries a credit balance that Platform draws on when it stores data or processes a change.
 
 Two choices stop every operation from starting with an empty-account dead end. A **Platform address** can hold credits, so funding exists before any identity does. And because anyone may top up any identity's balance, an app can simply cover its users' fees. Call that fee sponsorship. It isn't a special mechanism; it's a normal consequence of the open top-up rule, and it's what lets a product feel free to the user while the network still gets paid.
 
 ## One app, assembled
 
 Suppose Ada runs a small festival and sells limited-edition seat passes. Core settles each Dash payment. Ada registers a DPNS name so the sale has a readable address. Her data contract declares a pass record, and each pass in Drive is a unique, transferable document (an NFT) that a buyer purchases at a set price through the protocol's built-in purchase. The buyer's identity owns the pass afterward, and Ada's frontend tops up that identity's credits so a fee never greets the buyer. The ticket page, the pricing, the seat-inventory checks: that's Ada's own code on Ada's servers. The network's job is holding the passes, enforcing who owns each one, and running the purchase rules, the part that needed to outlive anyone's database.
-
-Pass the quiz to complete the lesson.
 
 <LessonQuiz
   challengeId="what-is-dash-platform"
