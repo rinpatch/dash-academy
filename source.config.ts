@@ -12,6 +12,9 @@ export const docs = defineDocs({
       exp: z.number().int().positive(),
       verification: z.enum(["quiz", "testnet", "hybrid"]),
       prerequisites: z.array(z.number().int().min(1).max(19)).default([]),
+      // Stub lessons carry status: draft by hand. The factory rewrites the whole file when it
+      // authors a lesson, so the flag disappears on its own once real content lands.
+      status: z.enum(["draft", "published"]).default("published"),
     }),
   },
 });

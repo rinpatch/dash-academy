@@ -23,19 +23,22 @@ export function LessonMobileBar({
   toc,
   lessonSlug,
   lessonTitle,
+  completableLessons,
 }: {
   lessons: LessonSummary[];
   currentUrl: string;
   toc: TableOfContents;
   lessonSlug: string;
   lessonTitle: string;
+  completableLessons: number;
 }) {
   const [open, setOpen] = useState<OpenSheet>(null);
   const { lessonIds, isHydrated } = useCompletedLessonIds();
   const noteCount = useNotesStore((state) => state.notesByLesson[lessonSlug]?.length ?? 0);
 
   const completedCount = isHydrated ? lessonIds.size : 0;
-  const percent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
+  const percent =
+    completableLessons > 0 ? Math.round((completedCount / completableLessons) * 100) : 0;
 
   // A tap on any link inside the contents sheet is a jump away from it, so the sheet gets out
   // of the way rather than leaving the reader to close it.
@@ -71,7 +74,7 @@ export function LessonMobileBar({
             />
           </div>
           <p className="text-center text-[11px] font-medium text-foreground/48">
-            {completedCount} / {lessons.length} Lessons
+            {completedCount} / {completableLessons} Lessons
           </p>
         </div>
 
@@ -94,7 +97,7 @@ export function LessonMobileBar({
       <Sheet open={open === "contents"} onOpenChange={(next) => !next && setOpen(null)}>
         <SheetContent title="Contents">
           <div className="flex flex-col gap-4" onClick={closeOnLink}>
-            <CourseTrackCard totalLessons={lessons.length} />
+            <CourseTrackCard totalLessons={completableLessons} />
             <LessonNavList lessons={lessons} currentUrl={currentUrl} toc={toc} />
           </div>
         </SheetContent>
