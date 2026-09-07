@@ -11,237 +11,149 @@
   },
   "sources": [
     {
-      "id": "S1",
-      "title": "Dash Academy curriculum — module 2 manifest row",
-      "kind": "curriculum manifest",
-      "locator": "lesson-factory/curriculum.json, module 3",
-      "version": "schemaVersion 1"
+      "id": "platform-overview",
+      "title": "What is Dash Platform?",
+      "kind": "vendored official Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md:8-13,33-50,62-81",
+      "version": "3.1.0"
     },
     {
-      "id": "S2",
-      "title": "What is Dash Platform",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "id": "platform-query",
+      "title": "Query Capabilities",
+      "kind": "vendored official Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md:7-35,50-64",
+      "version": "3.1.0"
     },
     {
-      "id": "S3",
-      "title": "What is Dash",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "S4",
-      "title": "Platform Comparison",
-      "kind": "vendored authoritative Platform Book",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/platform-comparison.md",
-      "version": "Dash Platform Book v4.2-dev"
-    },
-    {
-      "id": "S5",
-      "title": "Shielded Transaction Fees",
-      "kind": "vendored authoritative Platform Book",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/fees/shielded-fees.md",
-      "version": "Dash Platform Book v4.2-dev"
-    },
-    {
-      "id": "S6",
+      "id": "platform-credits",
       "title": "Identity",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "kind": "vendored official Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md:11,19-21,65-69",
+      "version": "3.1.0"
     },
     {
-      "id": "S7",
-      "title": "Fees",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/fees.md",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "S8",
-      "title": "Name Service (DPNS)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "S9",
-      "title": "Non-Fungible Tokens (NFTs)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/nft.md",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "S10",
+      "id": "platform-tokens",
       "title": "Tokens",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "kind": "vendored official Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md:7-19,30-43",
+      "version": "3.1.0"
     },
     {
-      "id": "S11",
-      "title": "Protocol Constants",
-      "kind": "vendored authoritative Platform protocol reference",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/protocol-constants.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "id": "platform-names",
+      "title": "Name Service (DPNS)",
+      "kind": "vendored official Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md:5-17",
+      "version": "3.1.0"
     },
     {
-      "id": "S12",
-      "title": "State Transition (protocol reference)",
-      "kind": "vendored authoritative Platform protocol reference",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/state-transition.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "id": "platform-documents",
+      "title": "Document",
+      "kind": "vendored official Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-document.md:7-11,122-142",
+      "version": "3.1.0"
     },
     {
-      "id": "S13",
-      "title": "DAPI Endpoints",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "id": "platform-privacy",
+      "title": "Dash Platform FAQ",
+      "kind": "vendored official Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/resources/faq.md:194-221",
+      "version": "3.1.0"
     },
     {
-      "id": "S14",
-      "title": "CoinJoin (core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-coinjoin.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "governance-guide",
+      "title": "Governance",
+      "kind": "vendored official Dash documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/governance/index.rst:11-34",
+      "version": "23.0.0"
     },
     {
-      "id": "S15",
-      "title": "Governance (core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features-governance.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "governance-usage",
+      "title": "Using Dash Governance",
+      "kind": "vendored official Dash documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/governance/using.rst:11-30",
+      "version": "23.0.0"
     },
     {
-      "id": "S16",
-      "title": "Glossary",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "id": "governance-history",
+      "title": "Dash Core P2P Network Protocol Versions",
+      "kind": "vendored official Dash developer documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/reference/p2p-network-protocol-versions.md:38",
+      "version": "23.0.0"
+    },
+    {
+      "id": "dao-current-history",
+      "title": "Introducing the Dash Ecosystem Fund",
+      "kind": "official Dash website",
+      "locator": "https://www.dash.org/blog/introducing-the-dash-ecosystem-fund/#the-daotreasury",
+      "version": "published 2026-05-29; retrieved 2026-09-07"
+    },
+    {
+      "id": "current-proposals",
+      "title": "DashCentral Budget",
+      "kind": "live community governance portal linked by official Dash documentation",
+      "locator": "https://www.dashcentral.org/budget",
+      "version": "live page retrieved 2026-09-07"
     }
   ],
   "claims": [
     {
-      "id": "C1",
-      "text": "Dash is organized into two layers: Core (layer 1) settles Dash payments and provides governance, while Platform (layer 2) stores and verifies structured application data via data contracts, documents, identities, and signed state transitions.",
-      "sourceIds": [
-        "S2",
-        "S3"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C2",
-      "text": "A Dash payment reaches confirmation in about a second, at no extra cost, because every transaction is InstantSend-locked and blocks are ChainLocked — practical for checkout and user-facing payment flows.",
-      "sourceIds": [
-        "S3"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C3",
-      "text": "Dash has no general-purpose smart-contract VM today: developers declare data with JSON-Schema data contracts instead of deploying code, which removes whole classes of smart-contract vulnerabilities; a VM is planned for Platform v4.0.",
-      "sourceIds": [
-        "S4"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C4",
-      "text": "Dash's clearest non-fit is arbitrary on-chain computation — anything that needs a Turing-complete VM or heavy custom code per node — while its clear fits are payments, verifiable app data with proofs, identities/usernames, tokens, and digital assets.",
-      "sourceIds": [
-        "S4"
-      ],
+      "id": "platform-fit",
+      "text": "Dash Platform is suitable when an application needs structured state shared across the network rather than data controlled solely by one application operator.",
+      "sourceIds": ["platform-overview"],
       "support": "inference"
     },
     {
-      "id": "C5",
-      "text": "DPNS registers human-readable .dash names (e.g. alice.dash) and ties them to a Platform identity, giving name-based interaction; premium names go through a masternode vote, ordinary names register immediately.",
-      "sourceIds": [
-        "S8"
-      ],
+      "id": "beyond-payments",
+      "text": "Past Dash payments, an application can use Platform for configurable tokens, readable usernames, and uniquely owned records whose ownership can transfer.",
+      "sourceIds": ["platform-tokens", "platform-names", "platform-documents"],
       "support": "direct"
     },
     {
-      "id": "C6",
-      "text": "NFTs on Dash are documents, not a separate token standard: each document has a unique ID analogous to an ERC-721 token ID, plus built-in transfer, set-price purchase, mutation, deletion, and creation-restriction options.",
-      "sourceIds": [
-        "S9"
-      ],
+      "id": "indexed-state",
+      "text": "Applications query the latest committed Platform state, and document filtering or sorting must use suitable indexes.",
+      "sourceIds": ["platform-query"],
       "support": "direct"
     },
     {
-      "id": "C7",
-      "text": "Fungible tokens are first-class protocol objects declared in a data contract (no smart contract): minting, max supply, freeze/pause, burning, scheduled and perpetual distribution, and groups with voting thresholds are configured declaratively and enforced by the protocol.",
-      "sourceIds": [
-        "S10",
-        "S4"
-      ],
+      "id": "verifiable-results",
+      "text": "A Platform query can return a cryptographic proof that lets a client verify the response without trusting the node that supplied it.",
+      "sourceIds": ["platform-query", "platform-overview"],
       "support": "direct"
     },
     {
-      "id": "C8",
-      "text": "Credits are a distinct unit of account from Dash: they are created at exactly 1000 credits per duff (1 DASH = 100,000,000,000 credits) by locking Dash on Core via an asset lock, and are spent on layer-2 fees.",
-      "sourceIds": [
-        "S11",
-        "S6"
-      ],
+      "id": "dash-versus-credits",
+      "text": "Dash is the asset used for Core payments and the source from which Credits are created; Platform actions consume Credits as fees.",
+      "sourceIds": ["platform-credits"],
       "support": "direct"
     },
     {
-      "id": "C9",
-      "text": "Platform fees are storage fees plus processing fees, scaled by a network-governed fee multiplier, with a refund when stored data is deleted and a user fee increase to prioritize inclusion during congestion.",
-      "sourceIds": [
-        "S7"
-      ],
+      "id": "public-state",
+      "text": "Application records placed in shared Platform state should be treated as publicly retrievable where their indexes permit; confidential values must be encrypted before submission or kept off Platform.",
+      "sourceIds": ["platform-query", "platform-privacy"],
+      "support": "inference"
+    },
+    {
+      "id": "bad-fit",
+      "text": "Dash is a bad fit for data that must remain secret in plaintext, for records that do not need shared ownership or verification, or when a conventional operator-controlled database is an acceptable authority.",
+      "sourceIds": ["platform-overview", "platform-query", "platform-privacy"],
+      "support": "inference"
+    },
+    {
+      "id": "dao-history",
+      "text": "Dash introduced its decentralized budget system in 2015 and describes itself as the oldest DAO still operating.",
+      "sourceIds": ["governance-history", "dao-current-history", "current-proposals"],
       "support": "direct"
     },
     {
-      "id": "C10",
-      "text": "Credits can be converted back to Dash through the identity credit withdrawal state transition, subject to a network-wide daily limit; anyone may top up any identity, so apps can subsidize user fees.",
-      "sourceIds": [
-        "S6"
-      ],
+      "id": "governance-loop",
+      "text": "Proposals request treasury funding, masternodes vote on them, and approved proposals receive funding from the blockchain.",
+      "sourceIds": ["governance-guide", "governance-usage"],
       "support": "direct"
     },
     {
-      "id": "C11",
-      "text": "Layer-1 transaction privacy comes from CoinJoin (formerly PrivateSend), a non-custodial mixing service coordinated by masternodes, so a user shuffles their Dash with others without trusting a third party.",
-      "sourceIds": [
-        "S14",
-        "S16"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C12",
-      "text": "Platform defines a shielded pool using Orchard/Halo2 zero-knowledge proofs for credits and tokens, with shield/unshield/shielded-transfer state transitions; however the shielded DAPI endpoints are defined in the protocol but not yet available on public nodes.",
-      "sourceIds": [
-        "S12",
-        "S13",
-        "S5"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C13",
-      "text": "Dash is the world's first and longest-running DAO: a treasury funded by a portion of the block subsidy pays approved proposals, and masternodes — which hold 1000 DASH as collateral — vote on how treasury funds are spent.",
-      "sourceIds": [
-        "S3",
-        "S16"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C14",
-      "text": "Platform clients verify query responses with cryptographic proofs rather than trusting the node that served them, giving a light client full-node-equivalent security guarantees.",
-      "sourceIds": [
-        "S2",
-        "S4"
-      ],
+      "id": "proposal-viewer",
+      "text": "DashCentral provides a live page for viewing active treasury proposals and their voting status.",
+      "sourceIds": ["current-proposals"],
       "support": "direct"
     }
   ],
@@ -249,23 +161,112 @@
   "conflicts": [],
   "uncertainties": [
     {
-      "id": "U1",
-      "topic": "How to frame the Platform shielded pool given its DAPI endpoints are not yet public",
-      "blocking": false,
-      "resolution": "The lesson names the effect and defers the machinery: CoinJoin is live on layer 1 for Dash, and Platform adds a zero-knowledge shielded pool that is protocol-defined and rolling out, without asserting it is usable on public nodes today."
+      "id": "oldest-dao-wording",
+      "question": "How should the comparative claim that Dash is the oldest operating DAO be attributed?",
+      "whyItMatters": "The claim is current and comparative rather than a protocol property.",
+      "options": [
+        "State it categorically as required by the manifest.",
+        "Attribute it to current official Dash documentation while still giving the required conclusion."
+      ],
+      "recommendation": "State that Dash introduced its DAO in 2015 and is the oldest DAO still operating, citing the current official Dash article and the live proposal page.",
+      "blocking": false
     },
     {
-      "id": "U2",
-      "topic": "Whether to cite the exact credits-per-duff ratio for Dash versus Credits",
-      "blocking": false,
-      "resolution": "The lesson states the distinction (Dash is money, credits are the fee unit) and cites the exact conversion 1,000 credits per duff / 1 DASH = 100,000,000,000 credits, since the ratio is citable from protocol constants and is the kind of concrete fact the quiz can test."
+      "id": "public-ledger-terminology",
+      "question": "Should Platform state itself be called a public ledger?",
+      "whyItMatters": "Using one label for Core transaction history and Platform application state could blur their different jobs.",
+      "options": [
+        "Call both a public ledger.",
+        "Call Platform public shared state and explain the same visibility consequence."
+      ],
+      "recommendation": "Use public shared Platform state when discussing application records, while connecting it to the public-ledger tradeoff.",
+      "blocking": false
     },
     {
-      "id": "U3",
-      "topic": "How deep to go on token/NFT/identity content without duplicating later modules",
-      "blocking": false,
-      "resolution": "The lesson keeps to effects — configurable tokens, document-based NFTs, .dash usernames — in one or two sentences each and defers configuration and action mechanics to modules 15 and 16."
+      "id": "dashcentral-dependency",
+      "question": "Can the lesson rely on DashCentral as the current-proposals destination?",
+      "whyItMatters": "DashCentral is a live third-party portal and could change independently of the documentation.",
+      "options": [
+        "Link directly to DashCentral's budget page.",
+        "Link only to the official governance guide."
+      ],
+      "recommendation": "Link both. The official guide establishes the process, and DashCentral currently supplies the required live proposal view.",
+      "blocking": false
     }
   ],
-  "executableExamples": []
+  "executableExamples": [],
+  "teachingPlan": {
+    "priorKnowledge": [
+      "The learner knows why public shared records remove unilateral operator control and what builders give up in return from content/academy/what-is-a-blockchain.mdx, sections 'Why nobody can rewrite the history' and 'Pros and cons.'",
+      "The learner knows that masternodes provide network services beyond ordinary full-node validation from content/academy/what-is-dash.mdx, section 'Who makes the lock stick?'",
+      "The learner can distinguish Core payments from Platform application state from content/academy/what-is-dash-platform.mdx, section 'Two layers, two jobs.'",
+      "The learner has seen usernames, tokens, transferable records, query proofs, public documents, and Credits at overview depth in content/academy/what-is-dash-platform.mdx, sections 'Reaching the network,' 'Two ways to hold value,' 'What stays private,' and 'Who pays for the work.'",
+      "The learner has seen these capabilities combined in one application from content/academy/what-is-dash-platform.mdx, section 'One app, assembled.'"
+    ],
+    "centralQuestion": "Which parts of my application benefit enough from Dash's public, shared, verifiable state to justify putting them there, and which parts should stay in infrastructure I control?",
+    "likelyMistake": "A developer sees that Platform can store application records and moves the entire application database there, including secrets, without first asking which records need shared ownership, public queries, or independent verification.",
+    "workedExample": "A hypothetical event marketplace accepts Dash, gives buyers usernames, awards a loyalty token, and lets ticket records change owners during resale. Buyers query available tickets and verify the answer, while legal names and accessibility notes remain encrypted or off-network. Buyers pay sellers in Dash, Platform state changes consume Credits, and the marketplace's network dependency leads to the DAO's treasury funding loop.",
+    "reasoningChain": [
+      "The marketplace requirements create an architecture decision rather than a feature tour.",
+      "Shared ticket ownership earns a place on Platform because one operator should not control the only record; operator-only rows do not.",
+      "Finding available tickets creates the need for indexed queries, and receiving an answer from a node creates the need to verify it against committed state.",
+      "Queryable shared state exposes the privacy cost, so confidential attendee details must be encrypted or kept off-network.",
+      "Using payments and state changes in one resale separates Dash spending from Credits spending.",
+      "Depending on the network raises who chooses and funds its work, leading to the DAO, masternode voting, treasury funding, and current proposals.",
+      "The final architecture applies one decision rule to every app component: use Dash only where public payments or shared, independently verifiable state provide a real benefit."
+    ],
+    "continuityGaps": []
+  },
+  "coverageMap": [
+    {
+      "requirement": "the learner can decide, for an app they have in mind, whether Dash fits, and say what would make it a bad choice",
+      "explanation": "Which records earn a place? and Make the cut",
+      "demonstration": "Mara places shared ticket ownership on Platform but rejects it for operator-only rows and confidential attendee details, then applies the same trust, verification, and visibility questions to each component.",
+      "assessment": ["shared-ticket-fit", "public-record-boundary"]
+    },
+    {
+      "requirement": "the learner can name what Dash lets them build past payments: tokens, usernames, records that change hands",
+      "explanation": "Which records earn a place?",
+      "demonstration": "The marketplace uses readable usernames, a loyalty token, and ticket records that change owners during resale without re-teaching their mechanics.",
+      "assessment": ["beyond-payments"]
+    },
+    {
+      "requirement": "the learner can recognize indexed, queryable Platform state and verifiable query results as application capabilities without learning query syntax",
+      "explanation": "An answer buyers can check",
+      "demonstration": "A buyer asks which event tickets remain available; an index supports the question and cryptographic evidence ties the result to committed state.",
+      "assessment": ["query-and-verify"]
+    },
+    {
+      "requirement": "the learner can say when they are spending Dash and when they are spending Credits",
+      "explanation": "Two balances in one purchase",
+      "demonstration": "During one resale, the buyer sends Dash to the seller while the Platform account spends Credits to change ticket ownership.",
+      "assessment": ["dash-and-credits"]
+    },
+    {
+      "requirement": "the learner can say what a public ledger means for the people using their app",
+      "explanation": "Public means public",
+      "demonstration": "Ticket ownership may be public, but legal names and accessibility notes are encrypted or kept off-network; the interface and privacy policy must reflect who can retrieve shared records.",
+      "assessment": ["public-record-boundary"]
+    },
+    {
+      "requirement": "the learner can say that Dash introduced its DAO in 2015 and is the oldest DAO still operating, explain at a high level how masternode voting and treasury funding connect, and know where to view current proposals",
+      "explanation": "Depending on the network",
+      "demonstration": "The marketplace's network dependency leads to the 2015 DAO history, the proposal-to-vote-to-funding loop, and links to the official guide and DashCentral's live proposals.",
+      "assessment": ["governance-loop"]
+    }
+  ],
+  "conceptualExamples": [
+    {
+      "id": "ticket-marketplace-fit",
+      "purpose": "Separate good-fit requirements from bad-fit ones in a hypothetical event marketplace.",
+      "sourceIds": ["platform-overview", "platform-query", "platform-credits", "platform-tokens", "platform-names", "platform-documents", "platform-privacy"],
+      "verification": "conceptual"
+    },
+    {
+      "id": "proposal-dependency",
+      "purpose": "Connect the marketplace's network dependency to proposals, masternode voting, and treasury funding.",
+      "sourceIds": ["governance-guide", "governance-usage", "governance-history", "dao-current-history", "current-proposals"],
+      "verification": "conceptual"
+    }
+  ]
 }

@@ -9,160 +9,125 @@ verification: quiz
 prerequisites: [3]
 ---
 
-The previous lesson introduced Dash's two layers. This one is a fit screen: a short checklist for deciding, before you write any code, whether Dash will carry your app well.
+Suppose Mara is designing a ticket marketplace. Buyers pay sellers, choose readable usernames, earn a loyalty token, and resell ticket records to new owners. They also need to find tickets that are still available. Some attendee details, including legal names and accessibility notes, must remain confidential.
 
-## A fit screen, not a tour
+The tempting choice is to put the whole marketplace on Dash because all of those facts belong to one app. That would be a mistake. The useful question isn't "Can Platform store this?" but "What would users gain if no marketplace operator held the only authoritative copy?"
 
-No platform is the right tool for every job. Dash is a strong choice when your app needs things a shared, independently verified network is good at — and a poor choice when you need what Dash deliberately does not do.
+## Which records earn a place?
 
-Recall the split you already met. **Dash Core** is the layer-1 money layer that settles Dash payments. **Dash Platform** is the layer-2 application-data layer: it stores structured data against a schema you declare, and only signed operations can change it. Keep both in mind as we walk the checklist, because each half answers a different half of the "is this a fit?" question.
+Payments have a straightforward route: buyers spend **Dash** when they pay sellers. Past payments, Platform gives the marketplace usernames, its loyalty token, and ticket records that can change hands. Module 3 introduced those capabilities; here they matter because each solves a marketplace requirement.
 
-## Payments and tokens
+The ticket record makes the strongest case for shared state. If Mara alone controls the ownership database, a buyer must trust her service not to revoke a ticket, assign it twice, or disappear before resale. Putting ticket ownership on Platform gives the parties a common record that one marketplace operator doesn't control alone.
 
-**Payments.** Dash is built around money, so settlements are fast and cheap. A Dash payment reaches confirmation in **about a second**, with no extra cost — a seller can treat it the way a cashier treats a card payment, without waiting for several blocks. That makes checkout and peer-to-peer payment flows feel like <Term id="fiat">fiat</Term>, without a middleman holding the funds.
+The same argument doesn't apply to every row. Mara's draft email, a cached search page, and an internal support note don't become better merely because a network stores them. A conventional database is the better tool when one operator is an acceptable authority and nobody needs to verify the record independently. Dash fits the parts that benefit from public payments or shared, verifiable state, not automatically the whole application.
 
-**Tokens.** On many networks an application's own token means writing and deploying a <Term id="smart-contract">smart contract</Term>. On Dash, fungible tokens are first-class protocol objects: you declare one inside your data contract — its name, supply, and permissions — and the network enforces it. You get minting, a maximum supply, freeze and pause, burning, and scheduled or ongoing distribution as configuration, not code. This is a pattern worth remembering: on Dash, "issuing an asset" is usually a declaration, not a deployment.
+## An answer buyers can check
 
-## Usernames and NFTs
+Ownership only helps if buyers can find the right tickets. The marketplace might ask, "Which tickets for this event are still available?" Platform can answer questions over **indexed** state, meaning records are organized by fields chosen in advance so applications can filter or sort them efficiently. The marketplace doesn't need to download every ticket and trust Mara's server to filter the list.
 
-**Usernames.** The Dash Platform Name Service (DPNS) registers human-readable `.dash` names like `alice.dash` and ties each one to a Platform <Term id="identity">identity</Term> — a persistent account that owns data and signs the changes to it. Ordinary names register immediately; premium names go to a masternode vote. That gives your users a name to send to, rather than a bare address.
+There are two claims in a search result: these records match the question, and they match the state the network committed. A Platform query can include cryptographic evidence for the second claim, letting the app verify the result against committed state instead of taking the responding node's word for it. Later lessons handle query syntax, index design, and proof checking. For this architecture decision, the capability is enough: the shared data can be queried, and the answer can be checked.
 
-**NFTs.** Dash does not ship a separate NFT token standard. An NFT is just a document — a uniquely identified record — that happens to represent one distinct thing. Each document has a unique ID (the equivalent of a token ID on other chains), and the protocol gives you transfer, purchase at a set price, mutation, deletion, and creation-restriction options. Because the "asset" is ordinary application data, an NFT, a username, and a profile can all be records in the same data model.
+## Public means public
 
-<Callout type="info" title="One data model for all of it">
-On Dash the word *document* covers a lot of ground: a collectible, a listing, a profile field, a name. The same rules — owned by an identity, changed by signed operations, verified against a schema — apply to every one of them.
-</Callout>
+That useful search changes the privacy decision. Records written to shared Platform state are queryable wherever their indexes permit, so Mara must treat them as public application data. Ticket ownership may deserve that visibility; an attendee's legal name or accessibility notes don't.
 
-## Dash versus Credits
+Those confidential details belong in encrypted form or in storage outside Platform. Encrypting a value means the shared record contains unreadable data and the app controls who receives the key. Keeping it off-network lets Mara use ordinary access controls instead. Either choice accepts the same limit: a public shared record isn't a safe place for a plaintext secret.
 
-Two different units are easy to confuse, so split them early.
+This is the public-ledger tradeoff in application terms. A user may expect only the operator to see a support note, but writing it to Platform can make it available beyond that operator. The interface and privacy policy need to match what the architecture actually reveals.
 
-| | Dash | Credits |
-| --- | --- | --- |
-| What it is | The layer-1 currency — the money itself | The layer-2 fee unit |
-| Where it lives | Dash Core | Dash Platform |
-| What you do with it | Pay someone; hold value | Pay for Platform operations (creating an identity, writing data, registering a name) |
+## Two balances in one purchase
 
-Dash is money. Credits are the metered fee unit Platform uses to charge for work. Credits are created by **locking Dash**, at a fixed rate of **1,000 credits per duff** — that is **1 DASH = 100,000,000,000 credits** — so they are backed by real Dash rather than invented out of thin air. When you delete stored data, the storage fees are refunded; and credits can be converted back to Dash through a withdrawal operation, subject to a network-wide daily limit.
+Now follow one resale. The buyer sends **Dash** to the seller because Dash is the asset used for payment. Changing the ticket's owner updates Platform state, and Platform charges **Credits** for that work. Credits are created from Dash, but they remain a separate balance used for Platform fees.
 
-One consequence matters to app design: because anyone can top up any identity's credit balance, an application can pay its users' fees for them. That is how a product can feel free to the end user while the network still gets paid.
+So "the buyer has enough Dash" answers only the payment question. The Platform account submitting the ownership change also needs enough Credits, whether the user funds them or Mara sponsors the fee. The split is simple: spend Dash to move money; spend Credits to store or change application state.
 
-<Callout type="idea" title="Who pays the fees?">
-You can design the economics either way: pass fee costs to your users, or fund a pool of credits your app spends on their behalf. The choice is an application decision, not a protocol constraint.
-</Callout>
+## Depending on the network
 
-## Privacy
+Choosing shared state means Mara's marketplace now depends on work that her company doesn't direct alone. Dash introduced its decentralized autonomous organization, or **DAO**, in 2015, and it is the oldest DAO still operating. The useful governance loop is short: proposals request funding from the network treasury, masternodes vote on them, and approved work receives treasury funding.
 
-Privacy on Dash comes in layers, and it is worth being precise about what exists today.
+That doesn't guarantee Mara will like every funded proposal. It tells her how the network chooses and pays for work it depends on, rather than leaving that role entirely to one company's budget. The [official Dash governance guide](https://docs.dash.org/en/stable/docs/user/governance/) explains the system, and [DashCentral's current proposals page](https://www.dashcentral.org/budget) shows active proposals and their voting status.
 
-On **layer 1**, Dash payments get optional privacy from **CoinJoin** (formerly PrivateSend): a non-custodial mixing process coordinated by <Term id="masternode">masternodes</Term> that shuffles your Dash together with other users' so a sender and recipient cannot be linked by the coins alone. You opt in; it does not automatically hide every transaction, and it does not touch Platform data.
+## Make the cut
 
-On **layer 2**, Dash Platform defines a **zero-knowledge shielded pool** for credits and tokens — using cryptographic proofs (Orchard/Halo2) that let you move value while revealing as little as possible, with shield, unshield, and shielded-transfer operations. The important caveat: this shielding is defined in the protocol and rolling out, but its DAPI endpoints are **not yet available on public nodes**. Applications shipping today should not promise fully private Platform balances; they should treat Platform data as public and encrypt anything confidential themselves, or keep it off-network.
+Mara's final architecture uses Dash for buyer-to-seller payments, public ticket ownership, usernames, the loyalty token, and verifiable ticket searches. It keeps confidential attendee details and operator-only records elsewhere. If she didn't need shared ownership or independently checkable results, a normal database would be cheaper in complexity and easier to keep private.
 
-That asymmetry is the honest headline: Dash gives you practical, opt-in payment privacy today, and a stronger privacy mechanism on the roadmap.
-
-## The DAO
-
-Dash is the world's first and longest-running **DAO** (decentralized autonomous organization). A treasury, funded by a portion of every block's reward, pays for approved proposals, and the <Term id="masternode">masternodes</Term> — servers that must hold 1,000 DASH as collateral — vote on what gets funded. That means the network's development budget is held and directed by the network itself, not by a single company's balance sheet.
-
-For a developer this is a quiet but real signal: the platform you are building on has a sustainable, community-directed way to fund its own roadmap.
-
-## When Dash fits — and when it doesn't
-
-Bring it together as a checklist.
-
-**Dash is a strong fit when your app needs:**
-
-- **Payments** — about-a-second Dash settlements in a checkout or payout flow.
-- **Verifiable shared data** — records many parties can check cryptographically, where a client can verify a query's answer instead of trusting the node that served it.
-- **Identity and usernames** — persistent identities and human-readable `.dash` names.
-- **Digital assets** — configurable fungible tokens and document-based NFTs.
-
-**Dash is a poor fit — reach for something else — when your app needs:**
-
-- **Arbitrary on-chain code** — Dash has no general-purpose smart-contract virtual machine today; you declare data with a JSON-Schema data contract instead of deploying programs. A Turing-complete VM is planned for Platform v4.0, but it is not here now.
-- **A private database** — Platform data is replicated and verifiable, which is the opposite of confidential. Encrypt client-side or keep secrets off-network.
-- **Heavy per-node computation** — anything that needs the whole network to run your custom logic on every write.
-
-The rule of thumb: **Dash gives you money, verifiable data, identity, and assets out of the box. It gives you none of the "run any code anywhere" freedom of a general-purpose chain — and that is the trade it makes.** Instead of a marketplace of user-deployed programs, you get a schema you declare and a network that stores and validates it, which removes whole classes of smart-contract vulnerabilities.
-
-Pass the quiz to complete the lesson.
+Apply the same cut to your own app. For each payment or record, ask who must trust the operator, who needs to verify the answer, and who may read the data. Choose Dash where public, shared, verifiable state changes those answers for the better. Reject it where secrecy matters, one operator is already trusted, or the record gains nothing from network agreement.
 
 <LessonQuiz
   challengeId="why-build-on-dash"
   passingScore={5}
   questions={[
     {
-      id: "fit-decision",
-      prompt: "Which application is Dash the strongest fit for?",
+      id: "shared-ticket-fit",
+      prompt: "A marketplace wants buyers to keep verifiable ticket ownership even if the marketplace operator disappears. Which design best fits that requirement?",
       options: [
-        { id: "a", label: "A marketplace of arbitrary user-deployed smart-contract code." },
-        { id: "b", label: "An app that accepts about-a-second Dash payments, stores verifiable shared records, and issues its own digital assets." },
-        { id: "c", label: "A database where no field may ever become visible to any network node." },
-        { id: "d", label: "Heavy custom computation that every node must run identically on each write." },
+        { id: "a", label: "Keep the only ownership table in the operator's private database." },
+        { id: "b", label: "Put ticket ownership in shared Platform state and keep presentation code in the app." },
+        { id: "c", label: "Email each buyer a screenshot of the operator's ownership table." },
+        { id: "d", label: "Store ownership only in the seller's browser." },
       ],
       correctOptionId: "b",
-      explanation: "Dash's sweet spot is payments, verifiable shared data, identities, and assets. It deliberately does not run arbitrary code or hide data from the nodes that verify it.",
+      explanation: "Shared Platform state removes the marketplace operator as the sole authority over ticket ownership. The app can still run its interface and private business data elsewhere.",
     },
     {
-      id: "payments-tokens",
-      prompt: "Your app needs near-instant settlement and its own reward token. What does Dash actually offer you?",
+      id: "beyond-payments",
+      prompt: "Besides accepting Dash payments, which marketplace requirements can Dash Platform support?",
       options: [
-        { id: "a", label: "About-a-second Dash payments plus a configurable token you declare in a data contract — no contract to deploy." },
-        { id: "b", label: "Only Dash payments; tokens must be issued on a different network." },
-        { id: "c", label: "Tokens, but payments take several mined blocks to confirm." },
-        { id: "d", label: "A general-purpose VM where you write and deploy your token's code." },
+        { id: "a", label: "Readable usernames, a loyalty token, and ticket records that can change owners." },
+        { id: "b", label: "Only private support notes and draft emails." },
+        { id: "c", label: "Only a second copy of each Dash payment." },
+        { id: "d", label: "Secret plaintext attendee records hidden from the network." },
       ],
       correctOptionId: "a",
-      explanation: "Payments confirm in about a second, and fungible tokens are first-class protocol objects declared in a data contract — configuration, not deployed code.",
+      explanation: "Platform supports application capabilities past payments, including usernames, tokens, and transferable records. That doesn't make confidential plaintext suitable for shared state.",
     },
     {
-      id: "usernames-nfts",
-      prompt: "How do usernames and NFTs work on Dash Platform?",
+      id: "query-and-verify",
+      prompt: "A buyer asks for tickets that are still available. What can Platform give the marketplace?",
       options: [
-        { id: "a", label: "Usernames are separate .dash smart contracts, and NFTs follow an ERC-721 token standard." },
-        { id: "b", label: "DPNS ties a .dash name to a Platform identity, and an NFT is a unique document with built-in transfer and purchase options." },
-        { id: "c", label: "Usernames live in each app's private database; NFTs live on a separate sidechain." },
-        { id: "d", label: "Both require deploying custom code for every name and every asset." },
+        { id: "a", label: "An indexed query over shared state whose result can be checked against committed state." },
+        { id: "b", label: "An answer that is trustworthy only because Mara's server returned it." },
+        { id: "c", label: "A private search that hides every matching ticket from all network participants." },
+        { id: "d", label: "A guarantee that no index had to be chosen for the records." },
+      ],
+      correctOptionId: "a",
+      explanation: "Indexes let applications ask efficient questions about Platform state. Cryptographic evidence can tie a result to committed state, so the responding server isn't the only authority.",
+    },
+    {
+      id: "public-record-boundary",
+      prompt: "The marketplace needs a transferable ticket record and a confidential accessibility note. Where should each go?",
+      options: [
+        { id: "a", label: "Put both on Platform in plaintext because only the owner can query them." },
+        { id: "b", label: "Put the ticket record on Platform; encrypt the note or keep it off-network." },
+        { id: "c", label: "Keep both in a browser cookie so no operator can change them." },
+        { id: "d", label: "Put the note on Platform and keep ticket ownership only in Mara's database." },
       ],
       correctOptionId: "b",
-      explanation: "DPNS registers human-readable .dash names against identities, and NFTs are documents — uniquely identified records — rather than a separate token standard.",
+      explanation: "Shared ticket ownership benefits from public, verifiable state. A confidential note doesn't, so plaintext belongs off Platform or must be encrypted before storage.",
     },
     {
-      id: "dash-vs-credits",
-      prompt: "What is the difference between Dash and Credits?",
+      id: "dash-and-credits",
+      prompt: "During a ticket resale, the buyer pays the seller and the ticket's owner changes on Platform. Which balances pay for those actions?",
       options: [
-        { id: "a", label: "Dash is layer-1 money you spend or hold; Credits are the layer-2 fee unit, created by locking Dash into the network." },
-        { id: "b", label: "Credits are a second currency you can spend with any Dash merchant." },
-        { id: "c", label: "Dash exists only on testnet, while Credits are the mainnet currency." },
-        { id: "d", label: "They are the same unit of value under two different names." },
+        { id: "a", label: "Dash pays the seller; Credits pay for the Platform state change." },
+        { id: "b", label: "Credits pay the seller; Dash pays the Platform fee." },
+        { id: "c", label: "Dash pays for both actions from one balance." },
+        { id: "d", label: "Credits pay for both actions from one balance." },
       ],
       correctOptionId: "a",
-      explanation: "Dash is the money. Credits meter Platform work and are minted from locked Dash at 1,000 credits per duff (1 DASH = 100,000,000,000 credits).",
+      explanation: "Dash moves payment value between people. Credits are the separate fee balance consumed when Platform stores or changes application state.",
     },
     {
-      id: "privacy",
-      prompt: "Which statement about privacy on Dash is accurate for an app shipping today?",
+      id: "governance-loop",
+      prompt: "Mara wants to understand how work on the network she depends on can receive funding. What should she look for?",
       options: [
-        { id: "a", label: "CoinJoin offers opt-in layer-1 mixing, while Platform's zero-knowledge shielded pool is protocol-defined but not yet open on public nodes." },
-        { id: "b", label: "Every Dash payment and every Platform record is automatically and fully private." },
-        { id: "c", label: "Platform data is hidden from all nodes by default, so you can store secrets in it." },
-        { id: "d", label: "Dash provides no privacy feature of any kind." },
+        { id: "a", label: "Treasury proposals that masternodes vote on, with approved work funded by the network; current proposals are listed on DashCentral." },
+        { id: "b", label: "Private invoices approved only by Mara's marketplace team." },
+        { id: "c", label: "A permanent list of projects chosen when Dash launched." },
+        { id: "d", label: "A vote by every marketplace customer on each Platform state change." },
       ],
       correctOptionId: "a",
-      explanation: "CoinJoin gives practical opt-in payment privacy today. The ZK shielded pool is on the roadmap, not yet public — so treat Platform data as public and encrypt anything confidential.",
-    },
-    {
-      id: "dao",
-      prompt: "How does Dash fund and govern its own development?",
-      options: [
-        { id: "a", label: "A treasury funded by part of the block reward pays proposals that masternodes vote on." },
-        { id: "b", label: "A single foundation decides all spending unilaterally." },
-        { id: "c", label: "Funding comes only from an ICO held after launch." },
-        { id: "d", label: "There is no governance; spending is fixed permanently in code." },
-      ],
-      correctOptionId: "a",
-      explanation: "Dash's DAO holds a treasury funded from each block and lets masternodes — which stake 1,000 DASH — vote on how those funds are spent.",
+      explanation: "Dash's governance loop connects treasury requests, masternode voting, and funding for approved proposals. DashCentral provides a live view of current proposals.",
     },
   ]}
 />
