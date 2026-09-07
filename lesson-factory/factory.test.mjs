@@ -230,6 +230,12 @@ test("a pedagogy pass needs demonstrated reader reasoning, not only a verdict", 
   assert.throws(() => validateStageOutput("review", result, "pedagogy-review"), /unresolved teaching gaps/);
 });
 
+test("pedagogy prompt reserves gap arrays for unresolved defects", () => {
+  const prompt = buildPrompt("pedagogy-review", { module: 8, title: "Wallets, keys, and testnet" }, { previousLessons: [] });
+  assert.match(prompt, /only unresolved defects in the gap arrays/);
+  assert.match(prompt, /upstream placeholder.*not a continuity gap/);
+});
+
 test("a partial draft can resume but cannot pass without both lesson and evidence", () => {
   const lesson = { slug: "sample" };
   const partial = ["content/academy/sample.mdx"];
