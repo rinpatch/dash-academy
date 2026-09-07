@@ -1,267 +1,238 @@
 {
   "schemaVersion": 1,
-  "module": 12,
   "slug": "data-contracts",
+  "module": 12,
   "title": "Data Contracts",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
   "sources": [
     {
-      "id": "src-manifest",
-      "title": "Dash Academy fixed curriculum — module 4",
-      "kind": "repository manifest",
-      "locator": "lesson-factory/curriculum.json, module 11",
-      "version": "current worktree"
+      "id": "S1",
+      "title": "Dash Academy curriculum, module 12",
+      "kind": "repository curriculum manifest",
+      "locator": "lesson-factory/curriculum.json:215-239",
+      "version": "workspace snapshot 2026-09-07"
     },
     {
-      "id": "src-contract-explanation",
-      "title": "Dash Platform Data Contract explanation",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-data-contract.md:9,25,29-36,42,58-68",
+      "id": "S2",
+      "title": "Data Contracts",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".claude/skills/dash-docs/docs-platform/docs/reference/data-contracts.md:7-27,69-87,148-152,200-202,235-250",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "src-contract-reference",
-      "title": "Dash Platform Data Contracts reference",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/data-contracts.md:9-27,31-43,71,93-100,117-129,150-168,202,237-250,313-340,419-445,445-450",
+      "id": "S3",
+      "title": "Data Contract",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".claude/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-data-contract.md:7-10,27-38,56-70",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "src-document-explanation",
-      "title": "Dash Platform Document explanation",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-document.md:7-17,40-58",
+      "id": "S4",
+      "title": "Document",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".claude/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-document.md:7-12,40-56",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "src-query-explanation",
-      "title": "Dash Platform Query Capabilities",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md:50-65",
+      "id": "S5",
+      "title": "Query Syntax",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".claude/skills/dash-docs/docs-platform/docs/reference/query-syntax.md:7-31",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "src-query-reference",
-      "title": "Dash Platform Query Syntax",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/query-syntax.md:7-31,135-149",
+      "id": "S6",
+      "title": "Update a data contract",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".claude/skills/dash-docs/docs-platform/docs/tutorials/contracts-and-documents/update-a-data-contract.md:5-13",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "src-trigger-explanation",
-      "title": "Dash Platform Data Trigger explanation",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-data-trigger.md:7-19,37-46",
+      "id": "S7",
+      "title": "Retrieve documents",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".claude/skills/dash-docs/docs-platform/docs/tutorials/contracts-and-documents/retrieve-documents.md:29-46,78-84",
       "version": "Dash Platform docs 3.1.0"
     },
     {
-      "id": "src-platform-book-contracts",
-      "title": "Dash Platform Book — Data Contracts",
-      "kind": "vendored authoritative implementation guide",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/data-model/data-contracts.md:1-57",
+      "id": "S8",
+      "title": "Data Trigger",
+      "kind": "vendored authoritative Dash Platform documentation",
+      "locator": ".claude/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-data-trigger.md:7-19,37-46",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "S9",
+      "title": "Platform Comparison",
+      "kind": "vendored Dash Platform Book",
+      "locator": ".claude/skills/dash-docs/platform-book/book/src/platform-comparison.md:34-49",
       "version": "Dash Platform Book v4.2-dev"
-    },
-    {
-      "id": "src-platform-book-indexes",
-      "title": "Dash Platform Book — Indexes",
-      "kind": "vendored authoritative implementation guide",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/drive/indexes.md:1-78",
-      "version": "Dash Platform Book v4.2-dev"
-    },
-    {
-      "id": "src-sdk-query-types",
-      "title": "@dashevo/wasm-sdk document query and data contract types",
-      "kind": "installed package type declaration and runtime",
-      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts:3319-3394,3709-3745,4624,5171-5200,6816-6825,9484-9581",
-      "version": "4.1.1"
-    },
-    {
-      "id": "src-lesson-verifier",
-      "title": "Module 4 deterministic contract fixture and WASM verifier",
-      "kind": "repository test fixture and installed SDK runtime check",
-      "locator": "lesson-factory/lessons/data-contracts/fixture.mjs; lesson-factory/lessons/data-contracts/verify.mjs",
-      "version": "current worktree with @dashevo/wasm-sdk 4.1.1"
-    },
-    {
-      "id": "src-register-tutorial",
-      "title": "Dash Platform Register a Data Contract tutorial",
-      "kind": "vendored authoritative documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/contracts-and-documents/register-a-data-contract.md:42-46",
-      "version": "Dash Platform docs 3.1.0"
     }
   ],
   "claims": [
     {
-      "id": "claim-scope",
-      "text": "Module 4 is a concepts-tier lesson titled Data Contracts, requires module 3 Identities, must cover schemas, document types, indexes, contract-time decisions, and no triggers or joins, and completes through quiz challenge data-contracts.",
-      "sourceIds": [
-        "src-manifest"
-      ],
+      "id": "C1",
+      "text": "A data contract defines application-data schemas, and a store or change request succeeds only when the submitted data satisfies the applicable schema.",
+      "sourceIds": ["S2", "S3"],
       "support": "direct"
     },
     {
-      "id": "claim-contract-purpose",
-      "text": "A data contract is the registered schema for application data; document writes and changes succeed only when their data conforms to that schema.",
-      "sourceIds": [
-        "src-contract-explanation",
-        "src-contract-reference",
-        "src-platform-book-contracts"
-      ],
+      "id": "C2",
+      "text": "A contract contains one or more document types. Each type defines a family of application records through its fields, field types, required fields, and validation constraints.",
+      "sourceIds": ["S2", "S4"],
       "support": "direct"
     },
     {
-      "id": "claim-ownership",
-      "text": "The identity that registers a contract owns it, and only that owner can update it.",
-      "sourceIds": [
-        "src-contract-explanation"
-      ],
+      "id": "C3",
+      "text": "Indexes are declared within a document type and organize selected fields so Platform can support queries over those fields.",
+      "sourceIds": ["S2", "S5"],
       "support": "direct"
     },
     {
-      "id": "claim-document-types",
-      "text": "A contract contains named document types, each defining the fields, validation rules, indexes, and relevant behavior for one category of application record.",
-      "sourceIds": [
-        "src-contract-reference",
-        "src-document-explanation",
-        "src-platform-book-contracts"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-schema-fields",
-      "text": "Document properties use JSON Schema-style types and constraints, distinguish required from optional fields, and require unique sequential positions starting at zero at each level.",
-      "sourceIds": [
-        "src-contract-reference"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-additional-properties",
-      "text": "Dash contracts must set additionalProperties to false wherever properties are defined.",
-      "sourceIds": [
-        "src-contract-reference"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-index-query-link",
-      "text": "Indexes are part of each document type and determine which fields can be filtered or sorted; non-indexed fields cannot be used for those operations apart from documented primary-key handling for $id.",
-      "sourceIds": [
-        "src-query-explanation",
-        "src-query-reference",
-        "src-contract-reference"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-compound-indexes",
-      "text": "Compound-index property order matters because usable queries must follow index prefix and ordering rules.",
-      "sourceIds": [
-        "src-contract-reference",
-        "src-query-reference",
-        "src-platform-book-indexes"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-index-asc-only",
-      "text": "Dash currently restricts an index's sort direction to ascending ('asc'); Drive only uses ascending storage today even though the direction field is preserved through the contract, so richer sort behaviour is deferred to the module 14 query lesson.",
-      "sourceIds": [
-        "src-register-tutorial",
-        "src-platform-book-indexes"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-unique-indexes",
-      "text": "A unique index prevents two documents of one type from sharing the same indexed value combination when every indexed property is non-null, making it both a query structure and an enforced invariant for fully populated combinations. If any indexed property is null, uniqueness cannot be enforced for that document; the lesson's required string-typed slug cannot be null, so its example invariant applies.",
-      "sourceIds": [
-        "src-contract-reference",
-        "src-platform-book-indexes"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-indexed-string-limit",
-      "text": "An indexed string property has a documented maximum length of 63 characters.",
-      "sourceIds": [
-        "src-contract-reference"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-contract-time",
-      "text": "Document boundaries, field constraints and requiredness, behavior, uniqueness, and query indexes are contract-time decisions; compatible additions are possible while renames, removals, type changes, and changes to existing unique indexes are restricted.",
-      "sourceIds": [
-        "src-contract-explanation",
-        "src-contract-reference",
-        "src-query-explanation"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-no-custom-triggers",
-      "text": "Ordinary application developers cannot deploy custom data triggers; Platform's hard-coded triggers are protocol logic used only by system contracts.",
-      "sourceIds": [
-        "src-trigger-explanation"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "claim-no-joins",
-      "text": "The document query surface targets one dataContractId and one documentTypeName and has no second source or join clause, so Platform provides no server-side relational joins.",
-      "sourceIds": [
-        "src-query-reference",
-        "src-sdk-query-types"
-      ],
+      "id": "C4",
+      "text": "Because query conditions must use fields covered by an index, developers should identify required reads before choosing fields and indexes.",
+      "sourceIds": ["S2", "S5"],
       "support": "inference"
     },
     {
-      "id": "claim-aggregate-only-grouping",
-      "text": "The groupBy query option is ignored by regular document fetching and is used by the aggregate count, sum, and average query APIs.",
-      "sourceIds": [
-        "src-sdk-query-types"
-      ],
+      "id": "C5",
+      "text": "Publication is consequential: supported updates are limited to compatible changes such as new document types, new optional properties, and non-unique indexes for properties added in that update. A developer should not assume an omitted field or index can later be added freely.",
+      "sourceIds": ["S3", "S6"],
       "support": "direct"
     },
     {
-      "id": "claim-relationship-pattern",
-      "text": "Applications relate document types with stored identifier fields and separate fetches, or deliberate read-oriented duplication whose consistency the application manages.",
-      "sourceIds": [
-        "src-document-explanation",
-        "src-sdk-query-types"
-      ],
-      "support": "inference"
-    },
-    {
-      "id": "claim-lesson-boundary",
-      "text": "As a concepts-tier quiz lesson before later writing and registration modules, module 4 should use a compact non-executable schema illustration rather than SDK registration or testnet code.",
-      "sourceIds": [
-        "src-manifest"
-      ],
-      "support": "inference"
-    },
-    {
-      "id": "claim-verifier-api",
-      "text": "The pinned WASM SDK 4.1.1 exposes a DataContract constructor with ownerId, identityNonce, schemas, and an optional fullValidation flag; the independent fixture confirms construction of the corrected public schema, but does not treat that runtime check as proof that every documented index constraint is enforced.",
-      "sourceIds": [
-        "src-sdk-query-types",
-        "src-lesson-verifier"
-      ],
+      "id": "C6",
+      "text": "A document query identifies one data contract and one document type, and its predicates apply to fields indexed for that queried type.",
+      "sourceIds": ["S5", "S7"],
       "support": "direct"
+    },
+    {
+      "id": "C7",
+      "text": "Platform's document-query model does not expose relational joins between document types. A read that depends on relationship data must fetch related records separately or keep the needed query field in the document type being searched.",
+      "sourceIds": ["S5", "S7"],
+      "support": "inference"
+    },
+    {
+      "id": "C8",
+      "text": "Data triggers are hard-coded protocol behavior for system contracts and are not a feature application developers can define for ordinary contracts.",
+      "sourceIds": ["S8"],
+      "support": "direct"
+    },
+    {
+      "id": "C9",
+      "text": "Data contracts are declarative schemas rather than uploaded arbitrary programs. Custom reactions such as closing an event when capacity is reached belong in application code, and the schema alone must not be presented as network-enforcing that reaction.",
+      "sourceIds": ["S8", "S9"],
+      "support": "inference"
     }
   ],
-  "conflicts": [
+  "apiExamples": [],
+  "conflicts": [],
+  "uncertainties": [
     {
-      "id": "conflict-indexed-string-runtime-validation",
-      "description": "The authoritative data-contract reference limits indexed string properties to 63 characters, but the pinned WASM 4.1.1 DataContract constructor accepted test schemas whose indexed strings declared larger maxLength values.",
-      "sourceIds": [
-        "src-contract-reference",
-        "src-lesson-verifier"
-      ],
-      "resolution": "The lesson and fixture enforce the documented 63-character limit with a separate deterministic assertion. The WASM test is described only as a constructor check, not complete validation of documented deployment constraints.",
-      "status": "resolved"
+      "id": "U1",
+      "topic": "The official query documentation does not use the exact phrase 'no joins'.",
+      "blocking": false,
+      "resolution": "State that Platform queries do not expose joins, supported as an inference from the single-contract, single-document-type query shape. Do not present 'no joins' as quoted documentation terminology."
     }
   ],
-  "examples": [],
-  "uncertainties": []
+  "executableExamples": [],
+  "teachingPlan": {
+    "priorKnowledge": [
+      "content/academy/what-is-dash-platform.mdx, 'The record after the payment': a document is an application record and a data contract describes record types, fields, and validity rules.",
+      "content/academy/what-is-dash-platform.mdx, 'Two layers, two jobs': Platform stores and validates shared state while application business logic runs elsewhere.",
+      "content/academy/why-build-on-dash.mdx, 'An answer buyers can check': indexed state uses fields chosen in advance, but the learner has not designed an index.",
+      "content/academy/why-build-on-dash.mdx, 'Which records earn a place?' and 'Public means public': the learner can decide which public shared records belong on Platform.",
+      "content/academy/register-a-username.mdx is a placeholder, so this lesson assumes no completed username registration."
+    ],
+    "centralQuestion": "Before the first record exists, how should a developer shape a small app's documents so Platform can validate them and answer the reads the app will need?",
+    "likelyMistake": "Designing documents like normalized relational tables, postponing indexes until query code is written, and assuming a join or custom database trigger can repair the model later.",
+    "workedExample": "A hypothetical community event board must list open events in a city by start time and list RSVPs for one event. These reads produce event and rsvp document types, fields such as city, status, start time, and event reference, and matching indexes. A later venue requirement exposes the lack of joins, while an automatic capacity rule exposes the lack of developer-defined triggers.",
+    "reasoningChain": [
+      "The app begins with questions users must ask, because those questions determine what Platform must retrieve.",
+      "Each question targets a family of records, creating the need to separate events from RSVPs as document types.",
+      "Each family needs rules for valid records, introducing schemas through concrete field, type, and required-value choices.",
+      "Filtered or ordered retrieval requires the queried type to contain the relevant fields and declare an index covering the intended read.",
+      "A relationship to another document type does not create a join, so the model must carry query-critical relationship data locally or leave multiple reads to application code.",
+      "Schema validation does not execute custom reactions, and ordinary developers cannot define data triggers, so custom behavior remains in the application.",
+      "Compatible contract updates are constrained, making the earlier modeling and indexing decisions consequential before publication.",
+      "The quiz transfers the reasoning to new app requirements rather than asking for definitions."
+    ],
+    "continuityGaps": [
+      "Module 11, content/academy/register-a-username.mdx, is a placeholder. The lesson does not say or imply that the learner registered a username.",
+      "Earlier lessons introduce documents, contracts, and indexed state but do not explain how one user-facing read determines a document type's fields and index; this lesson supplies that reasoning.",
+      "Earlier prose places application business logic outside Platform but does not distinguish that boundary from system-contract data triggers; this lesson clarifies the effect without teaching trigger internals.",
+      "Module 13 owns complete schema syntax and contract registration, so this lesson contains no executable schema or publication steps."
+    ]
+  },
+  "coverageMap": [
+    {
+      "requirement": "schemas",
+      "explanation": "Two questions, two families explains a schema as the validity rules for one family of records.",
+      "demonstration": "The event schema requires title, city, status, and start time; the RSVP schema requires relationship and response values, and Platform refuses missing or wrongly typed values.",
+      "assessment": ["workshop-schema"]
+    },
+    {
+      "requirement": "document types",
+      "explanation": "Two questions, two families separates event and RSVP records according to what each record describes.",
+      "demonstration": "One event document describes a workshop while each RSVP document records one person's response to it.",
+      "assessment": ["registrations-by-workshop"]
+    },
+    {
+      "requirement": "indexes",
+      "explanation": "Let the first read shape the event connects intended reads to fields and indexes on the searched document type.",
+      "demonstration": "The city, status, and start-time read produces a matching event index; responses for one event produce an RSVP index based on eventId.",
+      "assessment": ["workshop-listing", "registrations-by-workshop"]
+    },
+    {
+      "requirement": "contract-time decisions",
+      "explanation": "Decide while the questions are cheap explains that compatible updates exist but omitted fields and indexes cannot be assumed freely recoverable after publication.",
+      "demonstration": "The developer walks through expected screens and plans each filtered or ordered read's fields and index before the first record exists.",
+      "assessment": ["late-read-requirement"]
+    },
+    {
+      "requirement": "no triggers or joins",
+      "explanation": "A relationship isn't a join and When the last seat goes explain the query and custom-logic boundaries through the event app.",
+      "demonstration": "Venue city requires separate reads or a copied event field; reaching capacity requires application code rather than a developer-defined trigger.",
+      "assessment": ["venue-city-read", "full-workshop-reaction"]
+    }
+  ],
+  "conceptualExamples": [
+    {
+      "id": "community-events-model",
+      "sourceIds": ["S2", "S5", "S7", "S8"],
+      "verification": "conceptual"
+    },
+    {
+      "id": "quiz-transfer-scenarios",
+      "sourceIds": ["S1", "S5", "S8"],
+      "verification": "conceptual"
+    }
+  ],
+  "editorialReview": {
+    "kind": "author self-review, not an independent agent or learner test",
+    "reasoningChain": [
+      "Required reads identify the records Platform must retrieve.",
+      "Those records separate into event and RSVP families, each needing schema rules.",
+      "Each planned filtered or ordered read determines which fields belong on the searched type and which index it needs.",
+      "The venue change shows that a relationship identifier does not provide a join.",
+      "The capacity rule shows that schema validation does not run an app's custom reaction.",
+      "Constrained updates make these choices worth settling before publication."
+    ],
+    "transferQuestion": "A reading app stores books and authors separately, then needs to list books by an author's country. Can it keep country only on author records and expect one Platform book query to combine the types?",
+    "answer": "No. It must fetch authors and books separately, or store the query-critical country value on each book and index the book type for that read, with application code keeping duplicated values consistent.",
+    "supportingPassages": [
+      "Let the first read shape the event: the searched type needs the fields and index its filtered or ordered read depends on.",
+      "A relationship isn't a join: related types require separate reads or query-critical duplication on the searched record."
+    ],
+    "coverageGaps": [],
+    "continuityGaps": [
+      "The direct prerequisite remains a placeholder; the draft makes no claim that a username was registered."
+    ],
+    "readingTime": "972 prose words plus five scenario questions; retain the 14-minute manifest estimate because the prose-only estimate excludes quiz reasoning time."
+  }
 }
