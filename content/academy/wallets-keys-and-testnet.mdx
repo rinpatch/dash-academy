@@ -9,149 +9,148 @@ verification: quiz
 prerequisites: [7]
 ---
 
-## A wallet is a set of keys
+Suppose Priya is preparing a wallet for her first operation that needs testnet funds. She could visit a faucet immediately, but that skips the decision with the largest consequences: what must she back up before the wallet controls anything she cares about?
 
-You met the wallet in module 6 as the software that holds your keys. Here is the part that matters for money. A wallet does exactly two essential jobs: it works out **public keys and addresses** so other people can pay you, and it keeps the matching **private keys** so you can spend what arrived. The Dash itself never lives inside the wallet — it is a record on the shared ledger. The wallet's value is that only its holder can move that record.
+## Before the wallet receives funds
 
-That is why the private key is the root of control. The public key is computed from the private key, and the address is computed from the public key. Everything flows down from that one secret, so whoever holds the private key can spend whatever the address receives.
+A wallet manages keys; it isn't a hosted account that a company can reset. To receive funds, Priya shares a public **address**, which identifies a destination on the network. To spend funds sent there, her wallet must sign with the matching **private key**. Other people can check that signature without learning the private key.
 
-<Callout type="info" title="A mental model">
-The address is your public mailbox: anyone can drop Dash into it. The private key is the only key that opens the mailbox. Guard the key, not the mailbox.
+This makes the boundary clear. An address can be shown to a sender or displayed publicly. A private key must remain secret because whoever has it can authorize spending from its corresponding address. Merely knowing the address doesn't provide that authority.
+
+Priya's wallet will create more than one key and address over time. Copying each new private key into a growing backup would be fragile, so modern wallets solve the recovery problem another way.
+
+## One backup, many addresses
+
+When the wallet is set up, it gives Priya a **seed phrase**, also called a recovery phrase or <Term id="mnemonic">mnemonic</Term>. The wallet uses that phrase as the starting point for **derivation**: a repeatable process that produces a hierarchy of private keys, public keys, and addresses.
+
+The relationship looks like this:
+
+```text
+seed phrase
+├── private key A → public information → receiving address A
+├── private key B → public information → receiving address B
+└── private key C → public information → receiving address C
+```
+
+Derivation is deterministic, meaning the same starting phrase and compatible wallet settings reproduce the same derived results. Priya therefore doesn't need a separate backup every time her wallet derives another address. If her computer fails, she can enter the phrase into the same wallet software, or compatible software using the same settings, let it synchronize with the network, and regain control through the recreated keys.
+
+That promise has a boundary. The phrase recreates keys derived from that phrase; it doesn't recreate an unrelated private key imported separately into the wallet. If Priya imports one, she must follow that wallet's backup instructions for imported keys rather than assuming the phrase covers it.
+
+## Recovery power cuts both ways
+
+Priya now knows what to protect. A device failure isn't fatal if she still has the seed phrase, because the device held replaceable wallet software while the phrase can recreate the signing keys.
+
+Losing every usable copy is different. If Priya loses the seed phrase and the relevant private keys, the addresses and funds remain visible on the network, but she can no longer produce the signatures needed to spend them. No wallet vendor, Dash support service, or network operator can calculate the missing secret from a public address. The spending ability is gone.
+
+Disclosure causes the opposite failure. Anyone who obtains the phrase can derive the same private keys and exercise the same authority as Priya. A thief doesn't need her computer or her permission. For the same reason, an individual private key must never be shared.
+
+<Callout type="warn" title="A recovery phrase is spending authority">
+Never paste a seed phrase or private key into a faucet, form, chat, issue report, or message. A service that sends funds needs a receiving address, not the secret that can spend them.
 </Callout>
 
-## Seed phrases
+With her recovery plan settled, Priya can decide which Dash network should hold her practice funds.
 
-If your wallet held a pile of unrelated keys, every single one would need its own backup. It does not. One phrase recovers the entire wallet.
+## Practice without putting DASH at risk
 
-That phrase is the **seed phrase** (also called a mnemonic): a string of 12 to 24 ordinary words such as "rifle adjust ..." that your wallet generates the first time you set it up. The words are not arbitrary — they encode 128 to 256 bits of random data. Word count tracks that length: 128 bits makes 12 words, 160 makes 15, 192 makes 18, 224 makes 21, and 256 makes 24. With an optional extra password, the phrase is hashed into your wallet's 512-bit **root seed** — a standard called <Term id="bip39">BIP39</Term> defines exactly how words turn into that seed, the single source every later key is derived from.
+**Mainnet** is Dash's live network, where DASH has real-world value. **Testnet** is a separate public Dash blockchain intended for experiments; its currency, often written as tDASH, has no real-world value.
 
-Because the seed phrase reproduces the root seed, the seed phrase **is** the backup. Anyone who can read twelve words owns everything those words derive. Treat it the way you would treat the money itself:
+They aren't two modes over one balance. Each network keeps its own blockchain, addresses, and funds. Mainnet DASH doesn't appear in a testnet wallet, and the Dash protocol has no mechanism for moving or converting funds between the networks. Choosing testnet therefore doesn't make Priya's existing mainnet funds safe for testing; it keeps those funds out of the test entirely.
 
-<Callout type="warn" title="Guard the phrase">
-Write the seed phrase down and keep it offline. Never type it into a website, send it in a chat, or store it in a screenshot or password manager that syncs. Any app, person, or site that asks for it can spend your funds — legitimate software never needs it.
-</Callout>
-
-## Derivation
-
-The root seed expands into the whole wallet through **derivation**: computing each key and address from the one before, along a fixed path. Because every step is deterministic, the same seed always produces the same keys and addresses, in the same order. That is what makes a single backup sufficient: reinstalling your wallet and giving it the same phrase rebuilds the same wallet, address by address.
-
-Derivation follows standards so that different programs agree with one another. <Term id="bip32">BIP32</Term> describes how one seed grows the key tree, and <Term id="bip44">BIP44</Term> lays out where standard money addresses sit in that tree. A receiving address, for instance, sits at a path written something like `m/44'/1'/0'/0/0` on testnet and `m/44'/5'/0'/0/0` on mainnet — the slashes are steps through the tree, exactly the way a file path walks a folder structure. The `1'` or `5'` near the start is the coin type, the step that names which network you are on, which is one reason the same seed produces different addresses on testnet than on mainnet.
-
-<Callout type="idea" title="One seed, two jobs">
-As module 6 previewed, the same seed phrase also derives your identity keys — the keys that own your data on Dash Platform. You do not hand-craft that part either: the Dash SDK performs the derivation for you from the same phrase. Back up once, and you have covered both.
-</Callout>
-
-## What a private key controls (and what losing it costs)
-
-A private key has one job, and it is absolute: it spends the <Term id="duff">duffs</Term> at its address. When you send Dash, the wallet produces a signature with the private key, and everyone else checks that signature against the matching public key. No other action can move those funds, but the matching private key is the *only* thing that can.
-
-That power has no safety net. There is no "forgot your key" link and no reset, because no company is in charge of the ledger. If you lose the private key — or leak it to someone else — the funds it controls are gone, both for you and for everyone else, permanently. The docs put it plainly: a key that is generated, used, and then lost before it is backed up leaves the stored duffs "likely lost forever."
-
-This is the whole reason the seed phrase matters. The seed phrase can regenerate the private key, so the phrase is the backup for the key. Lose the phrase *and* the key, and nothing brings either back.
-
-<Callout type="warn" title="No recovery path">
-Test this rule on testnet before it ever matters on mainnet: send worthless coins, delete the key, and watch that the funds cannot be recovered. The habit — back up first, use second — is the point.
-</Callout>
-
-## Testnet versus mainnet
-
-Dash runs as two separate networks, and every lesson from here uses both of them in different roles.
-
-**Mainnet** is the real network. The Dash on it has real value, and moving it has real consequences — so it is the wrong place to learn, experiment, or test.
-
-**Testnet** is a near-identical copy that runs on coins with no real-world value. You can fund it, break it, and start over without risking anything, because the coins are worthless. It exists precisely so developers can practice on the real thing before touching real money.
-
-| | Mainnet | Testnet |
+| Priya needs to... | Use | Why |
 | --- | --- | --- |
-| Coins have value? | Yes — real Dash | No — worthless test Dash |
-| Use it for | Sending and receiving real money | Developing, testing, and breaking things |
-| Cost of a mistake | Real, permanent loss | Nothing but time |
+| Try an operation while mistakes shouldn't cost real money | Testnet | tDASH has no real-world value |
+| Send value in a live application | Mainnet | DASH on this network carries real value |
 
-A few differences to remember. Testnet and mainnet are separate chains: coins do not move between them, so you can never accidentally "promote" testnet Dash to mainnet. Testnet also relaxes some checks and may be reset at any time when the network needs a fresh start. Dash Platform runs its own testnet — about 150 <Term id="masternode">masternodes</Term> plus <Term id="dapi">DAPI</Term> and <Term id="drive">Drive</Term>, operated by Dash Core Group — so you get the full stack to practice against.
+Priya chooses testnet. Her wallet has no tDASH yet, and buying mainnet DASH wouldn't solve that because the balances don't cross networks.
 
-The workflow this course follows: do everything on testnet while you build, and treat mainnet as the place your finished app eventually runs.
+## Give the faucet an address, nothing else
 
-## Getting testnet Dash from a faucet
+A **faucet** is a public service that sends free tDASH to developers. The current Dash documentation points to the [Dash testnet faucet](https://faucet.testnet.networks.dash.org/).
 
-Testnet coins are worthless, which means you get them for free. A **faucet** is a service that dispenses them: you provide an address, and it sends you some test Dash. There is nothing to buy and nothing at stake.
+Priya's funding check is short:
 
-That free test Dash is what the very next lesson needs. To create an identity and start using Dash Platform you must first fund it, and that funding comes from these faucet coins.
+1. Set the wallet to testnet and select a testnet receiving address.
+2. Open the documented faucet and submit only that public address.
+3. Wait for the faucet's transaction to reach the testnet wallet, then check the wallet's testnet balance before using it.
+4. If the request doesn't succeed, don't substitute a seed phrase, private key, or mainnet address. Public faucet services can be unavailable, so try again later.
 
-<Callout type="info" title="Which address do you give the faucet?">
-You give the faucet the address you intend to spend from. The exact address type — and the step of deriving and funding it — belongs to the next lesson, so for now it is enough to know that a faucet sends test Dash to an address you provide.
-</Callout>
-
-Point a browser at the Dash Platform testnet faucet:
-
-- **https://faucet.testnet.networks.dash.org/** — the Platform faucet referenced by the current docs.
-
-One warning: faucets are a convenience, not a guarantee. They move, get rate-limited, or go down, and the exact URL changes from time to time. If that link is down, the Dash Core Group maintains its own faucet at **https://testnet-faucet.dash.org/** as an alternative, and the latest address is listed in the Dash developer docs.
-
-Pass the quiz to complete the lesson.
+The faucet doesn't recover, connect to, or take control of Priya's wallet. It acts like any sender: the address tells it where to send tDASH, while Priya keeps the private key needed to spend what arrives.
 
 <LessonQuiz
   challengeId="wallets-keys-and-testnet"
   passingScore={4}
   questions={[
     {
-      id: "seed-recovery",
-      prompt: "Your computer dies and you have only the 12-word seed phrase written on paper. What can you recover?",
+      id: "recover-derived-wallet",
+      prompt: "Priya's computer fails, but she kept the wallet's seed phrase. What can compatible wallet software recreate?",
       options: [
-        { id: "a", label: "Every key and address the wallet derived, so the funds are safe." },
-        { id: "b", label: "Only the address you most recently used." },
-        { id: "c", label: "Nothing, because the keys were only on the dead computer." },
-        { id: "d", label: "The funds, but only after a support request resets the wallet." },
+        { id: "a", label: "The keys and addresses derived from that phrase." },
+        { id: "b", label: "Only the final address the old wallet displayed." },
+        { id: "c", label: "Every unrelated private key she ever imported." },
+        { id: "d", label: "Nothing until wallet support resets her account." },
       ],
       correctOptionId: "a",
-      explanation: "The seed phrase regenerates the root seed, and derivation is deterministic, so the full key tree — and every address — is rebuilt. That is why the phrase is the one thing to back up.",
+      explanation: "Deterministic derivation reproduces the keys and addresses generated from the phrase when compatible settings are used. Unrelated imported keys fall outside that backup.",
     },
     {
-      id: "deterministic-derivation",
-      prompt: "Two of your apps are each given the same seed phrase. What do they produce?",
+      id: "lost-spending-authority",
+      prompt: "A testnet address still shows a balance, but every copy of its private key and recoverable seed phrase is gone. What can the wallet provider do?",
       options: [
-        { id: "a", label: "The same keys and addresses, because derivation is deterministic." },
-        { id: "b", label: "Different, random addresses every time." },
-        { id: "c", label: "The same addresses only if both are online at the same time." },
-        { id: "d", label: "A shared single address that both must not spend from." },
+        { id: "a", label: "Restore the private key from the public address." },
+        { id: "b", label: "Reset the address after confirming who created it." },
+        { id: "c", label: "Nothing that restores spending authority; the funds remain unspendable to the former holder." },
+        { id: "d", label: "Move the balance to a replacement address without a signature." },
       ],
-      correctOptionId: "a",
-      explanation: "Derivation is a fixed computation from the seed, so the same phrase always produces the same keys and addresses in the same order — which is what lets an offline or hardware wallet independently sign for the same wallet.",
+      correctOptionId: "c",
+      explanation: "The network can still show the funds, but spending requires the missing private key. No support service can derive that secret from the address or bypass the signature requirement.",
     },
     {
-      id: "private-key-loss",
-      prompt: "You lose the only copy of a private key, and its seed phrase was never backed up. What happens to the Dash it controls?",
+      id: "leaked-seed-phrase",
+      prompt: "Priya sends her seed phrase to someone who offers to help configure her wallet. What authority has she exposed?",
       options: [
-        { id: "a", label: "It is gone permanently; there is no reset or recovery path." },
-        { id: "b", label: "It is recoverable by contacting the Dash support team." },
-        { id: "c", label: "It automatically returns to the sender after a waiting period." },
-        { id: "d", label: "It stays spendable, since the address still holds it on the ledger." },
+        { id: "a", label: "Only the ability to view public addresses." },
+        { id: "b", label: "The ability to recreate its derived private keys and spend the funds they control." },
+        { id: "c", label: "Only access to valueless tDASH, even if the phrase also backs a mainnet wallet." },
+        { id: "d", label: "No authority unless she also sends the wallet software." },
       ],
-      correctOptionId: "a",
-      explanation: "Only the private key can spend the funds at its address, and there is no authority that can restore a lost key. The seed phrase is the backup for the key precisely because losing both means losing the funds forever.",
+      correctOptionId: "b",
+      explanation: "The phrase can reproduce the wallet's derived private keys. Whoever receives it can gain the same signing authority without possessing Priya's device.",
     },
     {
-      id: "testnet-choice",
-      prompt: "Your app is not ready to handle real money. Which network do you develop and test on?",
+      id: "choose-practice-network",
+      prompt: "Priya wants to rehearse a funded operation without risking DASH that has real-world value. Which network should she use?",
       options: [
-        { id: "a", label: "Testnet, because its coins are worthless and mistakes cost nothing." },
-        { id: "b", label: "Mainnet, because it is the only network with any coins." },
-        { id: "c", label: "Either, because coins move freely between the two." },
-        { id: "d", label: "Mainnet, but only for reading data, never for signing." },
+        { id: "a", label: "Testnet, funded with valueless tDASH." },
+        { id: "b", label: "Mainnet, funded with a very small amount of DASH." },
+        { id: "c", label: "Either network because both draw from one balance." },
+        { id: "d", label: "Mainnet first, then convert the result to testnet." },
       ],
       correctOptionId: "a",
-      explanation: "Testnet is a near-identical network running on valueless coins, built for exactly this. Mainnet coins have real value and the two chains are separate, so you cannot move coins between them.",
+      explanation: "Testnet exists for public experimentation with valueless tDASH. It is separate from mainnet, where DASH carries real value.",
     },
     {
-      id: "faucet-funds",
-      prompt: "The next lesson needs testnet Dash to fund an identity. How do you get it for free?",
+      id: "separate-network-balances",
+      prompt: "Priya has DASH on mainnet but no tDASH. Why can't her testnet operation use the mainnet balance?",
       options: [
-        { id: "a", label: "Send an address to a faucet, which then sends worthless test Dash to it." },
-        { id: "b", label: "Buy testnet Dash from an exchange." },
-        { id: "c", label: "Mine a block on testnet with your laptop." },
-        { id: "d", label: "Convert some mainnet Dash into testnet Dash." },
+        { id: "a", label: "The wallet needs time to copy the balance between networks." },
+        { id: "b", label: "Mainnet and testnet are separate blockchains whose funds don't cross between them." },
+        { id: "c", label: "Mainnet DASH must first lose its real-world value." },
+        { id: "d", label: "Only a wallet provider can convert DASH into tDASH." },
+      ],
+      correctOptionId: "b",
+      explanation: "Each network maintains its own funds and addresses. A balance on one network doesn't fund an operation on the other.",
+    },
+    {
+      id: "safe-faucet-request",
+      prompt: "Priya needs tDASH for practice. What is the safe way to obtain it?",
+      options: [
+        { id: "a", label: "Request it from a testnet faucet using only a testnet receiving address." },
+        { id: "b", label: "Give a faucet her seed phrase so it can derive a destination." },
+        { id: "c", label: "Buy mainnet DASH and convert it into tDASH." },
+        { id: "d", label: "Give a faucet her private key so it can confirm wallet control." },
       ],
       correctOptionId: "a",
-      explanation: "A faucet dispenses free testnet Dash to an address you provide. There is nothing to buy and the coins have no value — they exist so you can fund identity creation and everything after it.",
+      explanation: "A faucet only needs public destination information to send tDASH. Seed phrases and private keys confer spending authority and must remain secret.",
     },
   ]}
 />
