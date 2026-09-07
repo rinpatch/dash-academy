@@ -85,6 +85,31 @@ Developers who are **new to blockchain but not new to programming**. They want t
 - Explain every term of art the first time — but see `<Term>` below, which usually does it better
   than a sentence of definition.
 
+## The running example
+
+Every lesson uses the same world, so a reader who has come this far already knows the cast and can
+spend their attention on the new idea instead of a new scenario.
+
+**The app is a ticket marketplace.** Sellers list tickets for events; buyers pay in Dash and the
+ticket record changes owner on Platform. It was chosen because it needs every capability the course
+teaches — payments, usernames, documents, indexes, a loyalty token, transfer and purchase — so a
+lesson can reach for the piece it needs without inventing a new app.
+
+**The cast is three, and their roles don't rotate:**
+
+| Who | Role |
+|---|---|
+| **you** | Build the marketplace. The developer is the reader, never a named third person |
+| **Alice** | Buyer. Owns the wallet, the identity, the profile, the ticket. The default subject of any example |
+| **Bob** | Seller. The second identity — receives payments, and is the foil for "a valid signature is not authority over someone else's record" |
+
+Don't introduce a fourth name, and don't rename them per lesson. If an example needs a person who
+isn't a buyer or seller, it is usually the wrong example.
+
+Two exceptions, both deliberate: module 1 uses a classroom of students, because it runs before the
+marketplace exists and the analogy carries the distributed-ledger idea better than an app would.
+And a lesson may use a plain object — a venue, a receipt — without giving it a name.
+
 ## Components
 
 All four are available in any lesson without importing anything.

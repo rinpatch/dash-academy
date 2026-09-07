@@ -8,17 +8,19 @@ verification: quiz
 prerequisites: [2]
 ---
 
-A Dash payment can settle before the rest of an application has done anything useful. Your app still needs to remember who paid, what they ordered, and how far along the order is. Those records aren't payments, and parking them in a database you run hands the meaningful part of the app back to a single operator to control.
+A Dash payment can settle before the rest of an application has done anything useful. You're building a ticket marketplace: Bob lists a ticket, Alice pays for it, and Core settles the money in seconds. Your app still has to remember that the ticket is now hers, what it admits her to, and who she is on the marketplace. Those records aren't payments, and parking them in a database you run hands the meaningful part of the app back to a single operator to control.
 
 ## Two layers, two jobs
 
 Dash is really two systems working as one. **Dash Core** keeps the payment ledger: moving Dash from one person to another. **Dash Platform** keeps everything an app might want to share beyond that. You still write your own frontend and business logic and run them wherever you like. Platform stores and validates shared state; it doesn't run arbitrary programs you upload.
 
-That split doubles as your routing rule. A request that only moves Dash belongs on Core. A request that needs shared, queryable records owned by the people using the app, such as usernames, orders, or assets, belongs on Platform. A shop can take the payment on Core and keep the order on Platform at the same time; that's normal, not a conflict.
+That split doubles as your routing rule. A request that only moves Dash belongs on Core. A request that needs shared, queryable records owned by the people using the app, such as usernames, tickets, or assets, belongs on Platform. Your marketplace can take Alice's payment on Core and keep her ticket on Platform at the same time; that's normal, not a conflict.
 
 ## The record after the payment
 
-In a conventional app, a customer profile is a row in your database. On Platform it's a **document**: an application record held in **Drive**, the network's storage layer. Drive keeps Platform's current state, and each app gets its own slice of that state, keyed by contract.
+In a conventional app, Alice's marketplace profile is a row in your database. On Platform it's a **document**: an application record held in **Drive**, the network's storage layer. Drive keeps Platform's current state, and each app gets its own slice of that state, keyed by contract.
+
+That relocation is what makes her profile portable. Because the record lives in Drive rather than your database, a second app reading the same contract shows Alice the same biography, and neither app is the copy that counts.
 
 Nothing lands in Drive just because a client asked for it. Before an app can store anything, it publishes a **data contract** describing the record types it uses, their fields, and the rules a record must satisfy. The contract is the schema; the document is a record that fits it. A write that breaks the schema is refused, whoever sends it.
 
@@ -26,7 +28,7 @@ Nothing lands in Drive just because a client asked for it. Before an app can sto
 
 The contract settles "is this shaped correctly?" It says nothing about "who asked for this?"
 
-An **identity** answers that. An identity is a persistent account on Platform that owns data. To create or change that data, the identity submits a signed <Term id="state-transition">state transition</Term>; the network checks the signature to learn who authorized the change, then checks the change against the contract. A profile owned by one identity can't be quietly rewritten by another, even if the replacement is well formed.
+An **identity** answers that. An identity is a persistent account on Platform that owns data. To create or change that data, the identity submits a signed <Term id="state-transition">state transition</Term>; the network checks the signature to learn who authorized the change, then checks the change against the contract. Alice's profile is owned by Alice's identity, so Bob can't quietly rewrite it, even if his replacement is well formed.
 
 Names hang off identities too. The Dash Platform Name Service, **DPNS**, registers readable names and ties each to an identity, so a user can be addressed by a name rather than a bare identifier. Core moves money; it keeps no register of who owns which name. That register is itself an app built on Platform, the first hint that Platform's conveniences come from the same documents and identities you'll use.
 
@@ -42,7 +44,7 @@ Platform state holds more than plain rows. An app can issue assets, and the firs
 
 A **token** is interchangeable value you configure inside your data contract: your app's own currency, say. Any two units are the same thing. Transfer is built in, as is buying units directly with credits.
 
-An **NFT** isn't a separate kind of object. It's a document that stands for one distinct, ownable item like a seat, a collectible, or a plot of land. Because it's a document it has a unique identity within its contract, and the ability to transfer it or sell it at a set price comes from the protocol rather than code you write. The shortcut: interchangeable value is a token; a specific thing one person can own is an NFT.
+An **NFT** isn't a separate kind of object. It's a document that stands for one distinct, ownable item like a ticket, a collectible, or a plot of land. Because it's a document it has a unique identity within its contract, and the ability to transfer it or sell it at a set price comes from the protocol rather than code you write. The shortcut: interchangeable value is a token; a specific thing one person can own is an NFT.
 
 ## What stays private
 
@@ -60,7 +62,7 @@ Two choices stop every operation from starting with an empty-account dead end. A
 
 ## One app, assembled
 
-Ada runs a small festival and sells limited-edition seat passes. Core settles each Dash payment. Ada registers a DPNS name so the sale has a readable address. Her data contract declares a pass record, and each pass in Drive is a unique, transferable document (an NFT) that a buyer purchases at a set price through the protocol's built-in purchase. The buyer's identity owns the pass afterward, and Ada's frontend tops up that identity's credits so a fee never greets the buyer. The ticket page, the pricing, the seat-inventory checks: that's Ada's own code on Ada's servers. The network's job is holding the passes, enforcing who owns each one, and running the purchase rules, the part that needed to outlive anyone's database.
+Now the whole marketplace. Core settles Alice's Dash payment. Bob registers a DPNS name so buyers see a readable seller rather than a bare identifier. Your data contract declares a ticket record, and each ticket in Drive is a unique, transferable document (an NFT) that Alice purchases at Bob's set price through the protocol's built-in purchase. Her identity owns the ticket afterward, and your frontend tops up her credits so a fee never greets her. The event page, the pricing, the seat-inventory checks: that's your own code on your own servers. The network's job is holding the tickets, enforcing who owns each one, and running the purchase rules, the part that needed to outlive anyone's database.
 
 <LessonQuiz
   challengeId="what-is-dash-platform"
@@ -80,15 +82,15 @@ Ada runs a small festival and sells limited-edition seat passes. Core settles ea
     },
     {
       id: "names-and-identity",
-      prompt: "A user owns a profile and registers a readable name. How do the two relate on Platform?",
+      prompt: "Alice owns a profile and registers a readable name. How do the two relate on Platform?",
       options: [
-        { id: "a", label: "The name and profile both belong to the user's identity, which signs authorized changes to what it owns." },
+        { id: "a", label: "The name and profile both belong to Alice's identity, which signs authorized changes to what it owns." },
         { id: "b", label: "The name lives on Core and the profile in the operator's database." },
         { id: "c", label: "Anyone who knows the name may edit records associated with it." },
         { id: "d", label: "Names and profiles need no authorization beyond matching a schema." },
       ],
       correctOptionId: "a",
-      explanation: "DPNS ties a name to an identity, and the identity authorizes changes to the data it owns.",
+      explanation: "DPNS ties a name to an identity, and that identity authorizes changes to the data it owns.",
     },
     {
       id: "record-and-rules",
@@ -116,11 +118,11 @@ Ada runs a small festival and sells limited-edition seat passes. Core settles ea
     },
     {
       id: "token-or-nft",
-      prompt: "Ada sells one numbered festival seat and also mints a loyalty currency. How should she model each?",
+      prompt: "Your marketplace sells one numbered ticket and also mints a loyalty currency. How should you model each?",
       options: [
-        { id: "a", label: "The seat as an NFT document and the currency as a configured token." },
+        { id: "a", label: "The ticket as an NFT document and the currency as a configured token." },
         { id: "b", label: "Both as configured tokens." },
-        { id: "c", label: "The seat as a token and the currency as an NFT." },
+        { id: "c", label: "The ticket as a token and the currency as an NFT." },
         { id: "d", label: "Both as NFT documents." },
       ],
       correctOptionId: "a",
@@ -140,27 +142,27 @@ Ada runs a small festival and sells limited-edition seat passes. Core settles ea
     },
     {
       id: "credits-and-sponsorship",
-      prompt: "A new buyer's identity can't afford the fee to receive a pass. What lets Ada remove that hurdle?",
+      prompt: "Alice's new identity can't afford the fee to receive her ticket. What lets you remove that hurdle?",
       options: [
-        { id: "a", label: "Ada tops up the buyer's credit balance, since anyone can fund any identity." },
-        { id: "b", label: "The buyer must first lock new Dash on Core." },
-        { id: "c", label: "Ada moves the fee onto Core." },
-        { id: "d", label: "Receiving a pass never costs anything." },
+        { id: "a", label: "You top up her credit balance, since anyone can fund any identity." },
+        { id: "b", label: "She must first lock new Dash on Core." },
+        { id: "c", label: "You move the fee onto Core." },
+        { id: "d", label: "Receiving a ticket never costs anything." },
       ],
       correctOptionId: "a",
       explanation: "Credits pay for Platform work. Because anyone may top up any identity, an app can sponsor its users' fees.",
     },
     {
       id: "network-or-app",
-      prompt: "In Ada's festival app, which job is the network's rather than the developer's?",
+      prompt: "In the ticket marketplace, which job is the network's rather than yours?",
       options: [
-        { id: "a", label: "Rendering the ticket page and seat map." },
+        { id: "a", label: "Rendering the event page and seat map." },
         { id: "b", label: "Loading the pricing and checking inventory." },
-        { id: "c", label: "Holding the passes and enforcing who owns each one and the purchase rules." },
+        { id: "c", label: "Holding the tickets and enforcing who owns each one and the purchase rules." },
         { id: "d", label: "Sending the buyer a confirmation email." },
       ],
       correctOptionId: "c",
-      explanation: "Ada's frontend and business logic run on her servers. The network stores the records and enforces ownership and rules.",
+      explanation: "Your frontend and business logic run on your servers. The network stores the records and enforces ownership and rules.",
     },
   ]}
 />

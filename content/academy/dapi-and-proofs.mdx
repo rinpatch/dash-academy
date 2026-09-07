@@ -8,7 +8,7 @@ verification: quiz
 prerequisites: [5]
 ---
 
-Your app asks Dash Platform for a user's public profile, and an answer comes back even though you don't run a node or choose a server. Before your app acts on it, four questions matter: who answered, what happens if that machine fails, what stops it from lying, and what do you still have to trust?
+Your marketplace asks Dash Platform for Alice's public profile, and an answer comes back even though you don't run a node or choose a server. Before your app acts on it, four questions matter: who answered, what happens if that machine fails, what stops it from lying, and what do you still have to trust?
 
 ## One reply from a network
 
@@ -22,25 +22,25 @@ This distinction is easy to miss. A decentralized service doesn't mean every req
 
 The SDK needs candidates before it can choose one. On Dash's live network (mainnet) and its practice network (testnet), it contacts seed nodes, which help it discover addresses for DAPI nodes on that network. It then rotates among the discovered addresses instead of binding the app to one DAPI server.
 
-If the first candidate never answers the profile request, the SDK can retry through another discovered node and temporarily avoid the failed address. A bad pick can cost time, but it doesn't have to take the app offline. Later requests aren't stuck waiting on the same broken machine either.
+If the first candidate never answers the request for Alice's profile, the SDK can retry through another discovered node and temporarily avoid the failed address. A bad pick can cost time, but it doesn't have to take the app offline. Later requests aren't stuck waiting on the same broken machine either.
 
 Discovery solves an access problem, not a truth problem. Seed nodes help the client find candidates; they don't make every answer from those candidates correct. Likewise, an encrypted <Term id="tls">TLS</Term> connection protects bytes while they travel between the app and a node, but a well-protected connection can still carry a false answer.
 
-Now change the scenario. The selected node replies promptly, but it changes the profile before sending it. Retrying only helps if another node happens to return something different, and then the app has two claims with no reason to prefer either. Availability has been handled; honesty hasn't.
+Now change the scenario. The selected node replies promptly, but it alters Alice's profile before sending it. Retrying only helps if another node happens to return something different, and then the app has two claims with no reason to prefer either. Availability has been handled; honesty hasn't.
 
 ## Evidence travels with the answer
 
-A proof-aware Platform request can return the profile together with a **state proof**: cryptographic evidence tying the result to state the network has finalized and committed. Finalized state is the accepted Platform state for a completed block, rather than a pending change that nodes may still disagree about.
+A proof-aware Platform request can return her profile together with a **state proof**: cryptographic evidence tying the result to state the network has finalized and committed. Finalized state is the accepted Platform state for a completed block, rather than a pending change that nodes may still disagree about.
 
-The SDK checks that evidence locally. If it verifies, the app can establish that the returned profile matches the committed state. The same kind of evidence can support an answer that a requested record is absent, so a node can't safely turn "not found" into an unsupported assertion. If verification fails, the SDK rejects the result instead of presenting altered data as verified.
+The SDK checks that evidence locally. If it verifies, your app can establish that the returned profile matches the committed state. The same kind of evidence can support an answer that a requested record is absent, so a node can't safely turn "not found" into an unsupported assertion. If verification fails, the SDK rejects the result instead of presenting altered data as verified.
 
 A troublesome node still has ways to waste your time. It can stay silent, delay its reply, omit proof evidence where an ordinary response is allowed, or send evidence that fails the check. Proofs don't force a machine to cooperate, which is why the SDK still needs retry and temporary avoidance. Retry finds another speaker; verification decides whether the proof-bearing statement from that speaker deserves acceptance. Keeping those jobs separate prevents a common mistake: treating a responsive node as an honest one.
 
 An ordinary API response can't provide that conclusion. It contains a payload and may arrive through an encrypted connection, but the receiver still has to trust the server's account of the data. Nor does a response become proved merely because it came through DAPI or an SDK. DAPI supports ordinary responses too; only a proof-bearing response that the client successfully verifies crosses this boundary.
 
-Return to the hypothetical profile:
+Return to Alice's profile:
 
-- If the reply has no checked proof, the app trusts the node for the profile.
+- If the reply has no checked proof, the app trusts the node for what it says.
 - If the proof checks, the app verifies that this profile, or its reported absence, agrees with committed Platform state.
 
 Changing nodes improves the first case's chance of getting an answer. It doesn't turn that answer into the second case.
@@ -57,9 +57,9 @@ That leaves a narrower, but real, trust boundary. For a successfully verified re
 | An unproved profile is correct | Trusted from the responding node |
 | The lightweight client received the correct public keys for the network group | Trusted from the hosted key source |
 | The SDK and verifier implement the check correctly | Trusted software |
-| The person wrote a true claim in their profile | Not established by the state proof |
+| Bob wrote a true claim in his own profile | Not established by the state proof |
 
-That last row matters. A valid proof can establish that Platform committed a profile saying "I am a licensed pilot." It can't inspect a licence or decide whether the person told the truth. The proof authenticates what the shared state says, not every real-world claim recorded inside it.
+That last row matters. A valid proof can establish that Platform committed a profile saying "I am an accredited reseller." It can't inspect Bob's accreditation or decide whether he told the truth. The proof authenticates what the shared state says, not every real-world claim recorded inside it.
 
 Running a full node changes the boundary because the node can derive those public keys from the Core chain rather than accepting the hosted key source. Lightweight DAPI access therefore doesn't have the same trust model as running a full node. It gives an app locally checkable Platform answers without requiring the app to maintain and validate the full chain, but the remaining anchor and client software still count.
 
@@ -71,7 +71,7 @@ For any DAPI result your app might act on, ask two separate questions. Did the r
   questions={[
     {
       id: "who-answered",
-      prompt: "A hypothetical Platform profile request succeeds without the app choosing a server. What physically answered it?",
+      prompt: "Your request for Alice's profile succeeds without the app choosing a server. What physically answered it?",
       options: [
         { id: "a", label: "One DAPI instance on an evonode selected from network candidates." },
         { id: "b", label: "The app company's single authoritative database server." },
@@ -95,9 +95,9 @@ For any DAPI result your app might act on, ask two separate questions. Did the r
     },
     {
       id: "proved-versus-ordinary",
-      prompt: "Two nodes return the same profile. One response carries a state proof that verifies; the other carries only the profile data. What extra conclusion does the first support?",
+      prompt: "Two nodes return the same profile for Alice. One response carries a state proof that verifies; the other carries only the profile data. What extra conclusion does the first support?",
       options: [
-        { id: "a", label: "The profile's owner told the truth about every real-world claim." },
+        { id: "a", label: "Alice told the truth about every real-world claim in it." },
         { id: "b", label: "The node will remain available for later requests." },
         { id: "c", label: "The profile matches state finalized and committed by the network." },
         { id: "d", label: "The connection used stronger transport encryption." },
@@ -109,7 +109,7 @@ For any DAPI result your app might act on, ask two separate questions. Did the r
       id: "remaining-trust",
       prompt: "A lightweight client successfully verifies a proof-bearing response. What does it still take on trust in the SDK's trusted setup?",
       options: [
-        { id: "a", label: "That the responding DAPI node copied the profile honestly." },
+        { id: "a", label: "That the responding DAPI node copied Alice's profile honestly." },
         { id: "b", label: "That every DAPI and SDK response always includes a proof." },
         { id: "c", label: "That the hosted key source supplied the correct public keys for the network group and the local verifier checks them correctly." },
         { id: "d", label: "That retrying a failed node proves the next node's payload." },
@@ -119,11 +119,11 @@ For any DAPI result your app might act on, ask two separate questions. Did the r
     },
     {
       id: "proof-limit",
-      prompt: "A verified profile says its owner holds a professional licence. What has the state proof established?",
+      prompt: "Bob's verified profile says he is an accredited reseller. What has the state proof established?",
       options: [
-        { id: "a", label: "The licensing body independently confirmed the claim." },
+        { id: "a", label: "Some accrediting body independently confirmed the claim." },
         { id: "b", label: "Committed Platform state contains that profile and claim, not that the claim is true outside Platform." },
-        { id: "c", label: "The responding node personally checked the licence." },
+        { id: "c", label: "The responding node checked Bob's accreditation itself." },
         { id: "d", label: "No software or key source remains trusted." },
       ],
       correctOptionId: "b",

@@ -8,47 +8,47 @@ verification: quiz
 prerequisites: [3]
 ---
 
-Mara's ticket marketplace has an architecture problem. Buyers need to pay sellers, find tickets that are still available, choose readable usernames, earn a loyalty token, and resell ticket records to new owners. Some attendee details, including legal names and accessibility notes, must remain confidential. Which parts, if any, belong on Dash?
+Your ticket marketplace has an architecture problem. Buyers like Alice need to pay sellers like Bob, find tickets that are still available, choose readable usernames, earn a loyalty token, and resell ticket records to new owners. Some attendee details, including legal names and accessibility notes, must remain confidential. Which parts, if any, belong on Dash?
 
-The tempting choice is to put the whole marketplace on Dash because all of those facts belong to one app. That would be a mistake. The useful question isn't "Can Platform store this?" but "What would users gain if no marketplace operator held the only authoritative copy?"
+The tempting choice is to put the whole marketplace on Dash because all of those facts belong to one app. That would be a mistake. The useful question isn't "Can Platform store this?" but "What would Alice and Bob gain if no marketplace operator, you included, held the only authoritative copy?"
 
 ## Which records earn a place?
 
 Payments have a straightforward route: buyers spend **Dash** when they pay sellers. Past payments, Platform gives the marketplace usernames, its loyalty token, and ticket records that can change hands. Module 3 introduced those capabilities; here they matter because each solves a marketplace requirement.
 
-The ticket record makes the strongest case for shared state. If Mara alone controls the ownership database, a buyer must trust her service not to revoke a ticket, assign it twice, or disappear before resale. Putting ticket ownership on Platform gives the parties a common record that one marketplace operator doesn't control alone.
+The ticket record makes the strongest case for shared state. If you alone control the ownership database, Alice must trust your service not to revoke her ticket, assign it twice, or disappear before she can resell it. Putting ticket ownership on Platform gives her and Bob a common record that one marketplace operator doesn't control alone.
 
-The same argument doesn't apply to every row. Mara's draft email, a cached search page, and an internal support note don't become better merely because a network stores them. A conventional database is the better tool when one operator is an acceptable authority and nobody needs to verify the record independently. Dash fits the parts that benefit from public payments or shared, verifiable state, not automatically the whole application.
+The same argument doesn't apply to every row. Your draft email, a cached search page, and an internal support note don't become better merely because a network stores them. A conventional database is the better tool when one operator is an acceptable authority and nobody needs to verify the record independently. Dash fits the parts that benefit from public payments or shared, verifiable state, not automatically the whole application.
 
 ## An answer buyers can check
 
-Ownership only helps if buyers can find the right tickets. The marketplace might ask, "Which tickets for this event are still available?" Platform can answer questions over **indexed** state, meaning records are organized by fields chosen in advance so applications can filter or sort them efficiently. The marketplace doesn't need to download every ticket and trust Mara's server to filter the list.
+Ownership only helps if Alice can find the right tickets. The marketplace might ask, "Which tickets for this event are still available?" Platform can answer questions over **indexed** state, meaning records are organized by fields chosen in advance so applications can filter or sort them efficiently. Her app doesn't need to download every ticket and trust your server to filter the list.
 
 There are two claims in a search result: these records match the question, and they match the state the network committed. A Platform query can include cryptographic evidence for the second claim, letting the app verify the result against committed state instead of taking the responding node's word for it. Later lessons handle query syntax, index design, and proof checking. For this architecture decision, the capability is enough: the shared data can be queried, and the answer can be checked.
 
 ## Public means public
 
-That useful search changes the privacy decision. Records written to shared Platform state are queryable wherever their indexes permit, so Mara must treat them as public application data. Ticket ownership may deserve that visibility; an attendee's legal name or accessibility notes don't.
+That useful search changes the privacy decision. Records written to shared Platform state are queryable wherever their indexes permit, so you must treat them as public application data. Ticket ownership may deserve that visibility; Alice's legal name or accessibility notes don't.
 
-Those confidential details belong in encrypted form or in storage outside Platform. Encrypting a value means the shared record contains unreadable data and the app controls who receives the key. Keeping it off-network lets Mara use ordinary access controls instead. Either choice accepts the same limit: a public shared record isn't a safe place for a plaintext secret.
+Those confidential details belong in encrypted form or in storage outside Platform. Encrypting a value means the shared record contains unreadable data and the app controls who receives the key. Keeping it off-network lets you use ordinary access controls instead. Either choice accepts the same limit: a public shared record isn't a safe place for a plaintext secret.
 
-This is the public-ledger tradeoff in application terms. A user may expect only the operator to see a support note, but writing it to Platform can make it available beyond that operator. The interface and privacy policy need to match what the architecture actually reveals.
+This is the public-ledger tradeoff in application terms. Alice may expect only you to see a support note, but writing it to Platform can make it available far beyond you. The interface and privacy policy need to match what the architecture actually reveals.
 
 ## Two balances in one purchase
 
-Now follow one resale. The buyer sends **Dash** to the seller because Dash is the asset used for payment. Changing the ticket's owner updates Platform state, and Platform charges **Credits** for that work. Credits are created from Dash, but they remain a separate balance used for Platform fees.
+Now follow one resale. Alice sends **Dash** to Bob because Dash is the asset used for payment. Changing the ticket's owner updates Platform state, and Platform charges **Credits** for that work. Credits are created from Dash, but they remain a separate balance used for Platform fees.
 
-So "the buyer has enough Dash" answers only the payment question. The Platform account submitting the ownership change also needs enough Credits, whether the user funds them or Mara sponsors the fee. The split is simple: spend Dash to move money; spend Credits to store or change application state.
+So "Alice has enough Dash" answers only the payment question. The Platform account submitting the ownership change also needs enough Credits, whether she funds them or you sponsor the fee. The split is simple: spend Dash to move money; spend Credits to store or change application state.
 
 ## Depending on the network
 
-Choosing shared state means Mara's marketplace now depends on work that her company doesn't direct alone. Dash introduced its decentralized autonomous organization, or **DAO**, in 2015, and it is the oldest DAO still operating. The useful governance loop is short: proposals request funding from the network treasury, masternodes vote on them, and approved work receives treasury funding.
+Choosing shared state means your marketplace now depends on work that your company doesn't direct alone. Dash introduced its decentralized autonomous organization, or **DAO**, in 2015, and it is the oldest DAO still operating. The useful governance loop is short: proposals request funding from the network treasury, masternodes vote on them, and approved work receives treasury funding.
 
-That doesn't guarantee Mara will like every funded proposal. It tells her how the network chooses and pays for work it depends on, rather than leaving that role entirely to one company's budget. The [official Dash governance guide](https://docs.dash.org/en/stable/docs/user/governance/) explains the system, and [DashCentral's current proposals page](https://www.dashcentral.org/budget) shows active proposals and their voting status.
+That doesn't guarantee you'll like every funded proposal. It tells you how the network chooses and pays for work it depends on, rather than leaving that role entirely to one company's budget. The [official Dash governance guide](https://docs.dash.org/en/stable/docs/user/governance/) explains the system, and [DashCentral's current proposals page](https://www.dashcentral.org/budget) shows active proposals and their voting status.
 
 ## Make the cut
 
-Mara's final architecture uses Dash for buyer-to-seller payments, public ticket ownership, usernames, the loyalty token, and verifiable ticket searches. It keeps confidential attendee details and operator-only records elsewhere. If she didn't need shared ownership or independently checkable results, a normal database would be cheaper in complexity and easier to keep private.
+The final architecture uses Dash for buyer-to-seller payments, public ticket ownership, usernames, the loyalty token, and verifiable ticket searches. It keeps confidential attendee details and operator-only records elsewhere. If you didn't need shared ownership or independently checkable results, a normal database would be cheaper in complexity and easier to keep private.
 
 Apply the same cut to your own app. For each payment or record, ask who must trust the operator, who needs to verify the answer, and who may read the data. Choose Dash where public, shared, verifiable state changes those answers for the better. Reject it where secrecy matters, one operator is already trusted, or the record gains nothing from network agreement.
 
@@ -85,7 +85,7 @@ Apply the same cut to your own app. For each payment or record, ask who must tru
       prompt: "A buyer asks for tickets that are still available. What can Platform give the marketplace?",
       options: [
         { id: "a", label: "An indexed query over shared state whose result can be checked against committed state." },
-        { id: "b", label: "An answer that is trustworthy only because Mara's server returned it." },
+        { id: "b", label: "An answer that is trustworthy only because your server returned it." },
         { id: "c", label: "A private search that hides every matching ticket from all network participants." },
         { id: "d", label: "A guarantee that no index had to be chosen for the records." },
       ],
@@ -99,17 +99,17 @@ Apply the same cut to your own app. For each payment or record, ask who must tru
         { id: "a", label: "Put both on Platform in plaintext because only the owner can query them." },
         { id: "b", label: "Put the ticket record on Platform; encrypt the note or keep it off-network." },
         { id: "c", label: "Keep both in a browser cookie so no operator can change them." },
-        { id: "d", label: "Put the note on Platform and keep ticket ownership only in Mara's database." },
+        { id: "d", label: "Put the note on Platform and keep ticket ownership only in your database." },
       ],
       correctOptionId: "b",
       explanation: "Shared ticket ownership benefits from public, verifiable state. A confidential note doesn't, so plaintext belongs off Platform or must be encrypted before storage.",
     },
     {
       id: "dash-and-credits",
-      prompt: "During a ticket resale, the buyer pays the seller and the ticket's owner changes on Platform. Which balances pay for those actions?",
+      prompt: "During a resale, Alice pays Bob and the ticket's owner changes on Platform. Which balances pay for those actions?",
       options: [
-        { id: "a", label: "Dash pays the seller; Credits pay for the Platform state change." },
-        { id: "b", label: "Credits pay the seller; Dash pays the Platform fee." },
+        { id: "a", label: "Dash pays Bob; Credits pay for the Platform state change." },
+        { id: "b", label: "Credits pay Bob; Dash pays the Platform fee." },
         { id: "c", label: "Dash pays for both actions from one balance." },
         { id: "d", label: "Credits pay for both actions from one balance." },
       ],
@@ -118,12 +118,12 @@ Apply the same cut to your own app. For each payment or record, ask who must tru
     },
     {
       id: "governance-loop",
-      prompt: "Mara wants to understand how work on the network she depends on can receive funding. What should she look for?",
+      prompt: "You want to understand how work on the network you depend on can receive funding. What should you look for?",
       options: [
         { id: "a", label: "Treasury proposals that masternodes vote on, with approved work funded by the network; current proposals are listed on DashCentral." },
-        { id: "b", label: "Private invoices approved only by Mara's marketplace team." },
+        { id: "b", label: "Private invoices approved only by your marketplace team." },
         { id: "c", label: "A permanent list of projects chosen when Dash launched." },
-        { id: "d", label: "A vote by every marketplace customer on each Platform state change." },
+        { id: "d", label: "A vote by every marketplace buyer on each Platform state change." },
       ],
       correctOptionId: "a",
       explanation: "Dash's governance loop connects treasury requests, masternode voting, and funding for approved proposals. DashCentral provides a live view of current proposals.",

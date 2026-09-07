@@ -8,19 +8,19 @@ verification: quiz
 prerequisites: [13]
 ---
 
-Two devices open the same shared note. The phone shows “Bring the signed form,” and the laptop shows the same text a moment later. Reading agrees; editing is where trouble starts. What does it mean to read the note, and which device is allowed to change it?
+Two devices open Alice's marketplace profile. The phone shows her biography, “Front-row regular,” and the laptop shows the same text a moment later. Reading agrees; editing is where trouble starts. What does it mean to read the profile, and which device is allowed to change it?
 
-The note is a **document**, an application record stored as part of Platform state. Its shape comes from the data contract described earlier; the contract lab that would publish one is currently a placeholder, so this note is hypothetical. Alice creates it first with the text “Bring the signed form.” Only after that create is accepted can either device query it. Nothing below claims that a contract or document already exists.
+The profile is a **document**, an application record stored as part of Platform state. Its shape comes from the data contract described earlier; the contract lab that would publish one is currently a placeholder, so this profile is hypothetical. Alice creates it first with the biography “Front-row regular.” Only after that create is accepted can either device query it. Nothing below claims that a contract or document already exists.
 
 ## Start with the answer a read gives
 
-When the phone queries for the note, Platform returns a document from committed state: the version the network has accepted and stored. A read observes that state. It doesn't sign a request or change the note, and the laptop can ask the same question without receiving a private copy owned by the phone.
+When the phone queries for the profile, Platform returns a document from committed state: the version the network has accepted and stored. A read observes that state. It doesn't sign a request or change the profile, and the laptop can ask the same question without receiving a private copy owned by the phone.
 
 That distinction matters when the app displays an edit button. Showing a document proves that the app can read it; it doesn't prove that the current user may write it.
 
 ## Four moves through one record
 
-The note's lifecycle has four useful application-level moves:
+The profile's lifecycle has four useful application-level moves:
 
 - **Create** adds a new document that satisfies the contract's rules.
 - **Query** reads documents already committed to Platform.
@@ -29,29 +29,29 @@ The note's lifecycle has four useful application-level moves:
 
 Create, replace, and delete change shared state, so Platform validates and authorizes them before later queries can see the result. Query is the odd one out: it asks what exists rather than proposing a change.
 
-Ownership can change later through protocol actions such as transfer or purchase. Those are ways a document can acquire a new owner, not alternate names for replacing its contents; their rules belong elsewhere. For the note in this example, stay with the current owner.
+Ownership can change later through protocol actions such as transfer or purchase; that's how a ticket reaches its buyer. Those are ways a document can acquire a new owner, not alternate names for replacing its contents; their rules belong elsewhere. A profile stays with the identity that created it, so for this example the owner never changes.
 
 ## Reading isn't permission
 
-The note belongs to an identity, meaning the Platform account recorded as its owner. That ownership is the authorization boundary for ordinary mutation: the owning identity may replace the note, or delete it when the document type permits deletion, while an identity that can only read it may do neither.
+The profile belongs to an identity, meaning the Platform account recorded as its owner. That ownership is the authorization boundary for ordinary mutation: the owning identity may replace the profile, or delete it when the document type permits deletion, while an identity that can only read it may do neither.
 
-The app can display the note to Bob. Bob can learn the current text, but he can't submit a valid replacement just because the query succeeded. Alice's identity owns the note, so an authorized change must come from Alice's identity. Credits pay for Platform work, but funding an identity doesn't give it ownership or editing authority.
+The marketplace can display Alice's profile to Bob. Bob can learn the current biography, but he can't submit a valid replacement just because the query succeeded. Alice's identity owns the profile, so an authorized change must come from Alice's identity. Credits pay for Platform work, but funding an identity doesn't give it ownership or editing authority.
 
-If Alice wants another person to own the note, she must use an ownership-changing mechanism supported by the document type, such as transfer or purchase. An ordinary edit cannot smuggle a new owner into the record.
+The same boundary explains resale. When Alice sells her ticket to Bob, the ticket document acquires a new owner only through a mechanism its document type supports, such as transfer or purchase. An ordinary edit cannot smuggle a new owner into the record.
 
 ## Two edits, one winner
 
-Now Alice opens the note on both devices. Each reads revision 3. She edits the phone copy to “Bring the signed form and ID,” while the laptop copy becomes “Bring the signed form by Friday.” Both edits are authorized, but authorization alone can't tell Platform which copy included the newer thought.
+Now Alice opens her profile on both devices. Each reads revision 3. She edits the phone copy to “Front-row regular. Ask me about the Thursday show,” while the laptop copy becomes “Front-row regular since 2019.” Both edits are authorized, but authorization alone can't tell Platform which copy included the newer thought.
 
 The safe replacement rule supplies that missing check: fetch the current document, then submit the next revision. The phone's accepted replacement moves revision 3 to revision 4. When the laptop later submits its replacement based on revision 3, Platform rejects it as stale instead of silently overwriting the phone's accepted text.
 
 The laptop must read again, inspect revision 4, incorporate its intended change, and submit the next revision. This is optimistic concurrency: the app proceeds as if its copy is current, but the network refuses the write when that assumption is no longer true.
 
-Some document types are immutable. They can be created and queried, but they don't support replacement, so there is no revision to advance. That choice fits records that should remain as originally written; it doesn't turn a mutable note into a conflict-free record.
+Some document types are immutable. They can be created and queried, but they don't support replacement, so there is no revision to advance. That choice fits records that should stand as originally written, such as the receipt for a completed ticket sale; it doesn't turn a mutable profile into a conflict-free record.
 
 ## What deletion gives back
 
-Eventually Alice deletes the note. The document disappears from the current state, but deletion doesn't rewind every cost associated with storing and changing it.
+Eventually Alice deletes the profile. The document disappears from the current state, but deletion doesn't rewind every cost associated with storing and changing it.
 
 When an app stores data, it prepays the storage fee, and Platform gradually allocates that value over time. Deleting the document can return the unused portion of that prepaid storage cost. The longer the record has occupied storage, the less unused allocation remains. The processing work for the original write, and the work of processing the deletion, stays paid.
 
@@ -63,11 +63,11 @@ So an early delete may produce a partial storage refund, not a full reversal of 
   questions={[
     {
       id: "read-observes-state",
-      prompt: "The phone wants to show Alice the latest shared note without changing it. Which action fits?",
+      prompt: "The phone wants to show Alice her latest biography without changing it. Which action fits?",
       options: [
         { id: "a", label: "Query the document from committed Platform state." },
         { id: "b", label: "Submit a replacement containing the same text." },
-        { id: "c", label: "Delete the note and recreate it for the phone." },
+        { id: "c", label: "Delete the profile and recreate it for the phone." },
         { id: "d", label: "Ask Bob to sign a change so the phone can read it." },
       ],
       correctOptionId: "a",
@@ -75,11 +75,11 @@ So an early delete may produce a partial storage refund, not a full reversal of 
     },
     {
       id: "create-before-query",
-      prompt: "Alice has a valid new note that Platform has never stored. Which lifecycle action should the app use before either device can query it?",
+      prompt: "Alice has a valid new profile that Platform has never stored. Which lifecycle action should the app use before either device can query it?",
       options: [
         { id: "a", label: "Create the document, then query the committed result." },
-        { id: "b", label: "Replace the note at revision 1." },
-        { id: "c", label: "Delete the note so it appears in current state." },
+        { id: "b", label: "Replace the profile at revision 1." },
+        { id: "c", label: "Delete the profile so it appears in current state." },
         { id: "d", label: "Query it repeatedly until the network invents the record." },
       ],
       correctOptionId: "a",
@@ -87,11 +87,11 @@ So an early delete may produce a partial storage refund, not a full reversal of 
     },
     {
       id: "owner-authorizes",
-      prompt: "Bob can read Alice's note but wants to remove it. What should the app expect?",
+      prompt: "Bob can read Alice's profile but wants to remove it. What should the app expect?",
       options: [
         { id: "a", label: "Bob can delete it because reading proves access." },
         { id: "b", label: "Bob can delete it if he has enough credits." },
-        { id: "c", label: "The delete must be authorized by the identity that owns the note, and the document type must permit deletion." },
+        { id: "c", label: "The delete must be authorized by the identity that owns the profile, and the document type must permit deletion." },
         { id: "d", label: "The contract publisher may delete every document of that type." },
       ],
       correctOptionId: "c",
@@ -111,24 +111,24 @@ So an early delete may produce a partial storage refund, not a full reversal of 
     },
     {
       id: "immutable-record",
-      prompt: "An app stores a record type as immutable. Which behavior should its editor support?",
+      prompt: "The marketplace stores sale receipts as an immutable record type. Which behavior should its editor support?",
       options: [
-        { id: "a", label: "Create and query the record, but don't offer replacement." },
+        { id: "a", label: "Create and query the receipt, but don't offer replacement." },
         { id: "b", label: "Replace it whenever two devices disagree." },
         { id: "c", label: "Allow replacement without tracking a revision." },
         { id: "d", label: "Change its owner through an ordinary text edit." },
       ],
       correctOptionId: "a",
-      explanation: "Immutable documents can be created and read but not replaced, so an editor should not treat them like mutable notes with advancing revisions."
+      explanation: "Immutable documents can be created and read but not replaced, so an editor should not treat them like mutable profiles with advancing revisions."
     },
     {
       id: "partial-storage-refund",
-      prompt: "Alice deletes a note after it has occupied storage for some time. Which accounting result is correct?",
+      prompt: "Alice deletes her profile after it has occupied storage for some time. Which accounting result is correct?",
       options: [
         { id: "a", label: "Every storage and processing cost returns because the document is gone." },
         { id: "b", label: "Only the unused portion of prepaid storage value may return; processing work remains paid." },
         { id: "c", label: "No storage value can ever return after a delete." },
-        { id: "d", label: "The refund transfers ownership of the note to Alice again." },
+        { id: "d", label: "The refund restores the deleted profile to Alice." },
       ],
       correctOptionId: "b",
       explanation: "Deletion can return the unused storage allocation, but it doesn't refund processing work. The result is a partial storage refund rather than a reversal of all costs."

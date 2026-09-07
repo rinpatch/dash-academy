@@ -8,7 +8,7 @@ verification: quiz
 prerequisites: [6]
 ---
 
-Alice's shared profile works in two apps, just as it did in [What is Dash Platform?](/learn/what-is-dash-platform). Both show the same biography. Now Alice wants to change it, which raises a question the profile alone can't answer: who is allowed to write?
+Alice's marketplace profile works in two apps, just as it did in [What is Dash Platform?](/learn/what-is-dash-platform). Both show the same biography. Now Alice wants to change it, which raises a question the profile alone can't answer: who is allowed to write?
 
 Her wallet can sign a request, but a signature alone doesn't answer the network's question: is this the person allowed to edit this profile? Platform needs a record connecting the profile's owner to the keys that can act for them. That's what an **identity** provides.
 
@@ -18,7 +18,7 @@ An identity is an account recorded on Platform. It has a stable identifier, publ
 
 When Alice saves a new biography, her wallet signs the request with a private key. Platform checks the signature against a public key registered on her identity and checks that the key is allowed to authorize this action. It also checks that her identity owns the profile and that the update follows the data contract's rules.
 
-Bob could submit a biography with exactly the right fields and a valid signature from his own identity. It would still fail the ownership check. A valid signature proves who authorized a request; it doesn't give that person permission to change someone else's data.
+Bob, selling tickets on the same marketplace, could submit a biography with exactly the right fields and a valid signature from his own identity. It would still fail the ownership check. A valid signature proves who authorized a request; it doesn't give that person permission to change someone else's data.
 
 The wallet and identity do different jobs here. The wallet manages private keys and signs locally. The identity is the public network record used to check that authority. Its identifier is a 32-byte value, usually displayed as a string. Knowing it lets someone refer to Alice's account, not sign as her. Private keys aren't published in that record.
 
@@ -28,7 +28,7 @@ A readable name isn't the account either. A <Term id="dpns">DPNS</Term> name suc
 
 ## Why not use one key for everything?
 
-Alice's app needs permission to update a biography. It doesn't need the power to replace all the keys on her account or transfer her remaining credits elsewhere. Keeping those jobs separate limits what an exposed everyday key can authorize.
+The marketplace app needs permission to update Alice's biography. It doesn't need the power to replace all the keys on her account or transfer her remaining credits elsewhere. Keeping those jobs separate limits what an exposed everyday key can authorize.
 
 Each identity key has a **purpose**:
 
@@ -70,7 +70,7 @@ Credits can reach an identity through a Core funding transaction that locks Dash
 
 So when an app reports insufficient credits, check the balance of the identity signing the write. Don't assume that a funded Core wallet or Platform address means that identity is funded too. Funding is a separate operation, with its own fees.
 
-Alice doesn't have to supply the funds herself. Anyone can top up her identity, which lets an app developer cover users' fees. Paying into her balance doesn't give the developer her keys or ownership of her profile. Funding an account and controlling it are different things.
+Alice doesn't have to supply the funds herself. Anyone can top up her identity, which is how the marketplace covers its users' fees. Paying into her balance doesn't give the developer her keys or ownership of her profile. Funding an account and controlling it are different things.
 
 <LessonQuiz
   challengeId="identities"
@@ -89,7 +89,7 @@ Alice doesn't have to supply the funds herself. Anyone can top up her identity, 
     },
     {
       id: "master-key",
-      prompt: "An app only needs to edit its user's profile. Which key arrangement avoids giving it authority to replace the identity's keys?",
+      prompt: "The marketplace only needs to edit Alice's profile. Which key arrangement avoids giving it authority to replace her identity's keys?",
       options: [
         { id: "a", label: "Use the master authentication key for all writes." },
         { id: "b", label: "Use a transfer key for profile edits." },
@@ -122,11 +122,11 @@ Alice doesn't have to supply the funds herself. Anyone can top up her identity, 
     },
     {
       id: "sponsored-funding",
-      prompt: "Your app tops up a user's identity. What does that give your app?",
+      prompt: "The marketplace tops up Alice's identity. What does that give the marketplace?",
       options: [
-        { id: "a", label: "Permission to replace the user's keys." },
-        { id: "b", label: "Ownership of the user's existing documents." },
-        { id: "c", label: "Neither: the user has more credits, but authorization still depends on their keys." },
+        { id: "a", label: "Permission to replace her keys." },
+        { id: "b", label: "Ownership of her existing documents." },
+        { id: "c", label: "Neither: she has more credits, but authorization still depends on her keys." },
       ],
       correctOptionId: "c",
       explanation: "Anyone can add funds to an identity. Sponsoring fees doesn't transfer control of the account or the records it owns.",

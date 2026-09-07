@@ -8,38 +8,38 @@ verification: quiz
 prerequisites: [11]
 ---
 
-A community events app starts with no records and a pile of future questions. Before anyone posts an event, decide what the app must store by writing down what people will ask:
+The ticket marketplace starts with no records and a pile of future questions. Before Bob lists anything, decide what the app must store by writing down what people will ask:
 
-- Which open events are happening in my city, ordered by start time?
-- Who has responded to one event?
+- Which tickets are still on sale for events in my city, ordered by start time?
+- Which tickets have been sold for one event?
 
 Those reads are more useful than a list of fields pulled from thin air. They tell you which records the app needs, what facts each record must carry, and how Platform must organize them for retrieval.
 
 ## Two questions, two families
 
-An event and a response describe different things. An event has a title, city, status, and start time. A response connects one attendee to one event and records their answer. Mixing both into one kind of record would make every event repeat attendee details, while every response carried event details it didn't need.
+An event and a ticket describe different things. An event has a title, city, status, and start time. A ticket connects one seat to one event and records who owns it and what it costs. Mixing both into one kind of record would make every ticket repeat the event details, while every event carried seat details it didn't need.
 
-Give the contract two **document types** instead: `event` and `rsvp`. A document type is one family of records governed by the same rules. One `event` document might describe Saturday's repair workshop; each `rsvp` document records one person's response to it.
+Give the contract two **document types** instead: `event` and `ticket`. A document type is one family of records governed by the same rules. One `event` document might describe Saturday's show; each `ticket` document stands for one seat at it.
 
-For each family, its **schema** states what a valid record looks like. The `event` schema can require a title, city, status, and start time, with rules for the kind of value each field accepts. The `rsvp` schema can require an event reference, an attendee reference, and a response. If a submitted record is missing a required value or gives a value of the wrong kind, Platform refuses it.
+For each family, its **schema** states what a valid record looks like. The `event` schema can require a title, city, status, and start time, with rules for the kind of value each field accepts. The `ticket` schema can require an event reference, a seat, and a price. If a submitted record is missing a required value or gives a value of the wrong kind, Platform refuses it.
 
-A **data contract** gathers these document types and their schemas. It doesn't contain the events themselves. It supplies the rules that every event and RSVP must satisfy.
+A **data contract** gathers these document types and their schemas. It doesn't contain the events themselves. It supplies the rules that every event and ticket must satisfy.
 
 ## Let the first read shape the event
 
-Return to the first question: "Which open events are happening in my city, ordered by start time?"
+Return to the first question: "Which tickets are still on sale for events in my city, ordered by start time?"
 
 The `event` documents need `city`, `status`, and `startTime` because the answer depends on those values. Keeping only a venue name and hoping to derive its city later won't give this read what it needs.
 
-The document type also needs an **index** covering that intended read. An index organizes selected fields of one document type so Platform can retrieve records by those fields. Here, an index over city, status, and start time supports the app's city listing of open events in time order.
+The document type also needs an **index** covering that intended read. An index organizes selected fields of one document type so Platform can retrieve records by those fields. Here, an index over city, status, and start time supports Alice's city listing of open events in time order.
 
 An index isn't an after-the-fact speed setting. Filtered or ordered document reads such as this one depend on fields covered by an index, so an omitted index can leave the app unable to ask a planned question. This is why the read came first: it exposed both the fields and the index the event model needs.
 
-The second question does the same job for `rsvp`. To find responses for one event, each RSVP stores that event's identifier in an `eventId` field, and the RSVP type declares an index that starts from that relationship. The event reference isn't useful only as a link for the interface; it's data the app needs to search.
+The second question does the same job for `ticket`. To find the tickets for one event, each ticket stores that event's identifier in an `eventId` field, and the ticket type declares an index that starts from that relationship. The event reference isn't useful only as a link for the interface; it's data the app needs to search.
 
 ## A relationship isn't a join
 
-Now the organizer proposes splitting venues into a third document type while keeping the city search. Each event would store `venueId`, the venue record would carry the city, and you might expect Platform to combine both types during one read.
+Now Bob proposes splitting venues into a third document type while keeping the city search. Each event would store `venueId`, the venue record would carry the city, and you might expect Platform to combine both types during one read.
 
 Platform document queries don't expose relational joins between document types. A query targets one contract and one document type, so following `venueId` doesn't pull the venue's city into an event search.
 
@@ -49,19 +49,19 @@ This is a read-oriented choice, not an instruction to copy every related field. 
 
 ## When the last seat goes
 
-The organizer adds one more rule: when responses reach the event's capacity, change its status to `full` and notify the waiting list. Can the contract run that reaction whenever an RSVP arrives?
+Bob adds one more rule: when sold tickets reach the event's capacity, change its status to `soldout` and notify the waiting list. Can the contract run that reaction whenever a ticket sells?
 
-No. A schema validates the record presented to it; it doesn't count related RSVPs and then update another document. Platform has protocol-defined behavior for its own system contracts, but ordinary app developers can't attach custom data triggers to their contracts.
+No. A schema validates the record presented to it; it doesn't count related tickets and then update another document. Platform has protocol-defined behavior for its own system contracts, but ordinary app developers can't attach custom data triggers to their contracts.
 
-The events app must own that reaction. Its code can read the relevant responses, decide whether capacity has been reached, submit the event change, and send notifications. The contract still has a useful job: it can reject malformed events and RSVPs. It just isn't uploaded business logic.
+The marketplace must own that reaction. Its code can read the relevant tickets, decide whether capacity has been reached, submit the event change, and send notifications. The contract still has a useful job: it can reject malformed events and tickets. It just isn't uploaded business logic.
 
-That boundary also affects what the app can promise. A schema can require a numeric capacity and a recognized status value. By itself, it can't guarantee that the status changes at the exact moment the final RSVP arrives, because that guarantee depends on application code outside the contract.
+That boundary also affects what the app can promise. A schema can require a numeric capacity and a recognized status value. By itself, it can't guarantee that the status changes at the exact moment the final ticket sells, because that guarantee depends on application code outside the contract.
 
 ## Decide while the questions are cheap
 
 Before publication, changing `event` from a sketch to a better model costs little. After publication, contract updates are constrained. Platform permits some compatible additions, but you shouldn't assume that a missing field or index can later be added in whatever form a new read requires.
 
-Walk through the app's expected screens and ask what each one must retrieve. For every filtered or ordered read, identify the document type being searched, make sure that type carries the facts needed to answer, and plan its index. Then check the boundaries: any combination across types or reaction to a write belongs in application code unless the records themselves have been shaped to avoid it.
+Walk through the marketplace's expected screens and ask what each one must retrieve. For every filtered or ordered read, identify the document type being searched, make sure that type carries the facts needed to answer, and plan its index. Then check the boundaries: any combination across types or reaction to a write belongs in application code unless the records themselves have been shaped to avoid it.
 
 <LessonQuiz
   challengeId="data-contracts"
@@ -69,27 +69,27 @@ Walk through the app's expected screens and ask what each one must retrieve. For
   questions={[
     {
       id: "workshop-listing",
-      prompt: "A workshop app must list open workshops for one topic in date order. Which model best supports that requirement?",
+      prompt: "The marketplace must list open events for one genre in date order. Which model best supports that requirement?",
       options: [
-        { id: "a", label: "Put topic, status, and date on each workshop and plan an index covering that read." },
+        { id: "a", label: "Put genre, status, and date on each event and plan an index covering that read." },
         { id: "b", label: "Store only a title; application code can ask Platform to infer the other values." },
-        { id: "c", label: "Put topic and date only on registration records, then join them to workshops." },
+        { id: "c", label: "Put genre and date only on ticket records, then join them to events." },
         { id: "d", label: "Choose the fields now but postpone every index until query code is written." },
       ],
       correctOptionId: "a",
-      explanation: "The searched workshop record needs the values the listing filters and orders by, plus an index designed for that read.",
+      explanation: "The searched event record needs the values the listing filters and orders by, plus an index designed for that read.",
     },
     {
       id: "registrations-by-workshop",
-      prompt: "The app must find all registrations for one workshop. What should its registration document type include?",
+      prompt: "The app must find every ticket sold for one event. What should its ticket document type include?",
       options: [
-        { id: "a", label: "A workshop identifier and an index that supports retrieving registrations by it." },
-        { id: "b", label: "A copy of every field from the workshop, with no relationship identifier." },
-        { id: "c", label: "Only the attendee's display name because Platform discovers relationships automatically." },
-        { id: "d", label: "A custom trigger that turns workshop records into registrations." },
+        { id: "a", label: "An event identifier and an index that supports retrieving tickets by it." },
+        { id: "b", label: "A copy of every field from the event, with no relationship identifier." },
+        { id: "c", label: "Only the buyer's display name because Platform discovers relationships automatically." },
+        { id: "d", label: "A custom trigger that turns event records into tickets." },
       ],
       correctOptionId: "a",
-      explanation: "Each registration must carry the relationship the app searches on. An index on that document type makes the planned read possible.",
+      explanation: "Each ticket must carry the relationship the app searches on. An index on that document type makes the planned read possible.",
     },
     {
       id: "venue-city-read",
@@ -105,35 +105,35 @@ Walk through the app's expected screens and ask what each one must retrieve. For
     },
     {
       id: "full-workshop-reaction",
-      prompt: "A workshop should close when its final seat is taken. Where should that reaction live?",
+      prompt: "An event should close when its final seat sells. Where should that reaction live?",
       options: [
-        { id: "a", label: "In application code that checks registrations and submits the status change; the schema still validates record shape." },
-        { id: "b", label: "In a developer-defined Platform trigger attached to the registration type." },
+        { id: "a", label: "In application code that checks tickets and submits the status change; the schema still validates record shape." },
+        { id: "b", label: "In a developer-defined Platform trigger attached to the ticket type." },
         { id: "c", label: "In an index, because indexes run code after each matching write." },
-        { id: "d", label: "In a join between workshop and registration records." },
+        { id: "d", label: "In a join between event and ticket records." },
       ],
       correctOptionId: "a",
       explanation: "Ordinary contracts can't define custom data triggers. Cross-record reactions belong in app code, while schemas enforce the validity rules they can express for each record.",
     },
     {
       id: "workshop-schema",
-      prompt: "Which schema best describes a valid workshop record?",
+      prompt: "Which schema best describes a valid event record?",
       options: [
         { id: "a", label: "Require a title, a numeric capacity, and a recognized status value; reject records missing those fields or using the wrong value type." },
-        { id: "b", label: "Require only a title, then let Platform infer capacity and status from registrations." },
+        { id: "b", label: "Require only a title, then let Platform infer capacity and status from tickets." },
         { id: "c", label: "Accept any fields so the app can add whatever values it needs after publication." },
-        { id: "d", label: "Require a title and run custom code in the schema whenever a registration arrives." },
+        { id: "d", label: "Require a title and run custom code in the schema whenever a ticket sells." },
       ],
       correctOptionId: "a",
       explanation: "A schema describes the shape and valid values of one record family. It can reject missing or wrongly typed fields, but it doesn't infer related data or run custom reactions.",
     },
     {
       id: "late-read-requirement",
-      prompt: "Just before publishing, the team notices that users must filter workshops by accessibility option. What is the sound decision?",
+      prompt: "Just before publishing, the team notices that buyers must filter events by accessibility option. What is the sound decision?",
       options: [
-        { id: "a", label: "Add the needed field and plan the workshop index now, before relying on a later contract update." },
+        { id: "a", label: "Add the needed field and plan the event index now, before relying on a later contract update." },
         { id: "b", label: "Publish first because any field or index can always be reshaped later." },
-        { id: "c", label: "Keep the value only on attendee records and join it into workshop searches." },
+        { id: "c", label: "Keep the value only on ticket records and join it into event searches." },
         { id: "d", label: "Replace the field with a trigger that filters query results." },
       ],
       correctOptionId: "a",

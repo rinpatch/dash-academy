@@ -8,19 +8,19 @@ verification: quiz
 prerequisites: [7]
 ---
 
-Before Priya asks a faucet for testnet funds, she has a more expensive mistake to prevent: losing control of the wallet after it receives them. What must she back up before the wallet controls anything she cares about?
+Before Alice asks a faucet for testnet funds, she has a more expensive mistake to prevent: losing control of the wallet after it receives them. What must she back up before the wallet controls anything she cares about?
 
 ## Before the wallet receives funds
 
-A wallet manages keys; it isn't a hosted account that a company can reset. To receive funds, Priya shares a public **address**, which identifies a destination on the network. To spend funds sent there, her wallet must sign with the matching **private key**. Other people can check that signature without learning the private key.
+A wallet manages keys; it isn't a hosted account that a company can reset. To receive funds, Alice shares a public **address**, which identifies a destination on the network. To spend funds sent there, her wallet must sign with the matching **private key**. Other people can check that signature without learning the private key.
 
 This makes the boundary clear. An address can be shown to a sender or displayed publicly. A private key must remain secret because whoever has it can authorize spending from its corresponding address. Merely knowing the address doesn't provide that authority.
 
-Priya's wallet will create more than one key and address over time. Copying each new private key into a growing backup would be fragile, so modern wallets solve the recovery problem another way.
+Alice's wallet will create more than one key and address over time. Copying each new private key into a growing backup would be fragile, so modern wallets solve the recovery problem another way.
 
 ## One backup, many addresses
 
-When the wallet is set up, it gives Priya a **seed phrase**, also called a recovery phrase or <Term id="mnemonic">mnemonic</Term>. The wallet uses that phrase as the starting point for **derivation**: a repeatable process that produces a hierarchy of private keys, public keys, and addresses.
+When the wallet is set up, it gives Alice a **seed phrase**, also called a recovery phrase or <Term id="mnemonic">mnemonic</Term>. The wallet uses that phrase as the starting point for **derivation**: a repeatable process that produces a hierarchy of private keys, public keys, and addresses.
 
 The relationship looks like this:
 
@@ -31,49 +31,49 @@ seed phrase
 └── private key C → public information → receiving address C
 ```
 
-Derivation is deterministic, meaning the same starting phrase and compatible wallet settings reproduce the same derived results. Priya therefore doesn't need a separate backup every time her wallet derives another address. If her computer fails, she can enter the phrase into the same wallet software, or compatible software using the same settings, let it synchronize with the network, and regain control through the recreated keys.
+Derivation is deterministic, meaning the same starting phrase and compatible wallet settings reproduce the same derived results. Alice therefore doesn't need a separate backup every time her wallet derives another address. If her computer fails, she can enter the phrase into the same wallet software, or compatible software using the same settings, let it synchronize with the network, and regain control through the recreated keys.
 
-That promise has a boundary. The phrase recreates keys derived from that phrase; it doesn't recreate an unrelated private key imported separately into the wallet. If Priya imports one, she must follow that wallet's backup instructions for imported keys rather than assuming the phrase covers it.
+That promise has a boundary. The phrase recreates keys derived from that phrase; it doesn't recreate an unrelated private key imported separately into the wallet. If Alice imports one, she must follow that wallet's backup instructions for imported keys rather than assuming the phrase covers it.
 
 ## Recovery power cuts both ways
 
-Priya now knows what to protect. A device failure isn't fatal if she still has the seed phrase, because the device held replaceable wallet software while the phrase can recreate the signing keys.
+Alice now knows what to protect. A device failure isn't fatal if she still has the seed phrase, because the device held replaceable wallet software while the phrase can recreate the signing keys.
 
-Losing every usable copy is different. If Priya loses the seed phrase and the relevant private keys, the addresses and funds remain visible on the network, but she can no longer produce the signatures needed to spend them. No wallet vendor, Dash support service, or network operator can calculate the missing secret from a public address. The spending ability is gone.
+Losing every usable copy is different. If Alice loses the seed phrase and the relevant private keys, the addresses and funds remain visible on the network, but she can no longer produce the signatures needed to spend them. No wallet vendor, Dash support service, or network operator can calculate the missing secret from a public address. The spending ability is gone.
 
-Disclosure causes the opposite failure. Anyone who obtains the phrase can derive the same private keys and exercise the same authority as Priya. A thief doesn't need her computer or her permission. For the same reason, an individual private key must never be shared.
+Disclosure causes the opposite failure. Anyone who obtains the phrase can derive the same private keys and exercise the same authority as Alice. A thief doesn't need her computer or her permission. For the same reason, an individual private key must never be shared.
 
 <Callout type="warn" title="A recovery phrase is spending authority">
 Never paste a seed phrase or private key into a faucet, form, chat, issue report, or message. A service that sends funds needs a receiving address, not the secret that can spend them.
 </Callout>
 
-With her recovery plan settled, Priya can decide which Dash network should hold her practice funds.
+With her recovery plan settled, Alice can decide which Dash network should hold her practice funds.
 
 ## Practice without putting DASH at risk
 
 **Mainnet** is Dash's live network, where DASH has real-world value. **Testnet** is a separate public Dash blockchain intended for experiments; its currency, often written as tDASH, has no real-world value.
 
-They aren't two modes over one balance. Each network keeps its own blockchain, addresses, and funds. Mainnet DASH doesn't appear in a testnet wallet, and the Dash protocol has no mechanism for moving or converting funds between the networks. Choosing testnet therefore doesn't make Priya's existing mainnet funds safe for testing; it keeps those funds out of the test entirely.
+They aren't two modes over one balance. Each network keeps its own blockchain, addresses, and funds. Mainnet DASH doesn't appear in a testnet wallet, and the Dash protocol has no mechanism for moving or converting funds between the networks. Choosing testnet therefore doesn't make Alice's existing mainnet funds safe for testing; it keeps those funds out of the test entirely.
 
-| Priya needs to... | Use | Why |
+| Alice needs to... | Use | Why |
 | --- | --- | --- |
 | Try an operation while mistakes shouldn't cost real money | Testnet | tDASH has no real-world value |
 | Send value in a live application | Mainnet | DASH on this network carries real value |
 
-Priya chooses testnet. Her wallet has no tDASH yet, and buying mainnet DASH wouldn't solve that because the balances don't cross networks.
+Alice chooses testnet. Her wallet has no tDASH yet, and buying mainnet DASH wouldn't solve that because the balances don't cross networks.
 
 ## Give the faucet an address, nothing else
 
 A **faucet** is a public service that sends free tDASH to developers. The current Dash documentation points to the [Dash testnet faucet](https://faucet.testnet.networks.dash.org/).
 
-Priya's funding check is short:
+Alice's funding check is short:
 
 1. Set the wallet to testnet and select a testnet receiving address.
 2. Open the documented faucet and submit only that public address.
 3. Wait for the faucet's transaction to reach the testnet wallet, then check the wallet's testnet balance before using it.
 4. If the request doesn't succeed, don't substitute a seed phrase, private key, or mainnet address. Public faucet services can be unavailable, so try again later.
 
-The faucet doesn't recover, connect to, or take control of Priya's wallet. It acts like any sender: the address tells it where to send tDASH, while Priya keeps the private key needed to spend what arrives.
+The faucet doesn't recover, connect to, or take control of Alice's wallet. It acts like any sender: the address tells it where to send tDASH, while Alice keeps the private key needed to spend what arrives.
 
 <LessonQuiz
   challengeId="wallets-keys-and-testnet"
@@ -81,7 +81,7 @@ The faucet doesn't recover, connect to, or take control of Priya's wallet. It ac
   questions={[
     {
       id: "recover-derived-wallet",
-      prompt: "Priya's computer fails, but she kept the wallet's seed phrase. What can compatible wallet software recreate?",
+      prompt: "Alice's computer fails, but she kept the wallet's seed phrase. What can compatible wallet software recreate?",
       options: [
         { id: "a", label: "The keys and addresses derived from that phrase." },
         { id: "b", label: "Only the final address the old wallet displayed." },
@@ -105,7 +105,7 @@ The faucet doesn't recover, connect to, or take control of Priya's wallet. It ac
     },
     {
       id: "leaked-seed-phrase",
-      prompt: "Priya sends her seed phrase to someone who offers to help configure her wallet. What authority has she exposed?",
+      prompt: "Alice sends her seed phrase to someone who offers to help configure her wallet. What authority has she exposed?",
       options: [
         { id: "a", label: "Only the ability to view public addresses." },
         { id: "b", label: "The ability to recreate its derived private keys and spend the funds they control." },
@@ -113,11 +113,11 @@ The faucet doesn't recover, connect to, or take control of Priya's wallet. It ac
         { id: "d", label: "No authority unless she also sends the wallet software." },
       ],
       correctOptionId: "b",
-      explanation: "The phrase can reproduce the wallet's derived private keys. Whoever receives it can gain the same signing authority without possessing Priya's device.",
+      explanation: "The phrase can reproduce the wallet's derived private keys. Whoever receives it can gain the same signing authority without possessing Alice's device.",
     },
     {
       id: "choose-practice-network",
-      prompt: "Priya wants to rehearse a funded operation without risking DASH that has real-world value. Which network should she use?",
+      prompt: "Alice wants to rehearse a funded operation without risking DASH that has real-world value. Which network should she use?",
       options: [
         { id: "a", label: "Testnet, funded with valueless tDASH." },
         { id: "b", label: "Mainnet, funded with a very small amount of DASH." },
@@ -129,7 +129,7 @@ The faucet doesn't recover, connect to, or take control of Priya's wallet. It ac
     },
     {
       id: "separate-network-balances",
-      prompt: "Priya has DASH on mainnet but no tDASH. Why can't her testnet operation use the mainnet balance?",
+      prompt: "Alice has DASH on mainnet but no tDASH. Why can't her testnet operation use the mainnet balance?",
       options: [
         { id: "a", label: "The wallet needs time to copy the balance between networks." },
         { id: "b", label: "Mainnet and testnet are separate blockchains whose funds don't cross between them." },
@@ -141,7 +141,7 @@ The faucet doesn't recover, connect to, or take control of Priya's wallet. It ac
     },
     {
       id: "safe-faucet-request",
-      prompt: "Priya needs tDASH for practice. What is the safe way to obtain it?",
+      prompt: "Alice needs tDASH for practice. What is the safe way to obtain it?",
       options: [
         { id: "a", label: "Request it from a testnet faucet using only a testnet receiving address." },
         { id: "b", label: "Give a faucet her seed phrase so it can derive a destination." },
