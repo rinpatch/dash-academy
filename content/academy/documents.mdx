@@ -9,197 +9,130 @@ verification: quiz
 prerequisites: [13]
 ---
 
-A data contract declares the *shape* of your records; a document is one of those records, actually stored on the network. This lesson covers what a document is, how it is read and written, who owns it, how revisions work, and what happens to the storage fee when you delete it.
+Suppose two devices open the same shared note. The phone shows “Bring the signed form,” while the laptop shows the same text a moment later. Neither device owns the screen or the network, so what does it mean to read the note, and which device is allowed to change it?
 
-## What a Platform document is
+The note is a **document**, an application record stored as part of Platform state. Its shape comes from the data contract described earlier; the contract lab that would publish one is currently a placeholder, so this note is hypothetical. Imagine Alice creating that note first, with the text “Bring the signed form.” Only after that create is accepted can either device query it. Nothing below claims that a contract or document already exists.
 
-A **document** is the atomic unit of application data on Dash Platform. It behaves like a JSON document in a document-oriented database: a single record with named fields. The set of documents of one kind are what you declared as a *document type* when you published your <Term id="data-contract">data contract</Term>.
+## Start with the answer a read gives
 
-Every document carries two kinds of fields:
+When the phone queries for the note, Platform returns a document from committed state: the version the network has accepted and stored. A read observes that state. It doesn't sign a request or change the note, and the laptop can ask the same question without receiving a private copy owned by the phone.
 
-- **Base fields** (prefixed with `$`) are added by the protocol. Every document has them, regardless of the app.
-- **Application fields** are the ones you declared in the document type's schema in your data contract, such as a `message` on a note.
+That distinction matters when the app displays an edit button. Showing a document proves that the app can read it; it doesn't prove that the current user may write it.
 
-The base fields answer the questions the network needs answered for every record:
+## Four moves through one record
 
-| Field | What it records |
-| --- | --- |
-| `$id` | The document's unique ID (32 bytes) |
-| `$type` | The document type in the referenced contract |
-| `$revision` | The document's revision, `1` or higher, on mutable documents |
-| `$dataContractId` | The data contract this document belongs to |
-| `$ownerId` | The <Term id="identity">identity</Term> that owns the document |
+The note's lifecycle has four useful application-level moves:
 
-The document also has optional `$createdAt`, `$updatedAt`, `$transferredAt`, and their block-height companions, but those appear only when the document type's schema lists them as required properties.
+- **Create** adds a new document that satisfies the contract's rules.
+- **Query** reads documents already committed to Platform.
+- **Replace** changes an existing document while keeping it as the same record and advancing its revision.
+- **Delete** removes an existing document from the current state.
 
-Here is a `note` document the way a query returns it:
+Create, replace, and delete change shared state, so Platform validates and authorizes them before later queries can see the result. Query is the odd one out: it asks what exists rather than proposing a change.
 
-```json
-{
-  "$id": "6NsbpUBZUnyArsmWozxhuGdXTBNVE5BMyRh6hsowg8HY",
-  "$type": "note",
-  "$dataContractId": "2cJrFFWZNB1QBP2U9pzAwxLqbdnD2ZiA4j9ByyaVQPmB",
-  "$ownerId": "6YfP6tT9AK8HPVXMK7CQrhpc8VMg7frjEnXinSPvUmZC",
-  "$revision": 1,
-  "message": "Ship the first draft"
-}
-```
+Ownership can change later through protocol actions such as transfer or purchase. Those are ways a document can acquire a new owner, not alternate names for replacing its contents; their rules belong elsewhere. For the note in this example, stay with the current owner.
 
-The `$` fields are Platform's; `message` is the app's, declared in the contract.
+## Reading isn't permission
 
-### Where a document ID comes from
+The note belongs to an identity, meaning the Platform account recorded as its owner. That ownership is the authorization boundary for ordinary mutation: the owning identity may replace the note, or delete it when the document type permits deletion, while an identity that can only read it may do neither.
 
-You do not choose the `$id` by hand. The protocol derives it by double-SHA256 hashing the document's `dataContractId`, `ownerId`, type name, and a 32-byte random value called **entropy**. Entropy makes two otherwise-identical documents unique; the same owner creating two copies of the same type gets two different IDs for free.
+Imagine the app displays the note to Bob. Bob can learn the current text, but he can't submit a valid replacement just because the query succeeded. Alice's identity owns the note, so an authorized change must come from Alice's identity. Credits pay for Platform work, but funding an identity doesn't give it ownership or editing authority.
 
-## Read and write lifecycle
+If Alice wants another person to own the note, she must use an ownership-changing mechanism supported by the document type, such as transfer or purchase. An ordinary edit cannot smuggle a new owner into the record.
 
-A document's life splits into two paths that work differently.
+## Two edits, one winner
 
-### Reading
+Now Alice opens the note on both devices. Each reads revision 3. She edits the phone copy to “Bring the signed form and ID,” while the laptop copy becomes “Bring the signed form by Friday.” Both edits are authorized, but authorization alone can't tell Platform which copy included the newer thought.
 
-Reading is a **query against committed state**. You ask <Term id="dapi">DAPI</Term> for documents of a given contract and type, and you get back the documents the network has already validated and stored. The SDK reads with something like:
+The safe replacement rule supplies that missing check: fetch the current document, then submit the next revision. The phone's accepted replacement moves revision 3 to revision 4. When the laptop later submits its replacement based on revision 3, Platform rejects it as stale instead of silently overwriting the phone's accepted text.
 
-```js
-const results = await sdk.documents.query({
-  dataContractId: CONTRACT_ID,
-  documentTypeName: "note",
-  where: [["$id", "==", DOCUMENT_ID]],
-  limit: 2,
-});
-```
+The laptop must read again, inspect revision 4, incorporate its intended change, and submit the next revision. This is optimistic concurrency: the app proceeds as if its copy is current, but the network refuses the write when that assumption is no longer true.
 
-The result is a map keyed by each document's `$id`. A read does not sign anything and does not change state; you are looking at what already exists.
+Some document types are immutable. They can be created and queried, but they don't support replacement, so there is no revision to advance. That choice fits records that should remain as originally written; it doesn't turn a mutable note into a conflict-free record.
 
-### Writing
+## What deletion gives back
 
-Writing changes state, so it works through signed operations that the network validates. The core actions are the three you already know from any data store:
+Eventually Alice deletes the note. The document disappears from the current state, but deletion doesn't rewind every cost associated with storing and changing it.
 
-- **Create** adds a new document. It carries the entropy that seeds its `$id`.
-- **Replace** overwrites an existing document's data, keeping the same `$id` but advancing its revision.
-- **Delete** removes an existing document.
+When an app stores data, it prepays the storage fee, and Platform gradually allocates that value over time. Deleting the document can return the unused portion of that prepaid storage cost. The longer the record has occupied storage, the less unused allocation remains. The processing work for the original write, and the work of processing the deletion, stays paid.
 
-Two more actions change who owns a document rather than its data: **transfer** moves ownership to another identity, and **purchase** lets a buyer buy a document the owner has listed for sale. A final action, **update price**, lets the owner set or change the listing price. Transfer and purchase are the subject of their own later module, so here it is enough to know they are how ownership moves.
-
-Every one of these writes is wrapped in a signed <Term id="state-transition">state transition</Term> — specifically a **Batch** transition that can bundle one or more document actions — and submitted through DAPI by the owning identity. Before anything changes, Platform validates the transition against both the protocol and your data contract. Only a validated write becomes part of the state that later reads see.
-
-<Callout type="info" title="A useful mental model">
-Reads are lookups of what the network already agreed to. Writes are proposals the network checks before committing. That check — not a database administrator — is what enforces every rule in this lesson.
-</Callout>
-
-## Ownership
-
-Ownership is recorded in the `$ownerId` base field: the identity that submitted a document owns it. That single field drives what you are allowed to do with a record.
-
-- **Replace** and **delete** are permitted only on a document the submitting identity owns. The write is signed with a key bound to that identity, so no one else can mutate or remove the record.
-- **Transfer** changes ownership directly by naming a recipient identity. Only a document whose type the contract marks *transferable* can be transferred.
-- **Purchase** changes ownership when a buyer matches a price the current owner listed. Only types whose *trade mode* permits sale can be bought.
-- **Update price** can be set only by the current owner.
-
-A contract can also tighten who may *create* a document type in the first place, independently of who owns each document once it exists.
-
-The pattern to remember: the owner — the identity in `$ownerId` — holds the write permissions, and ownership moves only through the transfer or purchase actions, never through an ordinary edit.
-
-## Revisions
-
-`$revision` is how Dash Platform stops two writers from silently overwriting each other. It is a 64-bit number that starts at `1` when a document is created and must sit on your mind every time you update.
-
-Here is the rule: a **replace** must submit a `$revision` strictly greater than the one currently stored. The network rejects any replace built from a stale revision — a guard called **optimistic concurrency**. If you and another client both fetched revision `3`, the first replace to land accepts `4`; the second one fails because its `3` is no longer current, telling that client to re-fetch instead of clobbering the winner.
-
-The SDK makes the safe path the obvious one: fetch the current document, add one, then replace.
-
-```js
-const current = await fetchCurrentNote();            // e.g. $revision 3
-const replacement = new Document({
-  properties: { message: "Revised draft" },
-  documentTypeName: "note",
-  dataContractId: CONTRACT_ID,
-  ownerId: current.ownerId,
-  id: current.id,
-  revision: current.revision + 1n,                   // 4
-});
-await sdk.documents.replace({ document: replacement, identityKey, signer });
-```
-
-Revision also marks mutability. A document type whose contract sets `documentsMutable: false` produces documents with no `$revision` at all — they are immutable, created once and only ever read. The default is `documentsMutable: true`.
-
-## Delete refunds
-
-Deleting a document is not just cleanup — it can return money, which is why Dash Platform nudges apps to remove data they no longer need.
-
-When you write data, you pay a **storage fee**. That fee is not handed out all at once: it is paid to <Term id="masternode">masternodes</Term> gradually, over the storage's 50-year lifetime. If you delete the data before those 50 years are up, the portion that has not been distributed yet comes back to you as a **storage refund**.
-
-Two limits keep that honest:
-
-- You are refunded only the *undistributed* storage fee, not the full amount you originally paid — the longer the data has lived, the less remains to refund.
-- **Processing fees are never refunded.** The network already did the work of validating and applying your write, and that cost is not returned.
-
-So deleting early recovers the storage value that would otherwise keep trickling out to masternodes, but it is a partial return, not a full one.
-
-Pass the quiz to complete the lesson.
+So an early delete may produce a partial storage refund, not a full reversal of the record's costs. That is the useful accounting rule to carry into an app's cleanup design.
 
 <LessonQuiz
   challengeId="documents"
   passingScore={4}
   questions={[
     {
-      id: "read-vs-write",
-      prompt: "You want to show a user their saved note without changing it. Which action reads it?",
+      id: "read-observes-state",
+      prompt: "The phone wants to show Alice the latest shared note without changing it. Which action fits?",
       options: [
-        { id: "a", label: "Submit a signed replace transition with the same revision." },
-        { id: "b", label: "Query the committed state through DAPI and read the returned document." },
-        { id: "c", label: "Delete the note, then recreate it from a copy." },
-        { id: "d", label: "Sign a state transition so the network will hand the value over." },
-      ],
-      correctOptionId: "b",
-      explanation: "Reads are queries against committed state and sign nothing. Create, replace, and delete are signed writes that change state.",
-    },
-    {
-      id: "owns-edit",
-      prompt: "A document is owned by Alice. Who may replace or delete it?",
-      options: [
-        { id: "a", label: "The identity that registered the data contract." },
-        { id: "b", label: "Any identity that can read it." },
-        { id: "c", label: "Alice, the identity recorded in $ownerId." },
-        { id: "d", label: "Whichever identity queried it most recently." },
-      ],
-      correctOptionId: "c",
-      explanation: "Ownership lives in the $ownerId base field, and replace and delete are signed with the owner's key. Only the current owner can mutate or remove the document.",
-    },
-    {
-      id: "revision-bump",
-      prompt: "You fetched a document at $revision 3 and want to update it. Which $revision must your replace submit?",
-      options: [
-        { id: "a", label: "3, to match what you read." },
-        { id: "b", label: "4, one more than what is stored." },
-        { id: "c", label: "1, because every write starts a fresh count." },
-        { id: "d", label: "Any number greater than zero." },
-      ],
-      correctOptionId: "b",
-      explanation: "A replace must carry a revision strictly greater than the stored one; the SDK pattern is fetch the current document, add one, then replace. A non-increasing revision is rejected.",
-    },
-    {
-      id: "immutable-type",
-      prompt: "A contract sets documentsMutable: false for a document type. What can your app do with those documents?",
-      options: [
-        { id: "a", label: "Create and read them, but never replace them." },
-        { id: "b", label: "Replace them as often as they change." },
-        { id: "c", label: "Delete them but never read them." },
-        { id: "d", label: "Change their $id whenever they move." },
+        { id: "a", label: "Query the document from committed Platform state." },
+        { id: "b", label: "Submit a replacement containing the same text." },
+        { id: "c", label: "Delete the note and recreate it for the phone." },
+        { id: "d", label: "Ask Bob to sign a change so the phone can read it." },
       ],
       correctOptionId: "a",
-      explanation: "Immutable documents have no $revision and cannot be replaced — they are created once and only ever read.",
+      explanation: "A query observes the document already committed by Platform. It doesn't sign or change shared state; replacement and deletion do."
     },
     {
-      id: "delete-refund",
-      prompt: "A year after creating a document, you delete it. What does the platform return to you?",
+      id: "create-before-query",
+      prompt: "Alice has a valid new note that Platform has never stored. Which lifecycle action should the app use before either device can query it?",
       options: [
-        { id: "a", label: "The full storage fee and the processing fee, since the data is gone." },
-        { id: "b", label: "Nothing — fees are always spent the moment you pay them." },
-        { id: "c", label: "The storage fee still owed to masternodes that has not yet been paid out." },
-        { id: "d", label: "A new identity to hold the reclaimed credits." },
+        { id: "a", label: "Create the document, then query the committed result." },
+        { id: "b", label: "Replace the note at revision 1." },
+        { id: "c", label: "Delete the note so it appears in current state." },
+        { id: "d", label: "Query it repeatedly until the network invents the record." },
+      ],
+      correctOptionId: "a",
+      explanation: "Create adds a new document that satisfies the contract's rules. Query can read it only after Platform accepts that write into committed state."
+    },
+    {
+      id: "owner-authorizes",
+      prompt: "Bob can read Alice's note but wants to remove it. What should the app expect?",
+      options: [
+        { id: "a", label: "Bob can delete it because reading proves access." },
+        { id: "b", label: "Bob can delete it if he has enough credits." },
+        { id: "c", label: "The delete must be authorized by the identity that owns the note, and the document type must permit deletion." },
+        { id: "d", label: "The contract publisher may delete every document of that type." },
       ],
       correctOptionId: "c",
-      explanation: "Storage fees are distributed to masternodes over about 50 years; deleting early refunds only the not-yet-distributed remainder. Processing fees are never refunded.",
+      explanation: "Ownership is an authorization boundary. The identity that owns the document may replace or delete it; read access alone doesn't grant either permission."
     },
+    {
+      id: "stale-edit",
+      prompt: "Two devices read revision 3. The phone's replacement is accepted first. What should the laptop do when its replacement is rejected?",
+      options: [
+        { id: "a", label: "Retry the same replacement until the network accepts it." },
+        { id: "b", label: "Read the current document, incorporate its change, and submit the next revision." },
+        { id: "c", label: "Submit any larger revision number without reading again." },
+        { id: "d", label: "Delete the phone's version before retrying." },
+      ],
+      correctOptionId: "b",
+      explanation: "The rejected edit was built from stale state. The laptop must fetch the accepted version, merge its intended change, and advance from that current revision."
+    },
+    {
+      id: "immutable-record",
+      prompt: "An app stores a record type as immutable. Which behavior should its editor support?",
+      options: [
+        { id: "a", label: "Create and query the record, but don't offer replacement." },
+        { id: "b", label: "Replace it whenever two devices disagree." },
+        { id: "c", label: "Allow replacement without tracking a revision." },
+        { id: "d", label: "Change its owner through an ordinary text edit." },
+      ],
+      correctOptionId: "a",
+      explanation: "Immutable documents can be created and read but not replaced, so an editor should not treat them like mutable notes with advancing revisions."
+    },
+    {
+      id: "partial-storage-refund",
+      prompt: "Alice deletes a note after it has occupied storage for some time. Which accounting result is correct?",
+      options: [
+        { id: "a", label: "Every storage and processing cost returns because the document is gone." },
+        { id: "b", label: "Only the unused portion of prepaid storage value may return; processing work remains paid." },
+        { id: "c", label: "No storage value can ever return after a delete." },
+        { id: "d", label: "The refund transfers ownership of the note to Alice again." },
+      ],
+      correctOptionId: "b",
+      explanation: "Deletion can return the unused storage allocation, but it doesn't refund processing work. The result is a partial storage refund rather than a reversal of all costs."
+    }
   ]}
 />
