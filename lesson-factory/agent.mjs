@@ -7,7 +7,7 @@ const schemaDir = path.join(import.meta.dirname, "schemas");
 const skillPath = ".agents/skills/write-dash-lesson/SKILL.md";
 // one model for every role, override with LESSON_MODEL. Split per role only if a
 // stage's quality measurably lags.
-const model = process.env.LESSON_MODEL ?? "tokenrouter-oai/deepseek/deepseek-v4-pro-0813";
+const model = process.env.LESSON_MODEL ?? "tokenrouter-oai/openai/gpt-5.6-sol";
 // Research is the one stage worth extra effort by default. LESSON_VARIANT raises every stage,
 // which is how a reasoning model gets its effort level: opencode takes it as a CLI flag, so it
 // cannot ride along in LESSON_MODEL.

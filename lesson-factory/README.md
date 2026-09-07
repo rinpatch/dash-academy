@@ -32,16 +32,15 @@ npm test
 
 ### Model
 
-Every role runs `opencode run` with `tokenrouter-oai/deepseek/deepseek-v4-pro-0813`. Override with
+Every role runs `opencode run` with `tokenrouter-oai/openai/gpt-5.6-sol`. Override with
 `LESSON_MODEL=provider/model`. Research runs at `--variant high`; other roles use the default effort.
 
 TokenRouter is a custom provider defined in `~/.config/opencode/opencode.jsonc`, declared twice
-because the two model families need different transports. The `tokenrouter` provider is wired
+because the model families need different transports. The `tokenrouter` provider is wired
 through `@ai-sdk/anthropic`: on TokenRouter the Anthropic models are served from the native
 `/v1/messages` endpoint, and the chat-completions shim would drop prompt caching and thinking
-blocks. DeepSeek is served only over chat-completions, so it lives under `tokenrouter-oai` on
-`@ai-sdk/openai-compatible`. The `-free` DeepSeek route is deliberately not configured; it returns
-degenerate output on both transports.
+blocks. The `tokenrouter-oai` provider uses `@ai-sdk/openai-compatible` for chat-completions models
+and overrides GPT-5.6 with `@ai-sdk/openai` because TokenRouter serves it through the Responses API.
 
 A whole tier is many long agent runs. Check the TokenRouter balance before starting one: a mid-run
 `token quota is not enough` failure stops the sequence. Completed research is retained for resume.
