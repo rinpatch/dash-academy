@@ -32,7 +32,7 @@ npm test
 
 ### Model
 
-Every role runs `opencode run` with `tokenrouter-oai/openai/gpt-5.6-sol`. Override with
+Every role runs `opencode run` with `tokenrouter-oai/openai/gpt-5.6-luna`. Override with
 `LESSON_MODEL=provider/model`. Research runs at `--variant high`; other roles use the default effort.
 
 TokenRouter is a custom provider defined in `~/.config/opencode/opencode.jsonc`, declared twice
