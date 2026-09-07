@@ -29,26 +29,9 @@ export function usesComponent(mdx, names, id) {
   return false;
 }
 
-// A rough editorial signal, not a gate: time spent reasoning through examples and quizzes varies.
-export const WORDS_PER_MINUTE = 100;
-export const LENGTH_TOLERANCE = 0.3;
-
-/** Prose words in a lesson body: no frontmatter, no quiz block, no JSX tags. */
-export function proseWordCount(mdx) {
-  const body = mdx.replace(/^---[\s\S]*?---/, "");
-  const withoutQuiz = body.replace(/<LessonQuiz[\s\S]*?\/>/g, " ");
-  return withoutQuiz.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
-}
-
-/** SDK time includes typing and network waits, which a prose word count cannot predict. */
-export function checkLength(lesson, mdx) {
-  if (lesson.tier !== "concepts") return null;
-  const words = proseWordCount(mdx);
-  const expected = lesson.estimatedMinutes * WORDS_PER_MINUTE;
-  const drift = (words - expected) / expected;
-  if (Math.abs(drift) <= LENGTH_TOLERANCE) return null;
-  const minutes = Math.round(words / WORDS_PER_MINUTE);
-  return `Lesson is ${words} words but claims ${lesson.estimatedMinutes} minutes (${drift > 0 ? "+" : ""}${Math.round(drift * 100)}%). Rough prose-only estimate: ${minutes} minutes. Review reading, examples, and quiz time; report a proposed estimate if needed. Do not pad or split the lesson to hit a word count.`;
+export function hasStockHypotheticalOpening(mdx) {
+  const body = mdx.replace(/^---[\s\S]*?---/, "").trimStart();
+  return /^(?:Suppose|Imagine)\b/i.test(body);
 }
 
 export async function validateLesson(lesson, cwd, { complete = false } = {}) {
@@ -62,10 +45,18 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   try { ledger = JSON.parse(await readFile(sourcePath, "utf8")); } catch { errors.push(`Missing or invalid lesson-factory/lessons/${lesson.slug}/evidence.json`); }
 
   const frontmatter = parseFrontmatter(mdx);
-  for (const key of ["title", "description", "module", "tier", "estimatedMinutes", "exp"]) {
+  for (const key of ["title", "description", "module", "tier", "exp"]) {
     if (String(frontmatter[key]) !== String(lesson[key])) errors.push(`Frontmatter ${key} does not match manifest`);
   }
+  // A concepts lesson's reading estimate is derived from the file it ships (lib/reading-time.ts).
+  // SDK lessons keep a hand-set one: typing and testnet round-trips dominate that time.
+  if (lesson.tier === "concepts") {
+    if ("estimatedMinutes" in frontmatter) errors.push("Frontmatter must not set estimatedMinutes: concepts lessons derive it from the lesson text");
+  } else if (String(frontmatter.estimatedMinutes) !== String(lesson.estimatedMinutes)) {
+    errors.push("Frontmatter estimatedMinutes does not match manifest");
+  }
   if (/^# /m.test(mdx.replace(/^---[\s\S]*?---/, ""))) errors.push("Lesson body must not contain an H1");
+  if (hasStockHypotheticalOpening(mdx)) errors.push('Lesson must not begin with a stock "Suppose" or "Imagine" prompt');
   if (/\b(?:mnemonic|private[_ -]?key)\s*[:=]\s*["'][^"']+/i.test(mdx)) errors.push("Possible secret in MDX");
   // A substring check used to be enough, so a lesson could name its challenge in prose and pass
   // while shipping no working checkpoint at all. Require the id to be wired into a component that

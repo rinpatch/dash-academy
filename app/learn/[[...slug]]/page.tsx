@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AnchorProvider } from "fumadocs-core/toc";
 import { DocsBody } from "fumadocs-ui/layouts/docs/page";
-import { source } from "@/lib/source";
+import { lessonMinutes, source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { CourseTrackCard } from "@/components/lesson/course-track-card";
 import { LessonNavList, type LessonSummary } from "@/components/lesson/lesson-nav-list";
@@ -17,24 +17,27 @@ export default async function AcademyLesson({ params }: PageProps) {
   const page = source.getPage(slug ?? []);
   if (!page) notFound();
 
-  const lessons: LessonSummary[] = source
-    .getPages()
-    .slice()
-    .sort((a, b) => a.data.module - b.data.module)
-    .map((lesson) => ({
-      slug: lesson.slugs.join("/"),
-      url: lesson.url,
-      title: lesson.data.title,
-      estimatedMinutes: lesson.data.estimatedMinutes,
-      exp: lesson.data.exp,
-      isDraft: lesson.data.status === "draft",
-    }));
+  const lessons: LessonSummary[] = await Promise.all(
+    source
+      .getPages()
+      .slice()
+      .sort((a, b) => a.data.module - b.data.module)
+      .map(async (lesson) => ({
+        slug: lesson.slugs.join("/"),
+        url: lesson.url,
+        title: lesson.data.title,
+        estimatedMinutes: await lessonMinutes(lesson),
+        exp: lesson.data.exp,
+        isDraft: lesson.data.status === "draft",
+      })),
+  );
 
   // Unwritten lessons cannot be completed, so counting them would cap the track below 100%.
   const completableLessons = lessons.filter((lesson) => !lesson.isDraft).length;
 
   const Content = page.data.body;
   const lessonSlug = page.slugs.join("/");
+  const minutes = await lessonMinutes(page);
   const isDraft = page.data.status === "draft";
 
   return (
@@ -61,7 +64,7 @@ export default async function AcademyLesson({ params }: PageProps) {
         <main className="flex min-w-0 flex-col gap-6">
           <div className="flex flex-wrap items-center gap-4">
             <span className="rounded-xl bg-foreground/4 px-4 py-2 text-sm font-medium">
-              <span className="font-extrabold">{page.data.estimatedMinutes}</span> Min. Read
+              <span className="font-extrabold">{minutes}</span> Min.
             </span>
             <span className="rounded-xl bg-primary/12 px-4 py-2 text-sm font-medium text-primary">
               <span className="font-extrabold">+ {page.data.exp}</span> Exp

@@ -8,7 +8,7 @@ import { runAgent } from "./agent.mjs";
 import { command, hash, latestRunId, lessonKey, lessonTier, loadManifest, manifestPath, parseArgs, readJson, repoRoot, runRoot, selectIntegrationPages, writeJson } from "./lib.mjs";
 import { monitorRun } from "./monitor.mjs";
 import { liveTest, validateLiveConfiguration } from "./testnet.mjs";
-import { checkLength, deterministicTests, validateLesson } from "./validate.mjs";
+import { deterministicTests, validateLesson } from "./validate.mjs";
 import { assertAllowedChanges, assertDocsBaseline, assertGlossaryOnlyGrew, assertPreparedBaseline, changedFiles, commitLesson, withWorkspaceLock } from "./workspace.mjs";
 import { orderedLessons, previousLessons, runSequentially } from "./sequence.mjs";
 
@@ -179,8 +179,7 @@ async function testAndReview({ lesson, item, state, runDir, lessonDir, worktree 
       catch { return null; }
     }));
     const fileContents = Object.fromEntries(present.filter(Boolean));
-    const context = { previousLessons: item.previousLessons, research: item.research, answers: item.answers ?? {}, tests: item.tests, diff, fileContents,
-      readingTimeNote: checkLength(lesson, fileContents[`content/academy/${lesson.slug}.mdx`] ?? "") };
+    const context = { previousLessons: item.previousLessons, research: item.research, answers: item.answers ?? {}, tests: item.tests, diff, fileContents };
     const facts = await runAgent({ role: "facts-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 });
     const pedagogy = await runAgent({ role: "pedagogy-review", lesson, cwd: worktree, lessonDir, context, attempt: revision + 1 });
     item.reviews = { facts, pedagogy };

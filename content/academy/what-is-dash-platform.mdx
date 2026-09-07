@@ -3,13 +3,12 @@ title: What is Dash Platform?
 description: See what Dash Platform adds to Dash and what you can build with it.
 module: 3
 tier: concepts
-estimatedMinutes: 12
 exp: 100
 verification: quiz
 prerequisites: [2]
 ---
 
-Suppose your app has just accepted a Dash payment. The transfer settles on Dash Core, but the job is only half done: your app still needs to remember who paid, what they ordered, and how far along the order is. Those records aren't payments, and parking them in a database you run hands the meaningful part of the app back to a single operator to control.
+A Dash payment can settle before the rest of an application has done anything useful. Your app still needs to remember who paid, what they ordered, and how far along the order is. Those records aren't payments, and parking them in a database you run hands the meaningful part of the app back to a single operator to control.
 
 ## Two layers, two jobs
 
@@ -61,7 +60,7 @@ Two choices stop every operation from starting with an empty-account dead end. A
 
 ## One app, assembled
 
-Suppose Ada runs a small festival and sells limited-edition seat passes. Core settles each Dash payment. Ada registers a DPNS name so the sale has a readable address. Her data contract declares a pass record, and each pass in Drive is a unique, transferable document (an NFT) that a buyer purchases at a set price through the protocol's built-in purchase. The buyer's identity owns the pass afterward, and Ada's frontend tops up that identity's credits so a fee never greets the buyer. The ticket page, the pricing, the seat-inventory checks: that's Ada's own code on Ada's servers. The network's job is holding the passes, enforcing who owns each one, and running the purchase rules, the part that needed to outlive anyone's database.
+Ada runs a small festival and sells limited-edition seat passes. Core settles each Dash payment. Ada registers a DPNS name so the sale has a readable address. Her data contract declares a pass record, and each pass in Drive is a unique, transferable document (an NFT) that a buyer purchases at a set price through the protocol's built-in purchase. The buyer's identity owns the pass afterward, and Ada's frontend tops up that identity's credits so a fee never greets the buyer. The ticket page, the pricing, the seat-inventory checks: that's Ada's own code on Ada's servers. The network's job is holding the passes, enforcing who owns each one, and running the purchase rules, the part that needed to outlive anyone's database.
 
 <LessonQuiz
   challengeId="what-is-dash-platform"

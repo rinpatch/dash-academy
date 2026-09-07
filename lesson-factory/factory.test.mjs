@@ -6,7 +6,7 @@ import path from "node:path";
 import { glossaryIds, lessonTier, loadManifest, secretlessEnv, selectIntegrationPages, validateManifest } from "./lib.mjs";
 import { command, repoRoot } from "./lib.mjs";
 import { buildPrompt, formatEvent, parseResult, shouldRetryAgent, validateStageOutput } from "./agent.mjs";
-import { checkLength, usesComponent, validateLesson, VERIFICATION_COMPONENTS } from "./validate.mjs";
+import { hasStockHypotheticalOpening, usesComponent, validateLesson, VERIFICATION_COMPONENTS } from "./validate.mjs";
 import { orderedLessons, previousLessons, runSequentially } from "./sequence.mjs";
 import { assertAllowedChanges, changedFiles, commitLesson, withWorkspaceLock } from "./workspace.mjs";
 
@@ -158,14 +158,21 @@ test("validation demands a real verification component, not the challenge id in 
   assert.equal(usesComponent(`<LessonQuiz challengeId="q" questions={[{ id: "a", label: "x > y" }]} />`, ["LessonQuiz"], "q"), true);
 });
 
-test("lesson validation requires the quiz but leaves length to editorial review", async () => {
+test("stock hypothetical lesson openings are rejected", () => {
+  const frontmatter = "---\ntitle: Example\n---\n\n";
+  assert.equal(hasStockHypotheticalOpening(frontmatter + "Suppose a payment arrives."), true);
+  assert.equal(hasStockHypotheticalOpening(frontmatter + "Imagine a payment arrives."), true);
+  assert.equal(hasStockHypotheticalOpening(frontmatter + "A payment arrives."), false);
+});
+
+test("lesson validation requires the quiz and rejects a hand-written concepts estimate", async () => {
   const cwd = await mkdtemp(path.join(tmpdir(), "academy-validator-"));
   const lesson = {
     slug: "sample", module: 1, title: "Sample", description: "Example",
-    tier: "concepts", estimatedMinutes: 1, exp: 100,
+    tier: "concepts", exp: 100,
     verification: { kind: "quiz", challengeId: "sample" },
   };
-  const frontmatter = `---\ntitle: Sample\ndescription: Example\nmodule: 1\ntier: concepts\nestimatedMinutes: 1\nexp: 100\n---\n`;
+  const frontmatter = `---\ntitle: Sample\ndescription: Example\nmodule: 1\ntier: concepts\nexp: 100\n---\n`;
   const prose = "A payment arrives before a miner includes it in a block. ".repeat(8);
   const quiz = '<LessonQuiz challengeId="sample" />';
   const mdxPath = path.join(cwd, "content/academy/sample.mdx");
@@ -179,7 +186,12 @@ test("lesson validation requires the quiz but leaves length to editorial review"
 
     await writeFile(mdxPath, frontmatter + "Too short.\n" + quiz);
     assert.deepEqual(await validateLesson(lesson, cwd), []);
-    assert.match(checkLength(lesson, frontmatter + "Too short.\n" + quiz), /Do not pad/);
+
+    const withEstimate = frontmatter.replace("exp: 100", "estimatedMinutes: 1\nexp: 100");
+    await writeFile(mdxPath, withEstimate + prose + quiz);
+    assert.deepEqual(await validateLesson(lesson, cwd), [
+      "Frontmatter must not set estimatedMinutes: concepts lessons derive it from the lesson text",
+    ]);
 
     await writeFile(mdxPath, frontmatter + prose);
     assert.deepEqual(await validateLesson(lesson, cwd), ['Missing <LessonQuiz challengeId="sample">']);
@@ -234,6 +246,7 @@ test("pedagogy prompt reserves gap arrays for unresolved defects", () => {
   const prompt = buildPrompt("pedagogy-review", { module: 8, title: "Wallets, keys, and testnet" }, { previousLessons: [] });
   assert.match(prompt, /only unresolved defects in the gap arrays/);
   assert.match(prompt, /upstream placeholder.*not a continuity gap/);
+  assert.match(prompt, /Do not begin with stock hypothetical prompts/);
 });
 
 test("a partial draft can resume but cannot pass without both lesson and evidence", () => {

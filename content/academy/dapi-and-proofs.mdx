@@ -3,13 +3,12 @@ title: DAPI and Proofs
 description: Understand what answered your first request, and why you can trust the answer.
 module: 6
 tier: concepts
-estimatedMinutes: 15
 exp: 100
 verification: quiz
 prerequisites: [5]
 ---
 
-Suppose your app asks Dash Platform for a user's public profile. An answer comes back even though you don't run a node and haven't chosen a server. Before your app acts on it, four questions matter: who answered, what happens if that machine fails, what stops it from lying, and what do you still have to trust?
+Your app asks Dash Platform for a user's public profile, and an answer comes back even though you don't run a node or choose a server. Before your app acts on it, four questions matter: who answered, what happens if that machine fails, what stops it from lying, and what do you still have to trust?
 
 ## One reply from a network
 
@@ -23,7 +22,7 @@ This distinction is easy to miss. A decentralized service doesn't mean every req
 
 The SDK needs candidates before it can choose one. On Dash's live network (mainnet) and its practice network (testnet), it contacts seed nodes, which help it discover addresses for DAPI nodes on that network. It then rotates among the discovered addresses instead of binding the app to one DAPI server.
 
-Imagine the first candidate never answers the profile request. The SDK can retry through another discovered node and temporarily avoid the failed address. A bad pick can cost time, but it doesn't have to take the app offline. Later requests aren't stuck waiting on the same broken machine either.
+If the first candidate never answers the profile request, the SDK can retry through another discovered node and temporarily avoid the failed address. A bad pick can cost time, but it doesn't have to take the app offline. Later requests aren't stuck waiting on the same broken machine either.
 
 Discovery solves an access problem, not a truth problem. Seed nodes help the client find candidates; they don't make every answer from those candidates correct. Likewise, an encrypted <Term id="tls">TLS</Term> connection protects bytes while they travel between the app and a node, but a well-protected connection can still carry a false answer.
 

@@ -8,7 +8,8 @@ export const docs = defineDocs({
     schema: pageSchema.extend({
       module: z.number().int().min(1).max(19),
       tier: z.enum(["concepts", "sdk", "projects"]),
-      estimatedMinutes: z.number().int().positive(),
+      // Concepts lessons omit this and let lib/reading-time derive it from the file.
+      estimatedMinutes: z.number().int().positive().optional(),
       exp: z.number().int().positive(),
       verification: z.enum(["quiz", "testnet", "hybrid"]),
       prerequisites: z.array(z.number().int().min(1).max(19)).default([]),

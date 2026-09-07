@@ -25,6 +25,7 @@ Learners are developers who are new to Dash **and new to blockchain**. They are 
 - Define a term inline instead when the sentence around it depends on the meaning. The lesson must read correctly for someone who never opens a popover.
 - Analogies and short worked examples over specification tables. Comparison tables are for choices the learner has to make.
 - No learning objectives, in any form: not a `## Learning objectives` section, not a bulleted list, not a paragraph saying what the reader will be able to do by the end. Omit "What you accomplished" recaps and "Checkpoint" headings too; quiz and verifier components provide their own labels. Nothing about "this lesson" or "this course" at all. Start on the subject and let the reader find out what it teaches by reading it.
+- A worked example does not need a stock invitation such as “Suppose” or “Imagine.” State the setup directly. Compare the first paragraph with recent completed lessons and vary the entry point and sentence rhythm; a problem, consequence, question, or direct continuation can each work. Pedagogy review must return `revise` when an opening repeats the wording or shape of a recent lesson.
 
 Pedagogy review must return `revise` when a lesson leads with mechanism, covers a `mustNotCover` topic, or leaves a term of art both unmarked and undefined. A term wrapped in `<Term>` with a glossary entry counts as explained; do not ask for prose duplicating it.
 
@@ -77,9 +78,9 @@ work in a sentence. A single stray banned word is a finding, not a verdict.
 5. Record a coverage map in the evidence ledger: each exact `mustCover` item, the passage that explains it, the example that demonstrates it, and the question or task that tests it. A heading or keyword is not coverage.
 6. Review the result against the manifest, preceding lessons, answers, evidence, and test output. The pedagogy review must show its reasoning as described in the workflow. Repair only the assigned files.
 
-Treat `estimatedMinutes` as a budget to review after drafting, not a minimum word count. Include
-time spent on examples and the quiz. If the estimate needs changing, propose it in the report;
-do not pad the prose, change curriculum metadata, or split a fixed lesson to fit it.
+A concepts lesson has no reading estimate to hit: the site derives one from the file it ships
+(`lib/reading-time.ts`), and validation rejects an `estimatedMinutes` in its frontmatter. Write the
+lesson the length the material needs. Do not pad the prose or split a lesson to reach a word count.
 
 Do not alter curriculum numbering or scope. Do not access secrets or run live testnet writes. A successful local stage is not proof that the live testnet stage passed.
 

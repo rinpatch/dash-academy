@@ -47,7 +47,6 @@ title: What is Dash Platform?
 description: Meet Dash, and see what Dash Platform lets you build.
 module: 1
 tier: concepts
-estimatedMinutes: 12
 exp: 100
 verification: quiz
 prerequisites: []
@@ -59,7 +58,8 @@ prerequisites: []
 | `title`, `description` | Must match the manifest word for word |
 | `module` | Position in the course, 1–18 |
 | `tier` | `concepts` (reading + quiz) or `sdk` (hands-on testnet work). The two interleave — a concepts lesson sits directly in front of the lab that uses it, so tier does not follow from the module number |
-| `estimatedMinutes`, `exp` | From the manifest |
+| `exp` | From the manifest |
+| `estimatedMinutes` | SDK lessons only, from the manifest. A concepts lesson must omit it: the site derives the estimate from the lesson text (`lib/reading-time.ts`) so it cannot go stale |
 | `verification` | `quiz`, `testnet`, or `hybrid` |
 | `prerequisites` | **Module numbers, not slugs** — `[3]`, not `["identities"]` |
 

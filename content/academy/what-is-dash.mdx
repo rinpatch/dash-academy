@@ -3,7 +3,6 @@ title: What is Dash?
 description: "See how InstantSend, ChainLocks, and masternodes make Dash work as digital cash."
 module: 2
 tier: concepts
-estimatedMinutes: 12
 exp: 100
 verification: quiz
 prerequisites: [1]
@@ -13,11 +12,11 @@ Dash is a cryptocurrency built for payments. Its name comes from "digital cash":
 
 It launched in January 2014 as XCoin, became Darkcoin later that year, and adopted the name Dash in 2015. Its fast-payment feature arrived in 2015 as InstantX, now called InstantSend; ChainLocks followed in June 2019. These features address two parts of the same problem: making a payment safe to accept quickly and keeping its record secure afterward.
 
-Suppose you're building a checkout for a coffee shop. A customer sends Dash, and your app sees the transaction. The barista needs to know whether they can hand over the coffee. Seeing a payment arrive isn't enough: what stops the customer from trying to spend those same funds somewhere else?
+You're building a checkout for a coffee shop. A customer sends Dash, and your app sees the transaction. The barista needs to know whether they can hand over the coffee. Seeing a payment arrive isn't enough: what stops the customer from trying to spend those same funds somewhere else?
 
 ## InstantSend: can the customer spend the same money twice?
 
-Imagine the customer sends one transaction paying the shop, then another spending the same funds back to themselves. These are conflicting transactions: both try to use the same existing money. Only one can succeed, but the shop needs to know which one before giving away the coffee.
+The customer could send one transaction paying the shop, then another spending the same funds back to themselves. These are conflicting transactions: both try to use the same existing money. Only one can succeed, but the shop needs to know which one before giving away the coffee.
 
 **InstantSend** lets Dash settle that question before a miner includes the payment in a <Term id="block">block</Term>. It locks the transaction's **inputs**, the existing funds that transaction spends, to that particular payment. Once nodes accept the lock, they reject a conflicting transaction trying to use those inputs.
 
@@ -43,7 +42,7 @@ These roles explain how the shop gets an answer before mining. Masternodes suppl
 
 Now a miner includes the coffee payment in a block. Your checkout shows one block confirmation. InstantSend has already prevented the customer from spending the same inputs elsewhere, but it hasn't chosen which block the network must keep.
 
-Why would there be a choice? Two miners can produce different valid blocks at roughly the same time, each extending the same previous block. This creates a **fork**, two competing branches of the chain. Suppose block A contains the shop's payment and block B doesn't.
+Why would there be a choice? Two miners can produce different valid blocks at roughly the same time, each extending the same previous block. This creates a **fork**, two competing branches of the chain. Block A contains the shop's payment; block B doesn't.
 
 Without a block lock, the network could later adopt the branch through B as miners add more work to it. Switching branches is a **reorganization**. The shop's payment would then lose its place in block A. That doesn't, by itself, mean the customer has successfully spent the funds twice: losing block inclusion and accepting a conflicting spend are different events.
 

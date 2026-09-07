@@ -3,13 +3,12 @@ title: Identities
 description: Understand Platform identities, keys, credits, and their relationship to wallets.
 module: 7
 tier: concepts
-estimatedMinutes: 12
 exp: 100
 verification: quiz
 prerequisites: [6]
 ---
 
-Suppose you're building the shared profile described in [What is Dash Platform?](/learn/what-is-dash-platform). Alice can open it in two different apps, and both read the same biography. Now she wants to change it.
+Alice's shared profile works in two apps, just as it did in [What is Dash Platform?](/learn/what-is-dash-platform). Both show the same biography. Now Alice wants to change it, which raises a question the profile alone can't answer: who is allowed to write?
 
 Her wallet can sign a request, but a signature alone doesn't answer the network's question: is this the person allowed to edit this profile? Platform needs a record connecting the profile's owner to the keys that can act for them. That's what an **identity** provides.
 
@@ -44,7 +43,7 @@ A key also has a **security level**: Master, Critical, High, or Medium. These gu
 
 Every identity requires exactly one **master-level authentication key**. A separate authentication key can handle ordinary document writes, provided its level meets the document's requirements. High is commonly used for this kind of signing. Critical keys call for stronger protection, while Medium keys are intended for less sensitive uses such as encryption and decryption.
 
-Suppose Alice's everyday signing key is exposed, but her master key remains safe. She can authorize an identity update to disable the exposed key and add a replacement. Her identity identifier stays the same, so her profile still belongs to the same account. The disabled key can't authorize new changes; replacing it doesn't undo changes an attacker already made.
+Alice's everyday signing key is exposed, but her master key remains safe. She can authorize an identity update to disable the exposed key and add a replacement. Her identity identifier stays the same, so her profile still belongs to the same account. The disabled key can't authorize new changes; replacing it doesn't undo changes an attacker already made.
 
 That gives the separation a practical purpose: routine editing doesn't require handing the app the authority needed to manage the account's keys. A wallet can derive several keys from one <Term id="seed-phrase">seed phrase</Term>, but they're still separate keys with separate permissions. The labels don't protect them automatically; the app must keep more powerful private keys out of routine use.
 

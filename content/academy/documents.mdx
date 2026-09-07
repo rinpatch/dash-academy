@@ -3,15 +3,14 @@ title: Documents
 description: Understand the lifecycle, ownership, and revision of Platform documents.
 module: 14
 tier: concepts
-estimatedMinutes: 14
 exp: 100
 verification: quiz
 prerequisites: [13]
 ---
 
-Suppose two devices open the same shared note. The phone shows “Bring the signed form,” while the laptop shows the same text a moment later. Neither device owns the screen or the network, so what does it mean to read the note, and which device is allowed to change it?
+Two devices open the same shared note. The phone shows “Bring the signed form,” and the laptop shows the same text a moment later. Reading agrees; editing is where trouble starts. What does it mean to read the note, and which device is allowed to change it?
 
-The note is a **document**, an application record stored as part of Platform state. Its shape comes from the data contract described earlier; the contract lab that would publish one is currently a placeholder, so this note is hypothetical. Imagine Alice creating that note first, with the text “Bring the signed form.” Only after that create is accepted can either device query it. Nothing below claims that a contract or document already exists.
+The note is a **document**, an application record stored as part of Platform state. Its shape comes from the data contract described earlier; the contract lab that would publish one is currently a placeholder, so this note is hypothetical. Alice creates it first with the text “Bring the signed form.” Only after that create is accepted can either device query it. Nothing below claims that a contract or document already exists.
 
 ## Start with the answer a read gives
 
@@ -36,7 +35,7 @@ Ownership can change later through protocol actions such as transfer or purchase
 
 The note belongs to an identity, meaning the Platform account recorded as its owner. That ownership is the authorization boundary for ordinary mutation: the owning identity may replace the note, or delete it when the document type permits deletion, while an identity that can only read it may do neither.
 
-Imagine the app displays the note to Bob. Bob can learn the current text, but he can't submit a valid replacement just because the query succeeded. Alice's identity owns the note, so an authorized change must come from Alice's identity. Credits pay for Platform work, but funding an identity doesn't give it ownership or editing authority.
+The app can display the note to Bob. Bob can learn the current text, but he can't submit a valid replacement just because the query succeeded. Alice's identity owns the note, so an authorized change must come from Alice's identity. Credits pay for Platform work, but funding an identity doesn't give it ownership or editing authority.
 
 If Alice wants another person to own the note, she must use an ownership-changing mechanism supported by the document type, such as transfer or purchase. An ordinary edit cannot smuggle a new owner into the record.
 
