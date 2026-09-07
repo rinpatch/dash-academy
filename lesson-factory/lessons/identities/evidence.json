@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "identities",
-  "module": 6,
+  "module": 7,
   "title": "Identities",
   "targets": {
     "coreDocs": "23.0.0",
@@ -53,42 +53,46 @@
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "S7",
-      "title": "Register an Identity (tutorial)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/identities-and-names/register-an-identity.md",
+      "id": "S9",
+      "title": "Document ownership and replacement",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/document.md",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "S8",
-      "title": "Glossary",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/glossary.md",
+      "id": "S10",
+      "title": "Contract document signature requirements",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/data-contract.md#signatureSecurityLevelRequirement",
       "version": "Dash Platform Docs 3.1.0"
     }
   ],
   "claims": [
     {
       "id": "C1",
-      "text": "An identity is a low-level Platform construct: one or more public keys recorded on the platform chain plus a credit balance, used to own data and sign state transitions, and kept separate from DPNS usernames.",
+      "text": "An identity is a Platform record with a stable 32-byte identifier, public keys, and credit balance; it is separate from a wallet and a DPNS name.",
       "sourceIds": [
         "S1",
-        "S3"
+        "S3",
+        "S6"
       ],
       "support": "direct"
     },
     {
       "id": "C2",
-      "text": "A Core (layer-1) wallet address is a legacy Base58Check address used on the money layer to hold and move Dash, and is distinct from Platform's independent bech32m address system (DIP-18).",
+      "text": "For an ordinary mutable profile, the owner's identity must authorize a replacement, and the contract's rules still apply. A valid signature from another identity is insufficient.",
       "sourceIds": [
-        "S5"
+        "S9",
+        "S10"
       ],
       "support": "direct"
     },
     {
       "id": "C3",
-      "text": "A Platform address is a bech32m-encoded layer-2 address (dash1.../tdash1...) that holds credits directly and is used for address-based operations such as funding identity creation, independent of any identity.",
+      "text": "A wallet manages private keys locally; the identity publishes public keys. A public identifier is not signing authority. A Core payment address is not a Platform document's owner identity.",
       "sourceIds": [
+        "S1",
+        "S3",
         "S5",
         "S6"
       ],
@@ -96,136 +100,192 @@
     },
     {
       "id": "C4",
-      "text": "An identity balances the Core address / Platform address contrast: it is not an address at all, but a key set plus a credit balance; its 32-byte id is produced from a double SHA-256 of the funding outpoint rather than from a public key hash.",
-      "sourceIds": [
-        "S3",
-        "S1"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C5",
-      "text": "Creating an identity locks Dash on Core in an asset lock transaction; that lock is proven in an identity create state transition, and the locked value (minus fees) becomes the identity's initial credit balance.",
-      "sourceIds": [
-        "S1"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C6",
-      "text": "An identity's credit balance can be topped up by locking more Dash; anyone may top up any identity, which lets developers subsidize their users' usage.",
-      "sourceIds": [
-        "S1"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C7",
-      "text": "Each identity holds one or more public keys; every key carries a purpose (authentication, encryption, decryption, transfer) describing what it may be used for.",
-      "sourceIds": [
-        "S3",
-        "S6"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C8",
-      "text": "Every key also carries a security level (master, critical, high, medium) describing how carefully it should be stored; the master key is required and can only be used to update the identity.",
+      "text": "Authentication, transfer, encryption and decryption purposes separate key uses. Security levels are Master, Critical, High and Medium; each identity requires exactly one master-level authentication key, reserved for identity updates.",
       "sourceIds": [
         "S3"
       ],
       "support": "direct"
     },
     {
-      "id": "C9",
-      "text": "Every identity must have exactly one master-level authentication key used for updating the identity; additional authentication and transfer keys are strongly recommended.",
+      "id": "C5",
+      "text": "Document signing must satisfy the contract's security-level requirement, which defaults to High. Master cannot be used for routine document signing.",
+      "sourceIds": [
+        "S3",
+        "S10"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "An identity update adds or disables keys without replacing its identifier. Disabled keys cannot sign new changes; disabling a key is not a rollback of previous document changes.",
+      "sourceIds": [
+        "S1",
+        "S3"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C7",
+      "text": "Wallet software can derive several identity keys from one seed; deriving them together does not give them identical permissions or protect powerful keys from an application that receives them.",
       "sourceIds": [
         "S3",
         "S6"
       ],
-      "support": "direct"
+      "support": "inference"
     },
     {
-      "id": "C10",
-      "text": "Wallets conventionally derive five standard identity keys (DIP-9): master, high authentication, critical authentication, transfer, and encryption (medium).",
+      "id": "C8",
+      "text": "Credits pay Platform fees. The conversion is 1,000 credits per duff, or 100,000,000,000 per DASH; it is not a fixed fee quote for a document operation.",
       "sourceIds": [
-        "S6",
-        "S7"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C11",
-      "text": "Identity keys are derived from the wallet mnemonic via DIP-13 feature path m/9'/coin'/5'/0'/0'/{identityIndex}'/{keyIndex}', while addresses use BIP44 — so one wallet seed derives both addresses and identity keys.",
-      "sourceIds": [
-        "S6"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C12",
-      "text": "Credits are the layer-2 unit of account for fees; the conversion is 1 duff = 1,000 credits (CREDITS_PER_DUFF), so 1 Dash = 100,000,000 duffs = 100,000,000,000 credits.",
-      "sourceIds": [
+        "S2",
         "S4"
       ],
       "support": "direct"
     },
     {
-      "id": "C13",
-      "text": "Platform fees are divided into storage fees (cost of keeping data across the network) and processing fees (cost of validating state transitions); they are paid by deducting credits from the identity's balance.",
+      "id": "C9",
+      "text": "Processing fees cover processing state transitions and storage fees cover retaining data. An ordinary document write deducts fees from its identity balance. Fee adjustments and refunds can also affect the final amount.",
       "sourceIds": [
+        "S1",
         "S2"
       ],
       "support": "direct"
     },
     {
-      "id": "C14",
-      "text": "For everyday use processing fees are minuscule compared to storage fees, but they become prohibitively expensive in attack conditions.",
+      "id": "C10",
+      "text": "Funding can use a Core asset lock or credits already at a Platform address. Platform address and identity balances are distinct; an identity create or top-up operation moves funding into the identity.",
       "sourceIds": [
-        "S2"
+        "S1",
+        "S5",
+        "S6"
       ],
       "support": "direct"
     },
     {
-      "id": "C15",
-      "text": "Credits can be converted back to Dash via an identity credit withdrawal state transition, subject to a daily network-wide limit.",
+      "id": "C11",
+      "text": "Anyone can top up an identity, including an app developer sponsoring fees; adding funds does not give the sponsor the identity's signing keys or document ownership.",
       "sourceIds": [
-        "S1"
+        "S1",
+        "S3",
+        "S9"
       ],
-      "support": "direct"
+      "support": "inference"
     }
   ],
   "apiExamples": [],
   "conflicts": [
     {
       "id": "V1",
-      "topic": "Fee constants disagree across vendored docs",
+      "topic": "Fee examples must not become network quotes",
       "status": "resolved",
       "sources": [
         "S2",
         "S4"
       ],
-      "resolution": "Keep module 3 conceptual: state only 1 duff = 1,000 credits and the storage-vs-processing split; quote no per-byte or per-key fee constants, which belong to later hands-on lessons."
+      "resolution": "Use explicitly hypothetical balances and processing/storage amounts. State that refunds and other adjustments are excluded, and that actual costs depend on network fee rules."
     },
     {
       "id": "V2",
-      "topic": "mustCover names two objects but the acceptance test names four",
+      "topic": "Core locking is not the only identity funding route",
       "status": "resolved",
       "sources": [
-        "S5"
+        "S1",
+        "S5",
+        "S6"
       ],
-      "resolution": "Distinguish Core wallet/address, Platform address, and Platform identity in prose and a comparison table, naming each without the DIP-18 derivation mechanics reserved for module 9."
-    },
-    {
-      "id": "V3",
-      "topic": "How deep identity keys should go relative to module 10",
-      "status": "resolved",
-      "sources": [
-        "S3"
-      ],
-      "resolution": "Name the purposes (authentication, encryption, decryption, transfer) and security levels (master/critical/high/medium) and the mandatory master-level authentication key, without the full purpose/security-level allowlist or signing-behavior details."
+      "resolution": "Explain both Core locking and funding from Platform addresses, without deriving addresses or teaching creation APIs."
     }
   ],
   "uncertainties": [],
-  "executableExamples": []
+  "executableExamples": [],
+  "teachingPlan": {
+    "priorKnowledge": [
+      "content/academy/what-is-a-blockchain.mdx: signatures authorize changes without publishing private keys.",
+      "content/academy/what-is-dash-platform.mdx: The record after the payment and A valid record still needs an author introduce the shared profile, document ownership, and schema checks.",
+      "content/academy/dapi-and-proofs.mdx: distinguishes returned network data from what a client takes on trust; no completed SDK task assumed."
+    ],
+    "centralQuestion": "My user already has a wallet. Why does the app need an identity?",
+    "likelyMistake": "Treating possession of a wallet or funds at an address as permission and funding for any Platform write.",
+    "workedExample": "A hypothetical Alice edits an owner-controlled shared profile. Follow authorization, separate routine and account-management keys, then calculate two writes and identify the balance needing funding. All fee amounts are explicitly illustrative.",
+    "reasoningChain": [
+      "A shared profile needs an owner both apps recognize.",
+      "The identity links ownership to keys; a valid signature alone is not permission.",
+      "Different actions need different authority, so routine editing and managing identity keys use separate keys.",
+      "An authorized update still consumes network resources, so the identity needs credits.",
+      "The fee calculation shows when the balance is insufficient; a top-up supplies funds without transferring authority."
+    ],
+    "continuityGaps": [
+      "DAPI and Proofs refers to a completed module 4 SDK read, but setup is module 5 and remains a placeholder. This draft only uses the conceptual profile and makes no claim that the learner ran code. The preceding lesson needs a separate repair."
+    ]
+  },
+  "coverageMap": [
+    {
+      "requirement": "the learner can say what an identity is that a wallet address is not, and why Platform asks for one",
+      "explanation": "Who can change the profile?",
+      "demonstration": "Alice's owner identity can authorize an edit; Bob's correctly signed, schema-valid request still fails ownership.",
+      "assessment": [
+        "owns-data",
+        "platform-address"
+      ]
+    },
+    {
+      "requirement": "the learner can say why an identity carries several keys rather than one, and what each is for",
+      "explanation": "Why not use one key for everything?",
+      "demonstration": "An exposed everyday key can be disabled using separately protected master authority without changing ownership.",
+      "assessment": [
+        "master-key"
+      ]
+    },
+    {
+      "requirement": "the learner can work out what a Platform operation costs them and what they have to top up",
+      "explanation": "Who pays when Alice saves?; Which balance needs topping up?",
+      "demonstration": "120,000 minus two 50,000-credit writes leaves 20,000; a third needs funding into the identity, not just a Core or Platform address.",
+      "assessment": [
+        "fees-split",
+        "platform-address",
+        "sponsored-funding"
+      ]
+    }
+  ],
+  "conceptualExamples": [
+    {
+      "id": "profile-authorization",
+      "sourceIds": [
+        "S1",
+        "S3",
+        "S9",
+        "S10"
+      ],
+      "verification": "Source review; hypothetical profile with owner-only updates."
+    },
+    {
+      "id": "fee-budget",
+      "sourceIds": [
+        "S2",
+        "S4"
+      ],
+      "verification": "fixture.mjs checks worked and quiz arithmetic; amounts are illustrative, not measured network fees."
+    }
+  ],
+  "editorialReview": {
+    "kind": "author self-review, not an independent agent or learner test",
+    "reasoningChain": [
+      "A shared profile needs an owner both apps recognize.",
+      "The identity links ownership to keys; a valid signature alone is not permission.",
+      "Different actions need different authority, so routine editing and managing identity keys use separate keys.",
+      "An authorized update still consumes network resources, so the identity needs credits.",
+      "The fee calculation shows when the balance is insufficient; a top-up supplies funds without transferring authority."
+    ],
+    "transferQuestion": "Alice changes the permitted routine signing key but keeps the same identity. Must her profile be reassigned to the replacement key?",
+    "answer": "No. The owner is the stable identity identifier, not a particular key. The replacement key authorizes future requests for that same identity once the update is accepted.",
+    "supportingPassages": [
+      "Who can change the profile?: owner field points to the identity identifier.",
+      "Why not use one key for everything?: replacing an exposed key keeps the identity identifier and profile ownership."
+    ],
+    "coverageGaps": [],
+    "continuityGaps": [
+      "Upstream DAPI/setup mismatch is recorded in the teaching plan; this draft does not depend on the missing lab."
+    ],
+    "readingTime": "Approximately 1,100 prose words plus five scenario questions; retain the 12-minute manifest estimate pending learner feedback."
+  }
 }

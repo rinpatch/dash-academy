@@ -1,171 +1,123 @@
 ---
 title: What is Dash?
-description: "Start from zero: what a blockchain is, and what makes Dash different."
-module: 1
+description: "See how InstantSend, ChainLocks, and masternodes make Dash work as digital cash."
+module: 2
 tier: concepts
-estimatedMinutes: 12
 exp: 100
 verification: quiz
-prerequisites: []
+prerequisites: [1]
 ---
 
-Dash is digital cash with a second job. Before either job makes sense, you need the one idea both are built on: a blockchain. This lesson starts there and then shows what makes Dash different.
+Dash is a cryptocurrency built for payments. Its name comes from "digital cash": money you can hand over and use again without waiting around for the payment to settle.
 
-## A blockchain, in terms you already know
+It launched in January 2014 as XCoin, became Darkcoin later that year, and adopted the name Dash in 2015. Its fast-payment feature arrived in 2015 as InstantX, now called InstantSend; ChainLocks followed in June 2019. These features address two parts of the same problem: making a payment safe to accept quickly and keeping its record secure afterward.
 
-If you have worked with a database, a log file, or a Git history, you already understand the shape of a blockchain: an **append-only log** made of <Term id="block">blocks</Term>, where each block is a batch of transactions the network has agreed to add.
+You're building a checkout for a coffee shop. A customer sends Dash, and your app sees the transaction. The barista needs to know whether they can hand over the coffee. Seeing a payment arrive isn't enough: what stops the customer from trying to spend those same funds somewhere else?
 
-Two properties follow from how the blocks are linked. First, each block carries the **hash** — a short, fixed-size fingerprint of its contents — of the block before it. Chaining blocks by hash makes the log **tamper-evident**: change anything in an earlier block and every later block's fingerprint no longer lines up, so rewriting the past means redoing everything after it. Second, no single computer owns the log. Copies live on many independent <Term id="node">nodes</Term> around the world, and the network follows one set of rules to agree on which copy is correct, with no central administrator choosing winners.
+## InstantSend: can the customer spend the same money twice?
 
-From your side, it behaves like a database you can trust but nobody owns. The next section shows what actually moves through it.
+The customer could send one transaction paying the shop, then another spending the same funds back to themselves. These are conflicting transactions: both try to use the same existing money. Only one can succeed, but the shop needs to know which one before giving away the coffee.
 
-## Transactions, keys, and addresses
+**InstantSend** lets Dash settle that question before a miner includes the payment in a <Term id="block">block</Term>. It locks the transaction's **inputs**, the existing funds that transaction spends, to that particular payment. Once nodes accept the lock, they reject a conflicting transaction trying to use those inputs.
 
-There is no account with a balance you add to and subtract from. Value is a chain of ownership. A **transaction** spends the outputs of earlier transactions and creates new outputs for the next one: each output records an amount and the condition for spending it later. An output can be spent exactly once — a second attempt to spend the same output is rejected as a **double spend** (two payments trying to use the same money).
+For the customer in our example, sending a second transaction back to themselves won't undo the locked shop payment. The network enforces the lock; the shop doesn't have to trust the customer's promise or keep their wallet connected.
 
-Two related numbers let you spend an output:
+Dash automatically attempts to lock qualifying transactions, and locks usually arrive within seconds. The customer sends a normal payment without selecting a special fast mode. Your checkout does need to check that the lock actually arrived; broadcasting a transaction and obtaining a lock are separate events.
 
-- A **private key** — a secret 256-bit number that proves you may spend the output. Lose it and the money is gone; there is no password reset.
-- A **public key** — a number derived from the private key, which others use to check your signature. The relationship is one-way: the public key comes from the private key, but the private key cannot be recovered from the public key.
+At this point, the payment can still have **zero block confirmations**, meaning no block contains it yet. The shop can nevertheless safely accept it because InstantSend has ruled out a conflicting spend.
 
-You do not hand out the public key. You hand out an **address**: a short string derived from the public key (the usual form hashes it and adds a checksum). An address is enough for someone to pay you while revealing nothing about the private key that controls the money.
+The shop can also spend the received funds, for example to pay a supplier, before the customer's payment enters a block. "Locked" doesn't mean the recipient's money is frozen. It means the original inputs can't fund a competing payment; the recipient can spend the money they received in a new transaction.
 
-Dash's amount is measured the way dollars are: in whole units and their smallest subdivision. One DASH equals **100,000,000 duffs**, the smallest unit — the same idea as cents in a dollar.
+## Who makes the lock stick?
 
-## Why decentralization matters to a builder
+The checkout doesn't create that protection itself. Dash has **masternodes**, servers that validate the blockchain and provide additional services, including the locks used by InstantSend and ChainLocks. Groups of masternodes produce locks and share them with the network. Other nodes verify those locks and enforce them when deciding which transactions and blocks to accept.
 
-Everything so far has a practical payoff. When you build an app on a centralized platform, you are renting someone else's infrastructure: their servers, their uptime policy, their approval. When you build on a decentralized network, the deal changes:
+An ordinary **full node** downloads and validates the blockchain against the network's rules. It can reject a transaction that breaks those rules, including one that conflicts with an accepted lock. But it doesn't take part in producing the locks as a masternode does. Miners still assemble and produce blocks; an InstantSend lock doesn't mine a block on their behalf.
 
-- **No server to run or secure.** The network already runs the storage. You write application code and talk to the network; you do not operate the database or its backups.
-- **No single point of failure.** Because copies live on many independent nodes, one computer — or one company — going away does not take your app's data with it.
-- **Nobody can shut it down.** There is no central account to freeze and no company that can pull the plug or censor a record.
-- **No single backend to depend on.** The network is the backend. Your app keeps working as long as the network does, not as long as one vendor stays in business.
+Dash pays masternode operators for the extra services. A regular masternode requires 1,000 DASH as **collateral**, funds the operator must keep unspent while running it. This makes creating many masternodes costly and helps resist someone flooding that service layer with fake participants.
 
-Decentralization is a trade-off, not a free lunch — it changes how you think about upgrades, privacy, and who is responsible for a mistake. But the reason builders choose it is the same in every case: the app belongs to its users, not to a host.
+These roles explain how the shop gets an answer before mining. Masternodes supply the lock, and nodes enforce it. Ordinary validation alone doesn't supply that early decision; without the masternode service, the shop would lose the InstantSend assurance it relies on to serve the customer immediately.
 
-## Dash as money
+## ChainLocks: can the block disappear later?
 
-Dash is **digital cash**: a cryptocurrency built for payments. It began as a modification of Bitcoin's software, and it keeps Bitcoin's core idea — money that moves peer to peer with no bank in the middle — while adding the speed and services a payment network needs. Unlike <Term id="fiat">fiat</Term> currency, no government issues it and no central bank backs it; the network itself issues and settles it.
+Now a miner includes the coffee payment in a block. Your checkout shows one block confirmation. InstantSend has already prevented the customer from spending the same inputs elsewhere, but it hasn't chosen which block the network must keep.
 
-A few numbers orient you. Dash's blocks arrive roughly every **2.6 minutes**, and new coins are issued as a reward for proposing blocks. The network launched with no <Term id="premine">premine</Term> and no <Term id="ico">ICO</Term> — no founder stash and no presale.
+Why would there be a choice? Two miners can produce different valid blocks at roughly the same time, each extending the same previous block. This creates a **fork**, two competing branches of the chain. Block A contains the shop's payment; block B doesn't.
 
-## Masternodes make the rest possible
+Without a block lock, the network could later adopt the branch through B as miners add more work to it. Switching branches is a **reorganization**. The shop's payment would then lose its place in block A. That doesn't, by itself, mean the customer has successfully spent the funds twice: losing block inclusion and accepting a conflicting spend are different events.
 
-Bitcoin's network is a single tier: every computer does roughly the same job. Dash adds a **second tier** of specially equipped servers called **masternodes**.
+**ChainLocks** protect the block and the history leading up to it. Masternodes can produce a ChainLock for a mined block. Once a node verifies that lock, it rejects any competing block at the same **height**, or position in the chain, and any chain built on that competing block.
 
-A masternode is a server that deposits **1,000 DASH** as collateral and, in return, does extra work for the network. The collateral is the point: because an operator has real money at stake, the network can trust these servers with jobs that need more than blindly relaying transactions, and a misbehaving operator stands to lose more than they could gain.
+If A receives the ChainLock, nodes won't switch to B, even if miners build more blocks on B. The shop's payment stays recorded in A. This protection covers the whole block, including the other payments inside it.
 
-That second tier is what makes the rest of Dash possible. Masternodes provide the extra services that turn "cryptocurrency" into "digital cash you can actually spend": near-instant payment confirmation, an extra layer of security for the chain, and the self-governing, self-funded process that pays for the network's own development.
+## Why the checkout benefits from both
 
-## Payments confirm in about a second
+| | InstantSend | ChainLocks |
+| --- | --- | --- |
+| Protects | A payment | A block and its earlier history |
+| Stops | Spending the same funds in a conflicting payment | Replacing the locked block with a competing one |
+| Can act before mining? | Yes | No, it needs a block |
+| For the coffee shop | Hand over the coffee once the payment is locked | Keep the payment's place in the locked block |
 
-On most blockchains, "the payment went through" means "wait until enough blocks pile on top that reversing it becomes impractical." With Dash's 2.6-minute blocks, naive confirmation would mean waiting several minutes before you trust that money arrived.
+InstantSend lets the barista hand over the coffee before a block exists. A ChainLock needs a mined block, so it can't give that early answer. Once the payment is in a block, ChainLocks protect its place in the chain; an InstantSend lock alone doesn't choose which block stays.
 
-Dash is different: a payment **confirms in about a second**. The masternode tier vouches for each transaction as soon as it is broadcast, so in roughly the time it takes to swipe a card, a seller can treat a Dash payment as settled instead of waiting for several blocks to be <Term id="mining">mined</Term>.
+The features also work together: Dash attempts a ChainLock only after every transaction in the block has an InstantSend lock, establishing any missing transaction locks first. You don't choose one feature instead of the other when sending a payment.
 
-For a builder, that one-second difference is the difference between a usable checkout and a "please wait a few minutes" screen. You get cash-like speed — the way a banknote or a card payment feels instant — without a middleman holding the funds.
+For your checkout, track InstantSend status separately from the block-confirmation count. A payment with a verified InstantSend lock and zero confirmations carries protection that an unlocked payment with the same count doesn't. Show that distinction so the barista can act on the lock without waiting for the counter to change.
 
-## One network, two jobs
-
-Everything so far describes money. But Dash runs **two jobs on one network**, and the second is why this course exists:
-
-- **Dash Core** is the money layer — the layer-1 blockchain we have been describing. It settles Dash payments and carries the currency.
-- **Dash Platform** is the application-data layer. Instead of just money, it stores and serves the data behind real applications, and it runs on the same masternode tier.
-
-Platform has two main pieces you will meet throughout this course:
-
-- **Drive** is Platform's storage. It keeps and validates the network's application data.
-- <Term id="dapi">DAPI</Term> is Platform's API. Your app reads and writes to Platform through it instead of running its own node.
-
-<Callout type="info" title="A useful mental model">
-Dash Core is the payment rail. Dash Platform is the database. They share one network and one masternode tier, but each stays focused on its own job.
-</Callout>
-
-The two jobs come together on the masternodes that run both. <Term id="evonode">Evonodes</Term> are masternodes with a larger **4,000 DASH** deposit that, in addition to Core's services, host Dash Platform. Regular masternodes serve Core only.
-
-## Checkpoint
-
-Pass the quiz to complete the lesson.
+Dash also supports applications beyond payments through Dash Platform, an application-data layer hosted by a type of masternode called an Evolution masternode.
 
 <LessonQuiz
   challengeId="what-is-dash"
-  passingScore={5}
+  passingScore={4}
   questions={[
     {
-      id: "what-a-blockchain-is",
-      prompt: "You are choosing a data store for an app. What best describes what a blockchain gives you?",
+      id: "instantsend-before-block",
+      prompt: "A shop receives a qualifying Dash payment with an InstantSend lock but zero block confirmations. What does the lock tell the shop?",
       options: [
-        { id: "a", label: "A private database on one company's server, with fast but centrally controlled writes." },
-        { id: "b", label: "A shared, append-only record that many computers agree on and no single company owns." },
-        { id: "c", label: "A cache you can invalidate whenever your application logic changes." },
-        { id: "d", label: "An encrypted file store where every field is hidden from the network." },
+        { id: "a", label: "A miner has already placed the payment in a hidden block." },
+        { id: "b", label: "The spent inputs are locked to this transaction, so the payment can be safely accepted and re-spent before mining." },
+        { id: "c", label: "The sender has promised not to create a conflicting payment." },
+        { id: "d", label: "The transaction has received several ordinary block confirmations." },
       ],
       correctOptionId: "b",
-      explanation: "A blockchain is an append-only log copied across independent nodes, agreed on without a central administrator — so no single company owns it or can quietly rewrite the record.",
+      explanation: "InstantSend locks the inputs being spent to the transaction. That assurance is separate from block inclusion, so a locked payment may still have zero confirmations.",
     },
     {
-      id: "give-an-address",
-      prompt: "A customer asks how to send you a Dash payment. What do you give them?",
+      id: "separate-status",
+      prompt: "Two payments both have zero block confirmations, but only one has an InstantSend lock. How should your checkout treat them?",
       options: [
-        { id: "a", label: "Your private key, so they can sign on your behalf." },
-        { id: "b", label: "Your public address." },
-        { id: "c", label: "A copy of the whole blockchain." },
-        { id: "d", label: "Your account username and balance." },
+        { id: "a", label: "Distinguish them: the locked payment has protection against a conflicting spend, despite its zero count." },
+        { id: "b", label: "Treat both as protected because Dash automatically attempts InstantSend." },
+        { id: "c", label: "Wait for mining in both cases because a lock only takes effect inside a block." },
+        { id: "d", label: "Treat both as locked as soon as the sender's wallet reports that it sent them." },
       ],
-      correctOptionId: "b",
-      explanation: "Others pay you with your address — a short string derived from your public key that reveals nothing about the private key controlling the funds. You keep the private key secret.",
+      correctOptionId: "a",
+      explanation: "InstantSend and block inclusion are separate events. A wallet can report that a payment is locked while its confirmation count remains zero.",
     },
     {
-      id: "no-double-spend",
-      prompt: "Why can a transaction's output be spent only once?",
+      id: "chainlock-purpose",
+      prompt: "InstantSend already protects the coffee payment. Why does Dash still use ChainLocks?",
       options: [
-        { id: "a", label: "Because outputs are refunded automatically after one use." },
-        { id: "b", label: "Because the bank holds the output until the receiver withdraws it." },
-        { id: "c", label: "Because the network rejects a second attempt to spend the same output as a double spend." },
-        { id: "d", label: "Because outputs are too small to spend twice." },
+        { id: "a", label: "The shop must wait for a ChainLock before it can spend the received funds." },
+        { id: "b", label: "ChainLocks make miners produce the payment's block instantly." },
+        { id: "c", label: "InstantSend prevents a conflicting spend; a ChainLock prevents a reorganization from removing the locked block containing the payment." },
+        { id: "d", label: "The customer chooses ChainLocks when a payment doesn't qualify for InstantSend." },
       ],
       correctOptionId: "c",
-      explanation: "Value moves from one transaction's outputs into the next transaction's inputs. Each output may be spent once, and any later attempt to spend it again is rejected.",
+      explanation: "A ChainLock fixes the accepted block at its height. Nodes reject competing blocks and descendants, so the locked block can't disappear in a reorganization.",
     },
     {
-      id: "why-decentralize",
-      prompt: "Why does decentralization matter when you are choosing where to build an app?",
+      id: "node-roles",
+      prompt: "How do ordinary full nodes and masternodes divide the work behind Dash payments?",
       options: [
-        { id: "a", label: "Because your app's data keeps working even if one company goes offline — no single point of failure and nobody to shut it down." },
-        { id: "b", label: "Because it makes every API call faster than a centralized server." },
-        { id: "c", label: "Because the network stores your private keys for you." },
-        { id: "d", label: "Because it removes the need to write any application code." },
+        { id: "a", label: "Full nodes validate the chain and enforce accepted locks; compensated masternodes also participate in producing those locks." },
+        { id: "b", label: "Masternodes produce locks and mine the blocks; ordinary full nodes only relay the results." },
+        { id: "c", label: "Ordinary full nodes produce transaction locks; masternodes produce only block locks." },
+        { id: "d", label: "Both produce the same locks, but masternodes receive payment for doing it faster." },
       ],
       correctOptionId: "a",
-      explanation: "Decentralization means no server for you to run or secure, no single point of failure, and no company that can pull the plug — the network is the backend.",
-    },
-    {
-      id: "masternode-enables",
-      prompt: "What does the masternode tier make possible?",
-      options: [
-        { id: "a", label: "It lets one miner propose blocks without competition." },
-        { id: "b", label: "Depositing 1,000 DASH as collateral earns a server trust, so the second tier can deliver services like about-a-second payment confirmation." },
-        { id: "c", label: "It removes the need for private keys entirely." },
-        { id: "d", label: "It stores user passwords off-chain." },
-      ],
-      correctOptionId: "b",
-      explanation: "Collateralized, incentivized masternodes form a second tier that provides the extra services — including near-instant confirmation — that make Dash usable as everyday money.",
-    },
-    {
-      id: "which-layer-data",
-      prompt: "Your app needs to store shared application data. Which part of Dash handles that?",
-      options: [
-        { id: "a", label: "Dash Platform, the application-data layer, through Drive and DAPI." },
-        { id: "b", label: "Dash Core, the payments chain." },
-        { id: "c", label: "Neither — you must run and secure your own separate database." },
-        { id: "d", label: "A local cache on each user's device." },
-      ],
-      correctOptionId: "a",
-      explanation: "Dash Core is the money layer. Dash Platform is the application-data layer: Drive stores the data and DAPI is how your app reads and writes it.",
+      explanation: "Full nodes independently validate the chain. Masternodes form a compensated second tier that supplies Dash's additional transaction and block protections.",
     },
   ]}
 />
-
-## What you accomplished
-
-You can now read a blockchain the way you read any append-only, tamper-evident store — and see what makes Dash's version different: digital cash with about-a-second payment confirmation, enabled by a second tier of collateralized masternodes, and a second job, Dash Platform, that turns the same network into an application platform. The next lesson zooms in on that second job to show what you can actually build with it.

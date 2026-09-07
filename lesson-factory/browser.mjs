@@ -12,8 +12,13 @@ const browserWaiters = [];
 export async function browserPreflight() {
   const result = await command(portless, ["doctor"], { env: secretlessEnv() });
   const detail = `${result.stdout}\n${result.stderr}`;
-  if (result.code !== 0 || /Proxy is not running/i.test(detail) || !/port 1355/i.test(detail)) {
-    throw new Error(`Portless must be running locally with HTTPS on port 1355. Run '${portless} trust' once, then '${portless} proxy start -p 1355 --https'.\n${detail}`);
+  // Checks that the proxy answers and serves HTTPS, not which port it landed on: the port is a
+  // local choice (443 by default) and nothing below depends on it — the URL comes from
+  // `portless get`. Matching a literal port here failed every machine but the one it was written on.
+  const responding = /Proxy is responding on port \d+/i.test(detail) && !/Proxy is not running/i.test(detail);
+  const https = /Mode:\s*HTTPS/i.test(detail) && /Local CA is trusted/i.test(detail);
+  if (result.code !== 0 || !responding || !https) {
+    throw new Error(`Portless must be running locally with HTTPS. Run '${portless} trust' once, then '${portless} proxy start --https'.\n${detail}`);
   }
 }
 
@@ -32,7 +37,10 @@ async function runBrowserTest({ lesson, worktree, runId, lessonDir }) {
   await mkdir(artifactDir, { recursive: true });
   const serverLog = path.join(artifactDir, "server.log");
   const logHandle = await import("node:fs").then(({ openSync }) => openSync(serverLog, "a", 0o600));
-  const server = spawn("npm", ["run", "dev"], { cwd: worktree, env: secretlessEnv(), stdio: ["ignore", logHandle, logHandle] });
+  // dev:isolated, not dev: the URL below comes from `portless get`, and only the portless-wrapped
+  // script registers that route. Plain `next dev` serves localhost:3000 and nothing answers the
+  // proxy hostname, so the wait below burns its full 90 seconds.
+  const server = spawn("npm", ["run", "dev:isolated"], { cwd: worktree, env: secretlessEnv(), stdio: ["ignore", logHandle, logHandle] });
   const sessions = ["desktop", "isolated", "mobile"].map((role) => `${runId}-m${lesson.module}-${role}`.replace(/[^a-zA-Z0-9_-]/g, "-"));
   try {
     const urlResult = await command(portless, ["get", "dash-academy"], { cwd: worktree, env: secretlessEnv() });

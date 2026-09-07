@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "slug": "what-is-a-blockchain",
+  "module": 1,
+  "title": "What is a blockchain?",
+  "targets": {
+    "coreDocs": "23.0.0",
+    "platformDocs": "3.1.0",
+    "platformBook": "v4.2-dev",
+    "wasmSdk": "4.1.1"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Blockchain",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain.md, lines 7-11",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S2",
+      "title": "Blockchain Overview",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-block-chain-overview.md, lines 7-19",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S3",
+      "title": "Proof of Work",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-proof-of-work.md, lines 7-27",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S4",
+      "title": "Block Height and Forking",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-block-height-and-forking.md, lines 7-19",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S5",
+      "title": "P2P Network",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/p2p-network.md, lines 7-11",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S6",
+      "title": "Consensus Rule Changes",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/block-chain-consensus-rule-changes.md, lines 7-27",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S7",
+      "title": "Dash Documentation: Security",
+      "kind": "vendored authoritative Dash user documentation",
+      "locator": ".claude/skills/dash-docs/docs/docs/user/index.rst, lines 31-39",
+      "version": "Dash Docs 23.0.0"
+    },
+    {
+      "id": "S8",
+      "title": "Blockchain Technology Overview",
+      "kind": "NIST interagency report",
+      "locator": "https://doi.org/10.6028/NIST.IR.8202, abstract",
+      "version": "NIST IR 8202 Final, October 2018"
+    },
+    {
+      "id": "S9",
+      "title": "ChainLocks",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/dash-features-chainlocks.md, lines 10-18",
+      "version": "Dash Core Docs 23.0.0"
+    },
+    {
+      "id": "S10",
+      "title": "Mining",
+      "kind": "vendored authoritative Dash Core guide",
+      "locator": ".claude/skills/dash-docs/docs/docs/core/guide/mining.md, lines 9-13",
+      "version": "Dash Core Docs 23.0.0"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Dash's blockchain is a public ledger: an ordered, timestamped record of transactions designed to protect against double spending and modification of earlier transaction records.",
+      "sourceIds": [
+        "S1"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C13",
+      "text": "A blockchain's ledger is designed to protect against double spending, and it does so by establishing a single agreed order for transactions: the later of two conflicting spends is the one refused. Full nodes enforce this themselves rather than deferring to a central operator.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C2",
+      "text": "Transactions are collected into blocks, and each block header contains a commitment to that block's transactions plus the hash of the preceding block's header.",
+      "sourceIds": [
+        "S2"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C3",
+      "text": "The accepted historical record is append-only: the chain advances by adding a block, while changing an accepted transaction would also require changing its block and every following block. A correction therefore belongs in a later entry rather than overwriting the original entry.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S8"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C4",
+      "text": "In the baseline proof-of-work model, hash linkage makes tampering evident, but hashing alone does not make constructing a competing history economically expensive. Proof of work supplies that cost.",
+      "sourceIds": [
+        "S2",
+        "S3"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C5",
+      "text": "Dash full nodes independently validate blocks against shared consensus rules before accepting and relaying them; archival nodes retain the entire chain, while pruned full nodes may retain only part of the historical block data.",
+      "sourceIds": [
+        "S1",
+        "S5"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C6",
+      "text": "Changing one operator's local copy does not rewrite the network's accepted record. Dash full nodes independently reject blocks that fail their rules; accumulated work is part of the baseline chain-selection model, not a complete statement of current Dash acceptance.",
+      "sourceIds": [
+        "S1",
+        "S4",
+        "S5",
+        "S9"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C7",
+      "text": "In the baseline proof-of-work model, a party constructing a competing history must redo the proof of work for the changed block and its descendants while honest participants continue extending the original chain. The required work grows as more blocks follow the target block.",
+      "sourceIds": [
+        "S3"
+      ],
+      "support": "direct"
+    },
+    {
+      "id": "C8",
+      "text": "Proof of work makes constructing a competing historical chain expensive rather than mathematically impossible. Current Dash has an additional acceptance rule that can reject a competing chain regardless of accumulated work, so a more-work chain is not guaranteed to become accepted history. The lesson states this once, as a forward reference, because the mechanism itself is out of scope for module 1.",
+      "sourceIds": [
+        "S3",
+        "S4",
+        "S9"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C9",
+      "text": "Without a central repository or authority, participants can share and independently check a record without trusting the application operator to preserve the sole authoritative copy.",
+      "sourceIds": [
+        "S1",
+        "S5",
+        "S7",
+        "S8"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C10",
+      "text": "A builder gives up unilateral administration in exchange for that independence: accepted history cannot be silently patched or deleted, and changing shared validation rules requires network participants to adopt compatible rules or risk divergent chains.",
+      "sourceIds": [
+        "S2",
+        "S6",
+        "S8"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C11",
+      "text": "A Git commit history is a useful structural analogy because commits point backward and later identifiers depend on earlier history. Its limit teaches the main distinction: a repository owner can force-push, whereas independently validating blockchain full nodes do not accept one operator's rewritten copy merely because that operator published it.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S4",
+        "S5"
+      ],
+      "support": "inference"
+    },
+    {
+      "id": "C12",
+      "text": "Miners add new blocks to the chain and are paid from the mining portion of the block reward plus the transaction fees of the block they produce. Because untrustworthy peers wanting to modify past blocks have to work harder than honest peers who only add new blocks, extending the accepted chain is the better-paying activity.",
+      "sourceIds": [
+        "S10",
+        "S3"
+      ],
+      "support": "direct"
+    }
+  ],
+  "apiExamples": [],
+  "conflicts": [],
+  "uncertainties": [
+    {
+      "id": "U1",
+      "topic": "Should append-only be described as every node permanently storing every historical byte?",
+      "blocking": false,
+      "resolution": "Define append-only at the ledger level: accepted records are not overwritten, and corrections arrive as later entries. Do not claim every node is archival."
+    },
+    {
+      "id": "U2",
+      "topic": "Should the lesson call blockchain history immutable?",
+      "blocking": false,
+      "resolution": "Use tamper evident and costly to rewrite because immutable can imply that revision is impossible."
+    },
+    {
+      "id": "U3",
+      "topic": "Which familiar developer structure should carry the explanation?",
+      "blocking": false,
+      "resolution": "Use Git commit history for the block-linking shape and an administrator-controlled database for the builder tradeoff. State that a repository owner can force-push, while one blockchain operator cannot impose a rewritten copy on independently validating nodes."
+    },
+    {
+      "id": "U4",
+      "topic": "How should the lesson handle the gap between the baseline most-work rule and current Dash acceptance, given that the mechanism is mustNotCover?",
+      "blocking": false,
+      "resolution": "State it once in a Callout as a forward reference without naming the mechanism. Repeating the qualifier in the body, the quiz and the close undercuts every claim it attaches to and leaves the reader with nothing to do about it."
+    },
+    {
+      "id": "U5",
+      "topic": "Can module 1 motivate the lesson with double spending when the UTXO model is mustNotCover?",
+      "blocking": false,
+      "resolution": "Yes. Double spending is the motivating problem and is stated at the ledger level: the same money sent to two recipients, resolved by agreeing an order. Do not reach for inputs, outputs, UTXOs or change to explain it, which is the treatment module 1 previously carried and that commit 5e59f2b removed from scope. Centralised card settlement is the contrast case; keep it on authority and reversibility, never on throughput, since confirmation speed belongs to module 2."
+    },
+    {
+      "id": "U6",
+      "topic": "The lesson adopts the structure of a well-known beginner blockchain lesson (centralized ledger, shared-notebook analogy, then mechanism). Which of that model's claims can be reused?",
+      "blocking": false,
+      "resolution": "Reuse the shape and the everyday analogy, not the security claims. That genre commonly says tampering requires colluding with a majority of participants and that safety grows with the number of nodes; both are wrong here, since resistance comes from accumulated proof of work and from each node validating independently, not from headcount. It also calls the record immutable, which U2 rules out. The analogy is therefore used to establish durability only, and the lesson states explicitly that copies do not settle which conflicting entry came first."
+    }
+  ],
+  "executableExamples": []
+}

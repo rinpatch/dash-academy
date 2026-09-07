@@ -1,6 +1,6 @@
 # Lesson factory operator runbook
 
-This factory researches, authors, tests, independently reviews, and commits the fixed 18-module Dash Academy curriculum. Each lesson runs on its own branch and Git worktree. Git MDX plus its evidence ledger are the source of truth; Notion is reference input only.
+This factory researches, authors, tests, independently reviews, and commits the fixed Dash Academy curriculum. Lessons run sequentially, in module order, in the current checkout. Git MDX plus its evidence ledger are the source of truth; Notion is reference input only.
 
 `cli.mjs` is the factory entrypoint.
 
@@ -32,27 +32,25 @@ npm test
 
 ### Model
 
-Every role runs `opencode run` with `tokenrouter-oai/deepseek/deepseek-v4-pro-0813`. Override with
+Every role runs `opencode run` with `tokenrouter-oai/openai/gpt-5.6-luna`. Override with
 `LESSON_MODEL=provider/model`. Research runs at `--variant high`; other roles use the default effort.
 
 TokenRouter is a custom provider defined in `~/.config/opencode/opencode.jsonc`, declared twice
-because the two model families need different transports. The `tokenrouter` provider is wired
+because the model families need different transports. The `tokenrouter` provider is wired
 through `@ai-sdk/anthropic`: on TokenRouter the Anthropic models are served from the native
 `/v1/messages` endpoint, and the chat-completions shim would drop prompt caching and thinking
-blocks. DeepSeek is served only over chat-completions, so it lives under `tokenrouter-oai` on
-`@ai-sdk/openai-compatible`. The `-free` DeepSeek route is deliberately not configured; it returns
-degenerate output on both transports.
+blocks. The `tokenrouter-oai` provider uses `@ai-sdk/openai-compatible` for chat-completions models
+and overrides GPT-5.6 with `@ai-sdk/openai` because TokenRouter serves it through the Responses API.
 
 A whole tier is many long agent runs. Check the TokenRouter balance before starting one: a mid-run
-`token quota is not enough` failure kills every in-flight lesson at once and the research already
-paid for is lost.
+`token quota is not enough` failure stops the sequence. Completed research is retained for resume.
 
 Read-only roles (research, facts-review, pedagogy-review) run with `OPENCODE_PERMISSION` denying
-`edit` and `bash`; author and revision run with `--auto` and write access to their worktree.
+`edit` and `bash`; author and revision run with `--auto` and write access to the current checkout, restricted by the lesson file allowlist.
 opencode has no `--output-schema`, so the schema is embedded in the prompt and the final assistant
 message is parsed and validated by `validateStageOutput`.
 
-The three Dash documentation submodules must match the commits recorded by the current Git baseline. The worktree setup checks this before giving an agent access to them.
+The three Dash documentation submodules must match the commits recorded by the current Git baseline. The runner checks their revisions and tracked changes before giving an agent access to them.
 
 Browser tests share one loopback-only HTTPS Portless proxy. Trust its local CA once, then start it explicitly on the non-privileged port expected by the runner:
 
@@ -64,19 +62,19 @@ node_modules/.bin/portless doctor
 
 `portless trust` changes the machine trust store and should be run deliberately. Do not probe mutating Portless subcommands with `--help`: releases in the pinned pre-1.0 line may still execute the subcommand. Never enable LAN, tunnel, funnel, or wildcard exposure for lesson servers.
 
-Commit lesson-factory infrastructure before starting a real run. The runner accepts unrelated untracked files, but refuses uncommitted changes to its required infrastructure because newly created worktrees must all start from an exact commit.
+Start a new run from a clean checkout with the infrastructure committed. Preserve or commit unrelated changes first; the runner won't stash or discard them. Generated `next-env.d.ts` is excluded. A resume may retain the unfinished lesson's allowed files.
 
 ## Run the curriculum
 
 Start one tier or one module:
 
 ```sh
-npm run lessons -- run --tier 1 --concurrency 3
-npm run lessons -- run --tier 2 --concurrency 3
+npm run lessons -- run --tier 1
+npm run lessons -- run --tier 2
 npm run lessons -- run --module 10
 ```
 
-The safe default concurrency is three lesson workers. Browser suites are independently capped at two, and live testnet writers are serialized to one. A lesson moves through:
+One lesson finishes all local stages and commits before the next begins. Both reviews also run sequentially. `--concurrency` values other than 1 are rejected. Previous MDX is supplied to research, authoring, revision, and review so later drafts can continue earlier explanations and spot coverage gaps. Agents may read earlier lessons but not edit them. Live testnet writers remain serialized. A lesson moves through:
 
 ```text
 pending → researching → blocked | authoring → testing → reviewing
@@ -100,9 +98,9 @@ Commands use the latest run unless `--run-id <id>` is supplied. Durable, ignored
 
 ```text
 lesson-factory/.runs/<run-id>/
-├── run.json                         # baseline, worktrees, status, commits, summaries
+├── run.json                         # baseline, checkout, status, commits, summaries
 └── lessons/<NN-slug>/
-    ├── research.json                # sources, claims, uncertainties, outline
+    ├── research.json                # teaching plan, sources, claims, uncertainties, outline
     ├── author.json / revision.json  # structured author result
     ├── facts-review.json
     ├── pedagogy-review.json
@@ -118,7 +116,7 @@ lesson-factory/.runs/<run-id>/
 
 ### Human questions
 
-Material uncertainty blocks only that lesson. Review the exact source conflict and record a stable answer:
+Material uncertainty stops the sequence at that lesson; later lessons remain pending. Review the exact source conflict and record a stable answer:
 
 ```sh
 npm run lessons -- questions
@@ -135,9 +133,9 @@ npm run lessons -- resume --tier 1 --run-id <run-id>
 npm run lessons -- resume --tier 2 --run-id <run-id>
 ```
 
-The runner reuses completed research, authored files, worktrees, and commits instead of starting successful stages again. Failed worktrees are preserved for inspection.
+The runner reuses completed research, authored files, and commits instead of starting successful stages again. An unfinished draft remains in the checkout for inspection and repair. Old worktree-based runs cannot be resumed with this workflow; start a new run. Resumes check the curriculum hash and that existing lesson commits are present in the current history.
 
-Only one orchestrator may run at a time. If the process was forcibly killed, inspect `lesson-factory/.runs/orchestrator.lock`; remove it only after confirming its recorded PID no longer exists. Never remove a live lock.
+Run, resume, test, and integration commands share one checkout lock. If the process was forcibly killed, inspect `lesson-factory/.runs/orchestrator.lock`; remove it only after confirming its recorded PID no longer exists. Never remove a live lock.
 
 Exit status `0` means all selected lessons reached `passed` or `local-passed`, `2` means a human question blocked progress, and `1` means configuration, test, review, or runner failure.
 
@@ -150,7 +148,7 @@ npm run lessons -- test 10
 npm run lessons -- test 10 --browser
 ```
 
-The local lesson gate validates manifest/frontmatter/evidence consistency, executes the lesson fixture, lints the repository, builds the production app, and drives three isolated browser instances: desktop, a fresh-storage isolation check, and a 390px mobile viewport. Each worktree owns its Next.js process and Portless route; named browser sessions prevent cookie and storage leakage between lessons.
+The local lesson gate validates manifest/frontmatter/evidence consistency, executes the lesson fixture, lints the repository, builds the production app, and drives three isolated browser instances: desktop, a fresh-storage isolation check, and a 390px mobile viewport. Each browser stage starts and stops its Next.js process in the checkout; named browser sessions prevent cookie and storage leakage between lessons. Stop your ordinary development server before a factory run.
 
 ## Trusted Tier 2 live phase
 
@@ -185,14 +183,14 @@ All live writes share a lock in the repository’s Git common directory. Funding
 
 ## Integrate passing lessons
 
-Integration never mutates the operator’s branch. It creates a local integration branch and worktree from the captured run baseline, cherry-picks lesson commits in module order, regenerates `content/academy/meta.json`, and runs lint plus a production build.
+Lesson commits already exist on the current branch. `integrate` now updates navigation in that same checkout: it regenerates `content/academy/meta.json`, runs lint and a production build, then commits only the navigation file. It requires a clean checkout and does not create a branch, worktree, or cherry-pick.
 
 ```sh
 npm run lessons -- integrate --tier 1 --run-id <run-id>
 npm run lessons -- integrate --tier 2 --run-id <run-id>
 ```
 
-Integration refuses any selected lesson that is not `passed`; `local-passed` is intentionally insufficient for Tier 2. Tier 2 navigation retains validated Tier 1 prerequisites from the baseline and admits no stale or unpassed Tier 2 page. The command prints the created branch and worktree path. Review that branch before merging or cherry-picking it into another branch.
+Integration refuses any selected lesson that is not `passed`; `local-passed` is intentionally insufficient for Tier 2. Tier 2 navigation retains validated Tier 1 prerequisites from the baseline and admits no stale or unpassed Tier 2 page. If checks fail, the navigation edit remains uncommitted for inspection. Review the local commits before publishing them.
 
 ## Handoff checklist
 

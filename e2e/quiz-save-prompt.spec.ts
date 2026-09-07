@@ -1,15 +1,15 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
-import { addVirtualAuthenticator, passWhatIsDashQuiz } from "./helpers";
+import { addVirtualAuthenticator, passFirstLessonQuiz } from "./helpers";
 
 // Kept in step with DASH_ACADEMY_E2E_STORE in playwright.config.ts.
 const STORE = path.resolve("test-results/e2e-store/progress.json");
 
 test("offers to save when the first module is finished", async ({ context, page }) => {
   await addVirtualAuthenticator(context, page);
-  await page.goto("/learn/what-is-dash");
-  await passWhatIsDashQuiz(page);
+  await page.goto("/learn/what-is-a-blockchain");
+  await passFirstLessonQuiz(page);
 
   const toasts = page.locator("[data-sonner-toaster]");
   await expect(toasts.getByText("Keep your progress")).toBeVisible();
@@ -30,8 +30,8 @@ test("offers to save when the first module is finished", async ({ context, page 
 
 test("the profile reopens a dismissed save offer", async ({ context, page }) => {
   await addVirtualAuthenticator(context, page);
-  await page.goto("/learn/what-is-dash");
-  await passWhatIsDashQuiz(page);
+  await page.goto("/learn/what-is-a-blockchain");
+  await passFirstLessonQuiz(page);
 
   const toasts = page.locator("[data-sonner-toaster]");
   await toasts.getByRole("button", { name: "Save progress" }).click();
@@ -48,8 +48,8 @@ test("the profile reopens a dismissed save offer", async ({ context, page }) => 
 
 test("a failed push is reported and can be retried", async ({ context, page }) => {
   await addVirtualAuthenticator(context, page);
-  await page.goto("/learn/what-is-dash");
-  await passWhatIsDashQuiz(page);
+  await page.goto("/learn/what-is-a-blockchain");
+  await passFirstLessonQuiz(page);
   const toasts = page.locator("[data-sonner-toaster]");
   await toasts.getByRole("button", { name: "Save progress" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Create a passkey" }).click();

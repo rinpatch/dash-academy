@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "wallets-keys-and-testnet",
-  "module": 7,
+  "module": 8,
   "title": "Wallets, keys, and testnet",
   "targets": {
     "coreDocs": "23.0.0",
@@ -11,198 +11,259 @@
   },
   "sources": [
     {
-      "id": "S1",
-      "title": "Wallets (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "core-wallet-overview",
+      "title": "Dash Core Developer Guide: Wallets",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets.md:7-11",
+      "version": "Dash Core docs 23.0.0"
     },
     {
-      "id": "S2",
-      "title": "Wallet Files (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets-wallet-files.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "core-wallet-files",
+      "title": "Dash Core Developer Guide: Wallet Files",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets-wallet-files.md:7-15,77-127",
+      "version": "Dash Core docs 23.0.0"
     },
     {
-      "id": "S3",
-      "title": "Wallets (Core developer reference)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/reference/wallets.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "core-wallet-programs",
+      "title": "Dash Core Developer Guide: Wallet Programs",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets-wallet-programs.md:19-31",
+      "version": "Dash Core docs 23.0.0"
     },
     {
-      "id": "S4",
-      "title": "Testing Applications (Core examples)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/examples/testing-applications.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "core-mnemonic-backup",
+      "title": "Dash Core Wallet: Backing Up Your Mnemonic",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/wallets/dashcore/installation-windows.rst:240-268",
+      "version": "Dash user docs bundled with Core docs 23.0.0"
     },
     {
-      "id": "S5",
-      "title": "Glossary (Core)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/resources/glossary.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "core-hd-backup-limits",
+      "title": "Dash Core Wallet Backup: HD Wallet Information",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/wallets/dashcore/backup.rst:126-137",
+      "version": "Dash user docs bundled with Core docs 23.0.0"
     },
     {
-      "id": "S6",
-      "title": "Intro to Testnet (Platform)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/testnet.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "id": "core-testing-applications",
+      "title": "Dash Core Developer Examples: Testing Applications",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/examples/testing-applications.md:8-20",
+      "version": "Dash Core docs 23.0.0"
     },
     {
-      "id": "S7",
-      "title": "Setup SDK Client (Platform tutorial)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/setup-sdk-client.md",
-      "version": "Dash Platform Docs 3.1.0"
+      "id": "dash-testnet-guide",
+      "title": "Dash User Documentation: Testnet and Devnets",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs/docs/user/developers/testnet.rst:7-25,42-66",
+      "version": "Dash user docs bundled with Core docs 23.0.0"
     },
     {
-      "id": "S8",
-      "title": "Wallet Programs (Core guide)",
-      "kind": "vendored authoritative Core documentation",
-      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/wallets-wallet-programs.md",
-      "version": "Dash Core Docs 23.0.0"
+      "id": "platform-testnet",
+      "title": "Dash Platform Documentation: Intro to Testnet",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/testnet.md:5-16",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "platform-faucet-index",
+      "title": "Dash Platform Documentation: Resources",
+      "kind": "vendored-authoritative-docs",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/index.md:170-184",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "live-faucet-endpoint",
+      "title": "Dash Testnet Faucet",
+      "kind": "live-authoritative-service",
+      "locator": "https://faucet.testnet.networks.dash.org/",
+      "version": "HTTP endpoint checked 2026-09-07; returned its anti-bot challenge page"
     }
   ],
   "claims": [
     {
-      "id": "C1",
-      "text": "A wallet's only essential job is to let you receive and spend duffs: it creates public keys/addresses to receive funds and stores the matching private keys to spend them.",
-      "sourceIds": [
-        "S1",
-        "S8"
-      ],
+      "id": "wallet-manages-keys",
+      "text": "A Dash wallet manages public and private keys; public information is used to receive funds, while matching private keys authorize spending.",
+      "sourceIds": ["core-wallet-overview", "core-wallet-programs"],
       "support": "direct"
     },
     {
-      "id": "C2",
-      "text": "A private key is what unlocks, or spends, the duffs held at a particular address: it creates signatures that others verify with the matching public key.",
-      "sourceIds": [
-        "S2",
-        "S5"
-      ],
+      "id": "private-key-control",
+      "text": "A private key controls the ability to spend the funds locked to its corresponding address; possession of an address alone does not restore that ability.",
+      "sourceIds": ["core-wallet-files"],
       "support": "direct"
     },
     {
-      "id": "C3",
-      "text": "The private key is the root of control over an address's funds: the public key is derived from it and the address is derived from the public key, so whoever holds the private key can spend whatever that address receives.",
-      "sourceIds": [
-        "S2",
-        "S5"
-      ],
+      "id": "deterministic-derivation",
+      "text": "An HD wallet deterministically derives a hierarchy of keys from one root seed, so the same seed and compatible wallet settings can recreate the derived keys and addresses.",
+      "sourceIds": ["core-wallet-files", "core-hd-backup-limits"],
+      "support": "direct"
+    },
+    {
+      "id": "mnemonic-recovery",
+      "text": "A mnemonic, also called a recovery phrase, can restore its wallet after device loss; balances reappear after the restored wallet synchronizes.",
+      "sourceIds": ["core-mnemonic-backup"],
+      "support": "direct"
+    },
+    {
+      "id": "backup-boundary",
+      "text": "A seed phrase recreates keys derived from that seed, not unrelated private keys imported separately into a wallet.",
+      "sourceIds": ["core-hd-backup-limits"],
+      "support": "direct"
+    },
+    {
+      "id": "loss-consequence",
+      "text": "If every usable copy of the seed phrase and relevant private key is lost, access to the controlled funds is permanently lost; wallet support cannot derive the missing secret from a public address.",
+      "sourceIds": ["core-mnemonic-backup", "core-wallet-files"],
       "support": "inference"
     },
     {
-      "id": "C4",
-      "text": "Losing a private key or seed means losing the funds it controls permanently; there is no reset or recovery path, and the docs warn that a key generated, used, and then lost before being backed up leaves the stored duffs 'likely lost forever'.",
-      "sourceIds": [
-        "S2"
-      ],
+      "id": "leak-consequence",
+      "text": "Anyone who obtains a seed phrase can recreate its derived private keys and exercise the same spending authority, so seed phrases and private keys must never be shared.",
+      "sourceIds": ["core-mnemonic-backup", "core-wallet-files"],
+      "support": "inference"
+    },
+    {
+      "id": "testnet-purpose",
+      "text": "Testnet is a functioning public Dash blockchain intended for experimentation, and its tDASH has no real-world value.",
+      "sourceIds": ["core-testing-applications", "dash-testnet-guide", "platform-testnet"],
       "support": "direct"
     },
     {
-      "id": "C5",
-      "text": "A seed phrase (mnemonic) is a pseudo-sentence of 12 to 24 common words that encodes 128 to 256 bits of entropy and, optionally with a passphrase, is hashed into the wallet's 512-bit root seed (BIP39).",
-      "sourceIds": [
-        "S2"
-      ],
+      "id": "network-separation",
+      "text": "Mainnet and testnet are separate blockchains with distinct address formats and balances; the Dash protocol has no mechanism for moving or converting funds between them.",
+      "sourceIds": ["dash-testnet-guide"],
+      "support": "inference"
+    },
+    {
+      "id": "faucet-purpose",
+      "text": "A faucet dispenses free tDASH so developers can fund testnet operations without purchasing mainnet DASH.",
+      "sourceIds": ["core-testing-applications", "dash-testnet-guide", "platform-testnet"],
       "support": "direct"
     },
     {
-      "id": "C6",
-      "text": "Word count maps directly to entropy: 128 bits gives 12 words, 160 gives 15, 192 gives 18, 224 gives 21, and 256 gives 24.",
-      "sourceIds": [
-        "S2"
-      ],
+      "id": "faucet-url",
+      "text": "The current authoritative documentation identifies https://faucet.testnet.networks.dash.org/ as the Dash testnet faucet.",
+      "sourceIds": ["dash-testnet-guide", "platform-testnet", "platform-faucet-index", "live-faucet-endpoint"],
       "support": "direct"
     },
     {
-      "id": "C7",
-      "text": "The root seed is the single thing to back up: it is hashed into the master private key and master chain code, from which the entire tree of child keys and addresses is derived (BIP32 hierarchical deterministic wallet).",
-      "sourceIds": [
-        "S2",
-        "S3"
-      ],
-      "support": "direct"
+      "id": "faucet-input-safety",
+      "text": "A developer should give a faucet a testnet receiving address, never a seed phrase or private key; receiving requires public destination information, while those secrets confer spending authority.",
+      "sourceIds": ["core-wallet-overview", "core-wallet-programs", "core-mnemonic-backup"],
+      "support": "inference"
     },
     {
-      "id": "C8",
-      "text": "Derivation is deterministic: the same seed always produces the same keys and addresses, which is why one backup covers the whole wallet and why separate programs (such as an offline or hardware signing wallet) can independently derive the same keys.",
-      "sourceIds": [
-        "S2",
-        "S8"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C9",
-      "text": "One mnemonic derives both your Core addresses and your identity keys; the Dash SDK performs this derivation for you from the mnemonic plus a derivation path (BIP44 for addresses).",
-      "sourceIds": [
-        "S7"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C10",
-      "text": "Mainnet is the real network where duffs have real value; testnet is a separate, near-identical network where duffs have no real-world value, letting developers practice safely.",
-      "sourceIds": [
-        "S5",
-        "S4"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C11",
-      "text": "Testnet and mainnet are separate chains whose coins do not move between them; testnet relaxes some restrictions (e.g. standard-transaction checks), is subject to resets/incompatible changes, and its Dash Platform infrastructure (150 masternodes plus DAPI and Drive) is run by Dash Core Group.",
-      "sourceIds": [
-        "S4",
-        "S6"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C12",
-      "text": "Free testnet funds come from a faucet, a service that dispenses testnet Dash that has no real value; you provide an address and it sends you test Dash.",
-      "sourceIds": [
-        "S4",
-        "S6"
-      ],
-      "support": "direct"
-    },
-    {
-      "id": "C13",
-      "text": "The Platform docs point the testnet faucet at https://faucet.testnet.networks.dash.org/, while the Core docs list the Dash Core Group faucet at https://testnet-faucet.dash.org/.",
-      "sourceIds": [
-        "S6",
-        "S4"
-      ],
+      "id": "faucet-availability",
+      "text": "Public testnet faucets may be unavailable, so the lesson must not promise that a request will currently succeed.",
+      "sourceIds": ["core-testing-applications", "dash-testnet-guide"],
       "support": "direct"
     }
   ],
   "apiExamples": [],
-  "conflicts": [
-    {
-      "id": "V1",
-      "topic": "Faucet URL disagrees across vendored doc sets",
-      "status": "resolved",
-      "sources": [
-        "S6",
-        "S4"
-      ],
-      "resolution": "Teach the Platform docs URL (https://faucet.testnet.networks.dash.org/) as the primary pointer, since it is the pinned Platform 3.1.0 source, and name the Dash Core Group URL (https://testnet-faucet.dash.org/) as the alternative while noting faucets can move or go down."
-    }
-  ],
+  "conflicts": [],
   "uncertainties": [
     {
-      "id": "U1",
-      "question": "Must module 7 name the address type the faucet sends to, or keep it conceptual?",
-      "whyItMatters": "Asserting the wrong address type would conflict with module 8, which owns DIP-18 Platform address derivation and the funding path.",
+      "id": "faucet-live-availability",
+      "question": "Will the documented faucet dispense tDASH at the exact time a learner visits it?",
+      "whyItMatters": "Promising successful funding would be inaccurate and violate the manifest.",
       "blocking": false,
-      "resolution": "Keep module 7 conceptual: say the faucet sends free testnet Dash to an address the learner provides, and leave the exact address type and DIP-18 funding path to module 8."
+      "resolution": "Cite the authoritative URL while stating that public services can be unavailable; make no claim that a request will succeed."
+    },
+    {
+      "id": "cross-wallet-compatibility",
+      "question": "Will every wallet restore identical derived addresses from the same phrase?",
+      "whyItMatters": "Derivation conventions and settings can differ, so an unconditional cross-wallet recovery promise would overstate portability.",
+      "blocking": false,
+      "resolution": "Limit recovery to the same or compatible wallet and settings without introducing path syntax or standards tables."
     }
   ],
-  "executableExamples": []
+  "executableExamples": [],
+  "teachingPlan": {
+    "priorKnowledge": [
+      "content/academy/what-is-a-blockchain.mdx, Everyone keeps a copy: a private key produces signatures that authorize spending, while others verify without learning the key.",
+      "content/academy/what-is-dash.mdx, InstantSend and ChainLocks: Dash payments, inputs, confirmation, and network acceptance are familiar.",
+      "content/academy/what-is-dash-platform.mdx, Who pays for the work: Dash and Platform credits are distinct balances, and credits originate by locking Dash.",
+      "content/academy/identities.mdx, Who can change the profile? and Why not use one key for everything?: wallets keep private keys and sign locally; public keys are network-visible; one seed phrase can derive several separate keys.",
+      "content/academy/identities.mdx, Which balance needs topping up?: a funded Core wallet, Platform address, and identity balance are not automatically interchangeable."
+    ],
+    "centralQuestion": "Before the first operation that needs testnet funds, what must a developer protect and back up, why does that backup work, and how can they obtain practice funds without risking real DASH?",
+    "likelyMistake": "Treating the wallet like a hosted account that support can recover, then either exposing the phrase to a faucet or practising with valuable mainnet DASH because testnet is mistaken for a mode sharing the same balance.",
+    "workedExample": "A hypothetical developer, Priya, secures a seed phrase that can recreate the wallet's derived keys with compatible settings, chooses the separate testnet network, and gives the documented faucet only a public testnet receiving address.",
+    "reasoningChain": [
+      "The first funded operation needs a destination and signing authority, which raises the question of what a wallet controls.",
+      "Because private keys provide that authority, device failure creates a recovery problem before funds are requested.",
+      "Deterministic derivation explains why one seed phrase can recreate many wallet keys and addresses instead of requiring a backup for each derived key.",
+      "That recovery power also explains the stakes: losing every copy removes spending ability, while disclosure gives that ability to someone else.",
+      "Once secrets are protected, the developer must choose a network; using mainnet would put valuable DASH at risk during practice.",
+      "Testnet avoids that financial risk, but its separate blockchain means a mainnet balance cannot fund the testnet operation.",
+      "The missing tDASH therefore comes from a faucet, which needs only a public testnet receiving address and may sometimes be unavailable."
+    ],
+    "continuityGaps": [
+      "content/academy/environment-setup.mdx is a placeholder, so this lesson does not assume a working wallet, SDK installation, or completed testnet setup.",
+      "content/academy/identities.mdx introduces one-seed-to-several-keys but not deterministic recovery, backup limits, permanent loss, network separation, or faucet use; this lesson supplies those links without revisiting identity key purposes or levels.",
+      "No earlier lesson gives the learner a testnet receiving address or proves faucet funding succeeded, so Priya's flow remains hypothetical and the faucet steps allow for downtime."
+    ]
+  },
+  "coverageMap": [
+    {
+      "requirement": "seed phrases and derivation",
+      "explanation": "One backup, many addresses",
+      "demonstration": "Priya can use the phrase with compatible wallet settings to recreate the hierarchy of derived keys and addresses after device failure, while an unrelated imported key remains outside that backup.",
+      "assessment": ["recover-derived-wallet"]
+    },
+    {
+      "requirement": "what a private key controls, and what losing it costs",
+      "explanation": "Before the wallet receives funds; Recovery power cuts both ways",
+      "demonstration": "Priya's private key authorizes spending; losing every recoverable copy removes that authority, while disclosing the phrase gives the same authority to another person.",
+      "assessment": ["lost-spending-authority", "leaked-seed-phrase"]
+    },
+    {
+      "requirement": "testnet versus mainnet",
+      "explanation": "Practice without putting DASH at risk",
+      "demonstration": "Priya chooses valueless tDASH for rehearsal and cannot use her separate mainnet DASH balance to fund it.",
+      "assessment": ["choose-practice-network", "separate-network-balances"]
+    },
+    {
+      "requirement": "getting testnet Dash from a faucet",
+      "explanation": "Give the faucet an address, nothing else",
+      "demonstration": "Priya selects a testnet receiving address, submits only that public address to the documented faucet, checks the testnet wallet, and allows for service downtime.",
+      "assessment": ["safe-faucet-request"]
+    }
+  ],
+  "conceptualExamples": [
+    {
+      "id": "hypothetical-funded-testnet-preparation",
+      "sourceIds": ["core-wallet-files", "core-mnemonic-backup", "core-testing-applications", "dash-testnet-guide", "platform-faucet-index"],
+      "verification": "Conceptual source review; no live faucet request or secret material."
+    },
+    {
+      "id": "derivation-tree",
+      "sourceIds": ["core-wallet-files", "core-hd-backup-limits"],
+      "verification": "Conceptual relationship only; no concrete derivation paths, standards arithmetic, or executable code."
+    }
+  ],
+  "editorialReview": {
+    "kind": "author self-review, not an independent agent or learner test",
+    "reasoningChain": [
+      "Priya needs a public destination and private signing authority before requesting funds.",
+      "A wallet may derive many such destinations, so backing up every key separately would be unreliable.",
+      "Deterministic derivation makes the seed phrase a recovery source for its derived keys, which also makes phrase loss and disclosure consequential.",
+      "Protected keys still leave a network choice: mainnet risks valuable DASH, while testnet carries valueless tDASH on a separate balance.",
+      "Because mainnet funds cannot cross to testnet, Priya requests tDASH from a faucet using only public destination information."
+    ],
+    "transferQuestion": "A developer restores a wallet from its seed phrase and sees the derived addresses, but an address backed by a separately imported private key is absent. Does that mean deterministic recovery failed?",
+    "answer": "No. The phrase recreates keys derived from that phrase; a separately imported key requires its own applicable backup.",
+    "supportingPassages": [
+      "One backup, many addresses: compatible settings reproduce derived results.",
+      "One backup, many addresses: unrelated imported private keys fall outside the phrase's backup boundary."
+    ],
+    "coverageGaps": [],
+    "continuityGaps": [
+      "The environment setup prerequisite remains a placeholder, but this draft assumes no completed setup or successful network operation."
+    ],
+    "mustNotCoverReview": "The draft contains no DIP-18 address derivation, entropy or mnemonic-size table, concrete derivation path or coin type, identity key purpose or level, example phrase, destructive key exercise, infrastructure count or ownership claim, or faucet availability promise.",
+    "readingTime": "The validator counts 880 prose words. The six decision questions add about 500 readable words, bringing the lesson to roughly 1,380 words and supporting the 14-minute manifest estimate at its 100-word-per-minute editorial signal."
+  }
 }

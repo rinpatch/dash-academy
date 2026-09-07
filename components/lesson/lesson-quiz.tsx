@@ -154,14 +154,14 @@ export function LessonQuiz({
 
   return (
     <section
-      className="not-prose my-8 overflow-hidden rounded-3xl bg-card"
+      className="not-prose my-10 overflow-hidden rounded-3xl border border-foreground/12 bg-card"
       aria-labelledby="quiz-title"
     >
       <header className="border-b border-foreground/12 px-5 py-5 sm:px-7">
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
           <div>
             <h2 id="quiz-title" className="text-lg font-extrabold text-card-foreground">
-              {isReview ? "Review your answers" : "Knowledge check"}
+              {isReview ? "Review your answers" : "Check your understanding"}
             </h2>
             <p className="mt-1 text-sm text-foreground/48">
               Question {currentIndex + 1} of {questions.length}
@@ -321,7 +321,7 @@ function QuizResults({
 }) {
   return (
     <section
-      className="not-prose my-8 overflow-hidden rounded-3xl bg-card"
+      className="not-prose my-10 overflow-hidden rounded-3xl border border-foreground/12 bg-card"
       aria-labelledby="quiz-result-title"
     >
       <div ref={ref} tabIndex={-1} className="quiz-step-enter px-5 py-7 outline-none sm:px-7 sm:py-8">
@@ -329,7 +329,7 @@ function QuizResults({
           {passed ? "Quiz complete" : "Keep going"}
         </p>
         <h2 id="quiz-result-title" className="mt-2 text-balance text-2xl font-extrabold text-card-foreground">
-          {passed ? "You passed the knowledge check." : "Review the lesson and try once more."}
+          {passed ? "You passed the quiz." : "Review the lesson and try once more."}
         </h2>
         <p className="mt-3 max-w-2xl text-base leading-7 text-foreground/64">
           {restored
@@ -371,14 +371,14 @@ function QuizSkeleton({
 }) {
   return (
     <section
-      className="not-prose my-8 overflow-hidden rounded-3xl bg-card"
+      className="not-prose my-10 overflow-hidden rounded-3xl border border-foreground/12 bg-card"
       aria-label="Loading quiz progress"
       aria-busy="true"
     >
       <div className="border-b border-foreground/12 px-5 py-5 sm:px-7">
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
           <div>
-            <p className="text-lg font-extrabold text-card-foreground">Knowledge check</p>
+            <p className="text-lg font-extrabold text-card-foreground">Check your understanding</p>
             <p className="mt-1 text-sm text-foreground/48">Restoring your progress…</p>
           </div>
           <p className="text-sm font-medium text-foreground/48">{passingScore} correct to pass</p>

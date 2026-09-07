@@ -42,6 +42,7 @@ const SLOT_SNAPSHOT: Record<string, number> = {
   tokens: 20,
   "token-paid-document-creation:quiz": 21,
   "token-paid-document-creation": 22,
+  "what-is-a-blockchain": 23,
 };
 
 test("no slot number is ever assigned twice, including to retired challenges", () => {

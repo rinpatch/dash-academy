@@ -7,7 +7,13 @@ const schemaDir = path.join(import.meta.dirname, "schemas");
 const skillPath = ".agents/skills/write-dash-lesson/SKILL.md";
 // one model for every role, override with LESSON_MODEL. Split per role only if a
 // stage's quality measurably lags.
-const model = process.env.LESSON_MODEL ?? "tokenrouter-oai/deepseek/deepseek-v4-pro-0813";
+const model = process.env.LESSON_MODEL ?? "tokenrouter-oai/openai/gpt-5.6-luna";
+// Research is the one stage worth extra effort by default. LESSON_VARIANT raises every stage,
+// which is how a reasoning model gets its effort level: opencode takes it as a CLI flag, so it
+// cannot ride along in LESSON_MODEL.
+function variantFor(role) {
+  return process.env.LESSON_VARIANT ?? (role === "research" ? "high" : null);
+}
 
 export async function runAgent({ role, lesson, cwd, lessonDir, context = {}, attempt = 1 }) {
   const writable = role === "author" || role === "revision";
@@ -23,20 +29,18 @@ export async function runAgent({ role, lesson, cwd, lessonDir, context = {}, att
   const prompt = `${buildPrompt(role, lesson, context)}\n${vocabulary}\nYour final message must be a single JSON object matching this JSON Schema. No prose, no markdown fences, nothing else.\n${schema}`;
   // opencode has no --output-schema and no path-scoped sandbox; permissions are the read-only gate
   // and the final assistant message is the structured result.
-  // The Dash docs are symlinked into each worktree, so following one leaves --dir and opencode
-  // treats it as an external directory. Its default effect is "ask", which a non-interactive run
-  // turns into a reject: agents silently lost every doc read and returned research with no sources.
+  // Allow only the approved Dash source directory if a documentation path resolves outside cwd.
   const docs = { [path.join(repoRoot, ".agents/skills/dash-docs/**")]: "allow", "*": "deny" };
   const permission = writable
     ? { edit: "allow", bash: "allow", webfetch: "allow", external_directory: docs }
     : { edit: "deny", bash: "deny", webfetch: "allow", external_directory: docs };
   const args = [
     "run", "--dir", cwd, "--format", "json", "-m", model,
-    ...(role === "research" ? ["--variant", "high"] : []),
+    ...(variantFor(role) ? ["--variant", variantFor(role)] : []),
     ...(writable ? ["--auto"] : []),
   ];
   // opencode keeps every session in one machine-wide SQLite database with busy_timeout=0, so a
-  // parallel worker holding the write lock fails this one instantly, before the first model call.
+  // another opencode process holding the write lock fails this one before the first model call.
   // Nothing has been spent at that point, so retry rather than lose the stage.
   let result;
   for (let attemptNumber = 1; ; attemptNumber += 1) {
@@ -69,7 +73,7 @@ export async function runAgent({ role, lesson, cwd, lessonDir, context = {}, att
   if (result.code !== 0) throw new Error(`${role} agent failed (see ${stderrFile})`);
   const parsed = parseResult(result.stdout, role, stderrFile);
   await writeJson(output, parsed);
-  validateStageOutput(schemaName, parsed);
+  validateStageOutput(schemaName, parsed, role);
   return parsed;
 }
 
@@ -122,18 +126,19 @@ export function parseResult(stdout, role, stderrFile) {
 // author was spending 54 tool calls and 128K input tokens re-reading docs the research stage had
 // already distilled into its prompt.
 const trustHandoff = "The context below is your input. Do not re-derive it: the lesson files, diff, manifest, and test reports are already here in full, so do not re-read them from disk.";
-const verdictBar = "Return verdict revise only for defects in correctness, scope, the audience rule, schema, build, or tests. Report cosmetic issues (formatting, trailing newlines, wording preference) as findings without downgrading the verdict; a revision round is expensive.";
+const verdictBar = "Return verdict revise only for defects in correctness, scope, the audience rule, prose that fails the skill's through-line or anti-slop bar, schema, build, or tests. Report cosmetic issues (formatting, trailing newlines, a synonym you would have picked) as findings without downgrading the verdict; a revision round is expensive. A lesson that is accurate, in scope, and lifeless is not cosmetic: it is the defect the deterministic gates cannot catch, so it has to block here or it ships.";
+const openingBar = "Compare the first paragraph with the preceding lessons. Do not begin with stock hypothetical prompts such as 'Suppose' or 'Imagine,' and do not reuse a recent opening's syntax or rhythm.";
 
-function buildPrompt(role, lesson, context) {
-  const common = `Read ${skillPath} and follow it. You are the ${role} for exactly module ${lesson.module}: ${lesson.title}.\nManifest row:\n${JSON.stringify(lesson, null, 2)}\n`;
-  if (role === "research") return `${common}\nResearch independently. Read the repository instructions and authoritative Dash sources. Do not edit files. Return only the schema result. Material uncertainty must be blocking.`;
-  if (role === "author") return `${common}\nApproved research and answers:\n${JSON.stringify(context, null, 2)}\nThe research above is approved and authoritative. Write from it. Only open a source document when a fact you need is genuinely missing from it, and never to re-verify a claim it already records.\nWrite only content/academy/${lesson.slug}.mdx, lesson-factory/lessons/${lesson.slug}/evidence.json, optional lesson-factory/lessons/${lesson.slug}/fixture.mjs and verify.mjs, and appended entries in lib/glossary.ts. SDK lessons require both fixture files. Concept lessons need a fixture only when they contain executable examples. Important: curriculum prerequisites are slugs, but MDX frontmatter prerequisites must be the corresponding numeric module IDs required by source.config.ts. The verifier must use the independent WASM SDK and only public learner output. You may run the assigned lesson fixture, but do not run repository-wide lint, build, dev-server, or browser commands; the runner owns those gates in its pinned environment. Do not commit. Return only the schema result.`;
-  if (role === "revision") return `${common}\nRepair only the assigned lesson files using these review findings and test reports:\n${JSON.stringify(context, null, 2)}\n${trustHandoff} Fix the reported findings and nothing else. A finding usually names one example of a broken rule, not the whole defect: when it does, sweep the file and fix every instance of that rule, or the next review round will simply name the next one.\nYou may run the assigned lesson fixture, but do not run repository-wide lint, build, dev-server, or browser commands; the runner owns those gates in its pinned environment. Do not commit. Return only the schema result.`;
+export function buildPrompt(role, lesson, context) {
+  const common = `Read ${skillPath} and follow it. You are the ${role} for exactly module ${lesson.module}: ${lesson.title}. Read its references/teaching-examples.md. Earlier lessons are available as reading context, never as technical authority or files to edit. Work sequentially in this checkout; do not create worktrees or delegate lesson workers.\nManifest row:\n${JSON.stringify(lesson, null, 2)}\n`;
+  if (role === "research") return `${common}\nPrevious lessons:\n${JSON.stringify(context, null, 2)}\nResearch independently. Read the repository instructions and authoritative Dash sources. Produce a teachingPlan before proposing an outline: prior knowledge with file/section references, a central question, likely mistake, worked example, reasoning chain, and continuity gaps. Do not edit files. Return only the schema result. Material uncertainty must be blocking.`;
+  if (role === "author") return `${common}\nApproved research and answers:\n${JSON.stringify(context, null, 2)}\nThe research above is approved and authoritative. Write from it. Only open a source document when a fact you need is genuinely missing from it, and never to re-verify a claim it already records. ${openingBar}\nWrite only content/academy/${lesson.slug}.mdx, lesson-factory/lessons/${lesson.slug}/evidence.json, optional lesson-factory/lessons/${lesson.slug}/fixture.mjs and verify.mjs, and appended entries in lib/glossary.ts. SDK lessons require both fixture files. Concept lessons need a fixture only when they contain executable examples. Important: curriculum prerequisites are slugs, but MDX frontmatter prerequisites must be the corresponding numeric module IDs required by source.config.ts. The verifier must use the independent WASM SDK and only public learner output. You may run the assigned lesson fixture, but do not run repository-wide lint, build, dev-server, or browser commands; the runner owns those gates in its pinned environment. Do not commit. Return only the schema result.`;
+  if (role === "revision") return `${common}\nRepair only the assigned lesson files using these review findings and test reports:\n${JSON.stringify(context, null, 2)}\n${trustHandoff} Fix the reported findings and nothing else. A finding usually names one example of a broken rule, not the whole defect: when it does, sweep the file and fix every instance of that rule, or the next review round will simply name the next one. ${openingBar}\nYou may run the assigned lesson fixture, but do not run repository-wide lint, build, dev-server, or browser commands; the runner owns those gates in its pinned environment. Do not commit. Return only the schema result.`;
   // facts-review keeps its source access on purpose: checking claims against authoritative Dash
   // docs is the whole point of that gate. pedagogy-review has no such need.
   const scope = role === "facts-review"
     ? `${trustHandoff} You may still open authoritative Dash sources, but only to check a specific claim you actually doubt.`
-    : `${trustHandoff} Judging pedagogy needs only the manifest, the skill's audience rule, and the lesson text above, all of which are here.`;
+    : `${trustHandoff} Read the skill's prose section and the anti-slop skill it links. Compare the preceding lessons with any assumed knowledge or claimed prior work. ${openingBar} Return readerReview with your reconstructed reasoning chain, a new transfer question and answer justified by specific supporting passages, and coverage/continuity gaps. Put only unresolved defects in the gap arrays. If the lesson explicitly accommodates an upstream placeholder or missing prerequisite and still supplies everything this lesson requires, that is not a continuity gap. Check every mustCover against actual teaching, a demonstration, and assessment, not keywords. Revise if you need your own Dash knowledge to fill a missing step. Never request padding to meet a word count.`;
   return `${common}\nResearch, answers, diff, and tests:\n${JSON.stringify(context, null, 2)}\n${scope}\nReview independently. Do not edit files. ${verdictBar} Use block only when a missing human decision or irreconcilable source conflict makes revision impossible. Return only the schema result.`;
 }
 
@@ -141,13 +146,20 @@ function redact(value) {
   return value.replace(/\b(?:[a-z]+\s+){11,23}[a-z]+\b/gi, "[REDACTED POSSIBLE MNEMONIC]");
 }
 
-function validateStageOutput(kind, value) {
+export function validateStageOutput(kind, value, role = kind) {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(`${kind} output is not an object`);
   if (kind === "research") {
     if (!["ready", "blocked"].includes(value.status) || !Array.isArray(value.sources) || !Array.isArray(value.claims) || !Array.isArray(value.uncertainties) || !Array.isArray(value.outline) || !Array.isArray(value.examples)) throw new Error("Research output failed independent validation");
     const sourceIds = new Set(value.sources.map((source) => source.id));
     for (const claim of value.claims) for (const id of claim.sourceIds ?? []) if (!sourceIds.has(id)) throw new Error(`Research claim references unknown source ${id}`);
+    const plan = value.teachingPlan;
+    if (!plan || ["centralQuestion", "likelyMistake", "workedExample"].some((key) => !plan[key]?.trim()) || ["priorKnowledge", "reasoningChain", "continuityGaps"].some((key) => !Array.isArray(plan[key]))) throw new Error("Research output needs a teaching plan");
   } else if (kind === "author") {
     if (!["complete", "blocked"].includes(value.status) || !Array.isArray(value.changedFiles) || !Array.isArray(value.fixtures)) throw new Error("Author output failed independent validation");
   } else if (!["pass", "revise", "block"].includes(value.verdict) || !Array.isArray(value.findings)) throw new Error("Review output failed independent validation");
+  if (role === "pedagogy-review") {
+    const review = value.readerReview;
+    if (!review || ["transferQuestion", "answer"].some((key) => !review[key]?.trim()) || ["reasoningChain", "supportingPassages", "coverageGaps", "continuityGaps"].some((key) => !Array.isArray(review[key])) || !review.reasoningChain.length || !review.supportingPassages.length) throw new Error("Pedagogy review needs reader reasoning and a supported transfer answer");
+    if (value.verdict === "pass" && (review.coverageGaps.length || review.continuityGaps.length)) throw new Error("Pedagogy review cannot pass with unresolved teaching gaps");
+  }
 }

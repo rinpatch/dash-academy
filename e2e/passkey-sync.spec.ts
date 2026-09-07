@@ -40,7 +40,7 @@ test("an unexpected authenticator failure keeps its cause", async ({ context, pa
     if (message.type() === "error") consoleErrors.push(message.text());
   });
 
-  await page.goto("/learn/what-is-dash");
+  await page.goto("/learn/what-is-a-blockchain");
   const dialog = await openPasskeyDialog(page);
   await dialog.getByRole("button", { name: "Create a passkey" }).click();
 
@@ -63,7 +63,7 @@ test("saves and restores progress with a discoverable passkey", async ({ context
         version: 2,
         state: {
           completedChallenges: {
-            "what-is-dash": {
+            "what-is-a-blockchain": {
               completedAt: new Date().toISOString(),
               evidence: { score: 1, total: 1, answers: {} },
             },
@@ -73,7 +73,7 @@ test("saves and restores progress with a discoverable passkey", async ({ context
     );
   });
 
-  await page.goto("/learn/what-is-dash");
+  await page.goto("/learn/what-is-a-blockchain");
   const header = page.locator("header");
 
   await openPasskeyDialog(page);
@@ -104,12 +104,12 @@ test("saves and restores progress with a discoverable passkey", async ({ context
         return progress?.state?.syncedChallenges ?? [];
       }),
     )
-    .toContain("what-is-dash");
+    .toContain("what-is-a-blockchain");
 });
 
 test("signing in saves local progress when the passkey record is empty", async ({ context, page }) => {
   await addVirtualAuthenticator(context, page);
-  await page.goto("/learn/what-is-dash");
+  await page.goto("/learn/what-is-a-blockchain");
 
   let dialog = await openPasskeyDialog(page);
   await dialog.getByRole("button", { name: "Create a passkey" }).click();
@@ -144,7 +144,7 @@ test("signing in saves local progress when the passkey record is empty", async (
 
 test("asks which progress to keep when both sides have data", async ({ context, page }) => {
   await addVirtualAuthenticator(context, page);
-  await page.goto("/learn/what-is-dash");
+  await page.goto("/learn/what-is-a-blockchain");
   await page.evaluate(() => {
     localStorage.setItem(
       "dash-academy.progress.v2",
@@ -152,7 +152,7 @@ test("asks which progress to keep when both sides have data", async ({ context, 
         version: 2,
         state: {
           completedChallenges: {
-            "what-is-dash": {
+            "what-is-a-blockchain": {
               completedAt: new Date().toISOString(),
               evidence: { score: 1, total: 1, answers: {} },
             },
@@ -209,7 +209,7 @@ test("an unlinked passkey explains how to recover without a console error", asyn
     if (message.type() === "error") consoleErrors.push(message.text());
   });
 
-  await page.goto("/learn/what-is-dash");
+  await page.goto("/learn/what-is-a-blockchain");
   await page.evaluate(() => {
     localStorage.setItem(
       "dash-academy.progress.v2",

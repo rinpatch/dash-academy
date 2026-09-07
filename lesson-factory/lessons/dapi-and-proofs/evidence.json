@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
   "slug": "dapi-and-proofs",
-  "module": 5,
+  "module": 6,
   "title": "DAPI and Proofs",
   "targets": {
+    "coreDocs": "23.0.0",
     "platformDocs": "3.1.0",
     "platformBook": "v4.2-dev",
     "evoSdk": "4.1.1",
@@ -12,262 +13,267 @@
   "sources": [
     {
       "id": "s1",
-      "title": "Decentralized API (DAPI) — explanation",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Decentralized API (DAPI)",
+      "kind": "vendored Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md:5-34",
+      "version": "3.1.0"
     },
     {
       "id": "s2",
-      "title": "What is Dash Platform (DAPI/Drive, verifiable access)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Dash Features: Evolution Masternodes",
+      "kind": "vendored Core documentation",
+      "locator": ".agents/skills/dash-docs/docs/docs/core/guide/dash-features.md:27-31",
+      "version": "23.0.0"
     },
     {
       "id": "s3",
-      "title": "Platform State (GroveDB, AppHash, proofs)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-state.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Networks and Environments",
+      "kind": "vendored Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/networks-and-environments.md:6-17,91-92",
+      "version": "v4.2-dev"
     },
     {
       "id": "s4",
-      "title": "Platform Chain (consensus, finality, validators)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-chain.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Query Capabilities",
+      "kind": "vendored Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md:7-42",
+      "version": "3.1.0"
     },
     {
       "id": "s5",
-      "title": "Query Capabilities (determinism, inclusion/non-inclusion proofs)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Platform State",
+      "kind": "vendored Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive-platform-state.md:7-29",
+      "version": "3.1.0"
     },
     {
       "id": "s6",
-      "title": "Platform Proofs (proof structure)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/platform-proofs.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Trusted Mode and Proof Verification",
+      "kind": "vendored Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/trusted-mode.md:3-44",
+      "version": "v4.2-dev"
     },
     {
       "id": "s7",
-      "title": "DAPI Endpoints (JSON-RPC vs gRPC, Core vs Platform)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Evo SDK README",
+      "kind": "installed package documentation",
+      "locator": "node_modules/@dashevo/evo-sdk/README.md:28-58",
+      "version": "4.1.1"
     },
     {
       "id": "s8",
-      "title": "JSON-RPC Endpoints (Core chain lookups)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints-json-rpc-endpoints.md",
-      "version": "Dash Platform docs 3.1.0"
+      "title": "Evo SDK connection implementation",
+      "kind": "installed package runtime",
+      "locator": "node_modules/@dashevo/evo-sdk/dist/sdk.js:67-142",
+      "version": "4.1.1"
     },
     {
       "id": "s9",
-      "title": "Evo SDK — Trusted Mode and Proof Verification",
-      "kind": "vendored authoritative Dash Platform Book",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/trusted-mode.md",
-      "version": "Dash Platform Book v4.2-dev"
+      "title": "Platform gRPC Endpoints: Data Proofs and Metadata",
+      "kind": "vendored Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints-platform-endpoints.md:9-29",
+      "version": "3.1.0"
     },
     {
       "id": "s10",
-      "title": "Evo SDK — Networks and Environments (endpoint discovery)",
-      "kind": "vendored authoritative Dash Platform Book",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/networks-and-environments.md",
-      "version": "Dash Platform Book v4.2-dev"
-    },
-    {
-      "id": "s11",
-      "title": "Evo SDK — Getting Started (factories, connect)",
-      "kind": "vendored authoritative Dash Platform Book",
-      "locator": ".agents/skills/dash-docs/platform-book/book/src/evo-sdk/getting-started.md",
-      "version": "Dash Platform Book v4.2-dev"
-    },
-    {
-      "id": "s12",
-      "title": "Setup SDK Client tutorial",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/setup-sdk-client.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "s13",
-      "title": "Connect to a network tutorial (seed node, WASM factory note)",
-      "kind": "vendored authoritative Dash Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/connecting-to-testnet.md",
-      "version": "Dash Platform docs 3.1.0"
-    },
-    {
-      "id": "s14",
-      "title": "Evo SDK 4.1.1 connection options, trusted context, and factories",
-      "kind": "installed package type declaration",
-      "locator": "node_modules/@dashevo/evo-sdk/dist/sdk.d.ts",
-      "version": "@dashevo/evo-sdk 4.1.1"
-    },
-    {
-      "id": "s15",
-      "title": "WASM SDK 4.1.1 ProofInfo type declaration",
-      "kind": "installed package type declaration",
-      "locator": "node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts",
-      "version": "@dashevo/wasm-sdk 4.1.1"
+      "title": "Fetch Traits: Internal Fetch Pipeline",
+      "kind": "vendored Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/book/src/sdk/fetch-traits.md:283-312",
+      "version": "v4.2-dev"
     }
   ],
   "claims": [
     {
-      "id": "C1",
-      "text": "DAPI is a decentralized API built on Dash's masternode infrastructure that provides a single interface to both layer 1 (Core blockchain) and layer 2 (Dash Platform).",
+      "id": "c1",
+      "text": "A Platform SDK request reaches a DAPI instance hosted by an evonode, the masternode type that serves Platform as well as Core.",
       "sourceIds": ["s1", "s2"],
       "support": "direct"
     },
     {
-      "id": "C2",
-      "text": "DAPI gives a client the same access and security as running its own Dash node, and because clients can connect to different masternode instances there is no single point of failure.",
-      "sourceIds": ["s2"],
-      "support": "direct"
-    },
-    {
-      "id": "C3",
-      "text": "DAPI exposes two endpoint styles: JSON-RPC (some layer-1 Core information) and gRPC (layer-2 Platform, plus streaming of blocks, transactions/transitions, and masternode-list updates).",
-      "sourceIds": ["s1", "s7"],
-      "support": "direct"
-    },
-    {
-      "id": "C4",
-      "text": "The JSON-RPC endpoints expose only two Core chain lookups (getBestBlockHash and getBlockHash) and return no cryptographic proof, so their answers are taken on trust from the responding node.",
-      "sourceIds": ["s7", "s8"],
-      "support": "direct"
-    },
-    {
-      "id": "C5",
-      "text": "Connections to DAPI are encrypted with TLS, which protects the data in transit; TLS secures the pipe but does not by itself prove that the data inside it is correct.",
-      "sourceIds": ["s1"],
+      "id": "c2",
+      "text": "DAPI is not one application company's backend: the service is available through multiple network nodes, and a client can use different instances when resources or availability change.",
+      "sourceIds": ["s1", "s3"],
       "support": "inference"
     },
     {
-      "id": "C6",
-      "text": "Platform gRPC endpoints optionally return cryptographic proofs when the request sets prove: true, allowing a client to confirm the response matches consensus state instead of trusting the node.",
-      "sourceIds": ["s1", "s6"],
+      "id": "c3",
+      "text": "For mainnet and testnet, the SDK discovers DAPI endpoints from seed nodes and rotates among the discovered endpoints rather than binding every request to one server.",
+      "sourceIds": ["s3", "s8"],
       "support": "direct"
     },
     {
-      "id": "C7",
-      "text": "Platform state is stored in GroveDB, an authenticated data structure, and every committed block header includes an AppHash that commits to the root of the post-execution state tree.",
-      "sourceIds": ["s3"],
+      "id": "c4",
+      "text": "When a selected node fails, the SDK can retry another endpoint and temporarily avoid the failed address, reducing the availability risk of selecting a bad node.",
+      "sourceIds": ["s3", "s7", "s10"],
       "support": "direct"
     },
     {
-      "id": "C8",
-      "text": "A state proof is verified against the block header's AppHash, which is signed by the validator quorum, so a light client can certify returned data without re-executing the chain.",
-      "sourceIds": ["s3"],
-      "support": "direct"
-    },
-    {
-      "id": "C9",
-      "text": "Queries return the latest finalized state deterministically: the same query on two honest, up-to-date nodes produces the same result.",
-      "sourceIds": ["s5"],
-      "support": "direct"
-    },
-    {
-      "id": "C10",
-      "text": "There are two proof types: inclusion proofs (data exists and is unmodified) and non-inclusion proofs (data does not exist, useful for uniqueness checks such as usernames).",
-      "sourceIds": ["s5"],
-      "support": "direct"
-    },
-    {
-      "id": "C11",
-      "text": "A proof response comprises a root tree proof, one or more store tree proofs, and a quorum hash plus a quorum signature tying those paths to the validator set; in the SDK these surface as ProofInfo fields grovedbProof, quorumHash, signature, round, blockIdHash, and quorumType.",
-      "sourceIds": ["s6", "s15"],
-      "support": "direct"
-    },
-    {
-      "id": "C12",
-      "text": "The Evo SDK discovers DAPI endpoints from seed nodes and rotates between them automatically, temporarily banning failed nodes; supplying explicit addresses via withAddresses disables that discovery.",
-      "sourceIds": ["s10", "s11"],
-      "support": "direct"
-    },
-    {
-      "id": "C13",
-      "text": "In trusted mode (the *Trusted factory helpers), connect() fetches the current validator quorum public keys once from a well-known HTTPS endpoint and then verifies every subsequent response against them.",
-      "sourceIds": ["s9", "s11"],
-      "support": "direct"
-    },
-    {
-      "id": "C14",
-      "text": "Trusted-mode trust boundary: the client trusts one key-distribution endpoint for the validator set but does not trust any individual DAPI node for the data itself; in non-trusted mode or via Unproved variants the client skips verification and trusts the responding node.",
-      "sourceIds": ["s9"],
-      "support": "direct"
-    },
-    {
-      "id": "C15",
-      "text": "The verification boundary is therefore: Core JSON-RPC lookups and unproved reads are trust-based, while Platform data is only proof-verifiable when proofs are requested and quorum keys are available to check them against.",
-      "sourceIds": ["s8", "s9", "s6"],
+      "id": "c5",
+      "text": "TLS protects request and response bytes while they travel between the client and a DAPI node, but transport protection alone does not prove that returned application data matches network state.",
+      "sourceIds": ["s1", "s4"],
       "support": "inference"
     },
     {
-      "id": "C16",
-      "text": "The pinned @dashevo/evo-sdk 4.1.1 exports EvoSDK.testnetTrusted(), mainnetTrusted(), localTrusted(), and withAddresses(addresses, network), plus the trusted and proofs options and the banFailedAddress transport setting, so every API symbol named in the lesson exists in the pinned SDK.",
-      "sourceIds": ["s14", "s10", "s11"],
+      "id": "c6",
+      "text": "A proof-bearing Platform response lets the client verify that returned data, or a claimed absence, matches finalized state committed by the network.",
+      "sourceIds": ["s4", "s5", "s9"],
       "support": "direct"
     },
     {
-      "id": "C17",
-      "text": "The pinned @dashevo/wasm-sdk 4.1.1 ProofInfo constructor takes exactly (grovedbProof, quorumHash, signature, round, blockIdHash, quorumType), confirming the documented proof field shape.",
-      "sourceIds": ["s15"],
+      "id": "c7",
+      "text": "An ordinary response supplies an answer without that state evidence, so accepting its payload requires trusting the responding node or another provider that checked it.",
+      "sourceIds": ["s4", "s6"],
       "support": "direct"
-    }
-  ],
-  "conflicts": [
+    },
     {
-      "id": "X1",
-      "topic": "SDK version surface across pinned sources",
-      "status": "resolved",
-      "sources": ["s9", "s10", "s14", "s15"],
-      "resolution": "The richest behavior docs (trusted mode, endpoint rotation, withAddresses) live in the platform book at v4.2-dev while the course pins evoSdk/wasmSdk 4.1.1. Resolved against the installed packages: @dashevo/evo-sdk 4.1.1 sdk.d.ts exports testnetTrusted/mainnetTrusted/localTrusted and withAddresses plus the trusted/proofs/banFailedAddress options, and @dashevo/wasm-sdk 4.1.1 declares ProofInfo with grovedbProof/quorumHash/signature/round/blockIdHash/quorumType. The lesson names only these verified symbols and otherwise describes behavior by effect."
+      "id": "c8",
+      "text": "Proof support is optional at the endpoint level, and the pinned SDK has limited unproved paths; therefore, not every DAPI or SDK result is automatically proved.",
+      "sourceIds": ["s1", "s7", "s9"],
+      "support": "direct"
+    },
+    {
+      "id": "c9",
+      "text": "For proof-aware fetches, the SDK verifies the proof and rejects verification failures before returning the requested object as a verified result.",
+      "sourceIds": ["s10"],
+      "support": "direct"
+    },
+    {
+      "id": "c10",
+      "text": "Proof verification needs the active validator quorum's public keys as an anchor. In the pinned SDK's trusted mode, those keys and discovered addresses come from a prefetched trusted context.",
+      "sourceIds": ["s6", "s7", "s8"],
+      "support": "direct"
+    },
+    {
+      "id": "c11",
+      "text": "In a lightweight trusted-mode setup, the learner still trusts the well-known HTTPS service to supply the correct quorum public keys, plus the SDK and cryptographic verifier they run locally.",
+      "sourceIds": ["s6", "s8"],
+      "support": "direct"
+    },
+    {
+      "id": "c12",
+      "text": "A full node can derive quorum keys from the Core chain instead of accepting the hosted key source, so lightweight DAPI access does not have the same trust model as running that node.",
+      "sourceIds": ["s6"],
+      "support": "direct"
+    },
+    {
+      "id": "c13",
+      "text": "A valid state proof establishes consistency with committed Platform state; it does not establish that an application record's real-world assertion is true.",
+      "sourceIds": ["s4", "s5"],
+      "support": "inference"
     }
   ],
+  "apiExamples": [],
+  "conflicts": [],
   "uncertainties": [
     {
       "id": "u1",
-      "question": "Which Evo SDK API surface is authoritative given the course pins evoSdk/wasmSdk 4.1.1, while the richest behavior docs come from the platform book at v4.2-dev and docs-platform at 3.1.0?",
-      "whyItMatters": "Citing a factory or fetch variant that did not exist in the pinned 4.1.1 SDK would falsify an API claim for a learner coding against 4.1.1.",
-      "recommendation": "Describe behavior by effect and reuse only symbols verified against the installed 4.1.1 package types.",
+      "question": "Do all Platform queries in the pinned SDK carry and verify proofs?",
+      "whyItMatters": "Saying yes would hide the distinction between a proved answer and an ordinary response.",
+      "options": [
+        "Follow broad Platform Book wording that every query includes a proof.",
+        "Follow the installed 4.1.1 package, which documents proof defaults, limited unproved paths, and query-specific behavior."
+      ],
+      "recommendation": "Use the installed 4.1.1 package as authority for SDK behavior. Say only that proof-aware query paths request and verify proofs, while DAPI endpoints can also return ordinary responses.",
       "blocking": false,
-      "resolution": "Verified testnetTrusted/mainnetTrusted/localTrusted, withAddresses, trusted, proofs, and banFailedAddress in @dashevo/evo-sdk 4.1.1 sdk.d.ts, and ProofInfo fields in @dashevo/wasm-sdk 4.1.1 sdk.d.ts. The lesson names these and no unverified method signatures."
+      "resolution": "The lesson distinguishes successfully verified proof-bearing responses from ordinary responses and makes no universal proof claim."
     },
     {
       "id": "u2",
-      "question": "The glossary contains two GroveDB entries (grovedb and grove-db); which should the state-proof prose reference given the rule against removing or rewording existing entries?",
-      "whyItMatters": "A Term reference must resolve to a single glossary id, and the lesson needs GroveDB/AppHash to explain state proofs.",
-      "recommendation": "Use the grovedb id for GroveDB, rely on the existing apphash entry, and add state-proof and light-client entries; do not delete or reword the duplicate.",
+      "question": "Does lightweight DAPI access provide the same trust model as running a full node?",
+      "whyItMatters": "Trusted mode accepts quorum keys from a hosted HTTPS source, unlike a full node that derives them from the Core chain.",
+      "options": [
+        "Repeat the broad equivalence claim from introductory prose.",
+        "Distinguish locally checked response data from the hosted quorum-key anchor and client implementation that remain trusted."
+      ],
+      "recommendation": "Follow the detailed trusted-mode source and distinguish the two trust models.",
       "blocking": false,
-      "resolution": "The lesson references id=grovedb for GroveDB and id=apphash for AppHash; appended state-proof and light-client entries to lib/glossary.ts and left the grove-db duplicate untouched."
+      "resolution": "The lesson states the remaining hosted key and verifier trust and explicitly rejects full-node equivalence."
+    },
+    {
+      "id": "u3",
+      "question": "Must the lesson name the SDK's exact endpoint-selection algorithm?",
+      "whyItMatters": "The internal algorithm may change, while the curriculum asks for effect-level understanding.",
+      "options": [
+        "Describe an unsupported random or round-robin algorithm.",
+        "Explain discovery, rotation, retry, and temporary avoidance without naming the internal algorithm."
+      ],
+      "recommendation": "Explain only the supported effects.",
+      "blocking": false,
+      "resolution": "The lesson describes endpoint behavior without assigning an unsupported algorithm."
     }
   ],
-  "examples": [
+  "executableExamples": [],
+  "teachingPlan": {
+    "priorKnowledge": [
+      "From content/academy/what-is-a-blockchain.mdx, section 'Why nobody can rewrite the history,' learners know that full nodes check network rules instead of accepting an operator's declaration.",
+      "From content/academy/what-is-dash.mdx, section 'Who makes the lock stick?,' learners know that masternodes are compensated network servers with roles beyond ordinary full-node validation.",
+      "From content/academy/what-is-dash-platform.mdx, section 'Reaching the network,' learners know that apps reach Platform through DAPI and SDKs, evonodes serve it, and a state proof can accompany data.",
+      "From content/academy/why-build-on-dash.mdx, section 'An answer buyers can check,' learners have seen that query results can be checked against committed state rather than trusted solely because one server returned them.",
+      "content/academy/environment-setup.mdx is a placeholder, so no installation, connection, or live request can be assumed."
+    ],
+    "centralQuestion": "When an SDK returns Platform data from a node you do not run, which parts of that answer can your application verify, and which parts must it still trust?",
+    "likelyMistake": "Treating decentralization and proof verification as the same promise: either trusting any response because it came through DAPI, or assuming a valid proof removes every dependency on a hosted trust anchor and client software.",
+      "workedExample": "A hypothetical app on mainnet or testnet requests a user's public profile. The SDK discovers candidates through seed nodes and rotates among them. When the selected DAPI node times out, the SDK retries another and temporarily avoids the failed address. The second node returns a proof-bearing profile that the client checks against committed state. The app can verify the state claim but still relies on its quorum-key source and verifier; without a checked proof, it would trust the responding node.",
+    "reasoningChain": [
+      "The hypothetical result first raises who physically answered it.",
+      "On mainnet and testnet, seed-assisted discovery and rotation explain how the SDK selects among evonodes, which raises an availability concern when the selected node fails.",
+      "Discovery, retry, and temporary avoidance handle silence, but a responsive node can still return false data.",
+      "That honesty problem requires separating an ordinary response from a proof-bearing response tied to finalized state.",
+      "Local verification establishes the record or its absence against committed state, which raises the question of where the verification anchor comes from.",
+      "The hosted quorum-key source and local verifier reveal the remaining trust and distinguish lightweight access from running a full node.",
+      "The profile claim then limits the conclusion: a proof authenticates committed state, not truth outside Platform."
+    ],
+    "continuityGaps": [
+      "Environment setup is only a placeholder, so the lesson never says the learner installed the SDK, connected to testnet, or made a verified read.",
+      "Module 3 introduces DAPI and state proofs but does not explain endpoint discovery, retry, the quorum-key anchor, or ordinary responses; this lesson supplies those distinctions without repeating Core-versus-Platform basics."
+    ]
+  },
+  "coverageMap": [
     {
-      "id": "ex-trusted-connect",
-      "purpose": "Show connecting the SDK in trusted mode so it discovers DAPI endpoints from seeds and prefetches quorum keys for proof verification (illustrative — mirrors module 4's connection).",
-      "apiSymbols": ["EvoSDK.testnetTrusted()", "EvoSDK.mainnetTrusted()", "EvoSDK.localTrusted()", "sdk.connect()"],
-      "sourceIds": ["s9", "s10", "s11", "s12", "s13"],
-      "verification": "compile"
+      "requirement": "the learner can say what answered their SDK call, and why it is not one company's server",
+      "explanation": "One reply from a network",
+      "demonstration": "The hypothetical profile reply comes from one DAPI instance on an evonode, while the service remains reachable through multiple network nodes rather than an application company's sole backend.",
+      "assessment": ["who-answered"]
     },
     {
-      "id": "ex-proof-boundary",
-      "purpose": "Illustrate the trust gradient: a default verified read versus skipping verification and trusting the responding node, using only 4.1.1-verified symbols.",
-      "apiSymbols": ["sdk.identities.fetch(id)", "fetchWithProof(id)", "fetchUnproved(id)"],
-      "sourceIds": ["s9", "s14"],
-      "verification": "compile"
+      "requirement": "the learner can say how the SDK picks a node to ask, and why picking a bad one does not have to hurt them",
+      "explanation": "If the first node stays silent",
+      "demonstration": "On mainnet and testnet, the SDK discovers candidates through seed nodes, rotates among their addresses, retries after a timeout, and temporarily avoids the failed address.",
+      "assessment": ["failed-node"]
     },
     {
-      "id": "ex-endpoint-selection",
-      "purpose": "Contrast automatic seed-node discovery with rotation against supplying explicit masternode addresses (which turns discovery off).",
-      "apiSymbols": ["EvoSDK.withAddresses(addresses, network)", "seed nodes", "banFailedAddress"],
-      "sourceIds": ["s10", "s11", "s14"],
-      "verification": "compile"
+      "requirement": "the learner can say what a state proof gives them that an ordinary API response cannot",
+      "explanation": "Evidence travels with the answer",
+      "demonstration": "The same profile is compared with and without a checked proof; only the proved response supports a local conclusion that the result matches finalized, committed Platform state.",
+      "assessment": ["proved-versus-ordinary", "proof-limit"]
+    },
+    {
+      "requirement": "the learner can separate the parts of an answer they can check themselves from the parts they still take on trust",
+      "explanation": "What the proof doesn't say",
+      "demonstration": "A comparison table separates the locally checked state claim from the hosted quorum-key source, verifier software, unproved payload, and real-world meaning that remain trusted or unestablished.",
+      "assessment": ["remaining-trust", "proof-limit"]
     }
-  ]
+  ],
+  "conceptualExamples": [
+    {
+      "id": "hypothetical-profile-read",
+      "purpose": "Follow one profile request through node selection, failover, proof verification, and the remaining trust boundary.",
+      "sourceIds": ["s1", "s3", "s4", "s5", "s6", "s8", "s10"],
+      "verification": "conceptual"
+    }
+  ],
+  "readerReview": {
+    "reasoningChain": [
+      "One evonode answers a request, but multiple DAPI instances keep the app from depending on one company server.",
+      "On mainnet and testnet, the SDK discovers candidates through seed nodes and rotates among them, so a timeout can lead to retry and temporary avoidance rather than an outage.",
+      "Failover proves nothing about a responsive node's honesty, which creates the need for evidence tied to committed state.",
+      "A checked state proof authenticates the returned record or absence, while an ordinary payload remains trusted from its server.",
+      "The lightweight client still relies on its quorum-key source and verifier, and no state proof establishes a record's truth outside Platform."
+    ],
+    "transferQuestion": "A ticket app retries a timed-out DAPI node, then receives an unproved ownership record from the next node. Can it call the ownership independently verified because failover succeeded?",
+    "answer": "No. Retry restored access, but only a successfully checked proof can tie the ownership result to committed Platform state. Without one, the app trusts the second node's payload.",
+    "supportingPassages": ["If the first node stays silent", "Evidence travels with the answer"],
+    "coverageGaps": [],
+    "continuityGaps": []
+  }
 }

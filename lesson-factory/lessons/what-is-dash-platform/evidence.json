@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "what-is-dash-platform",
-  "module": 2,
+  "module": 3,
   "title": "What is Dash Platform?",
   "targets": {
     "coreDocs": "23.0.0",
@@ -11,230 +11,372 @@
   },
   "sources": [
     {
-      "id": "intro-platform",
-      "title": "What is Dash Platform",
+      "id": "S1",
+      "title": "Dash Academy curriculum, module 3 (What is Dash Platform?)",
+      "kind": "curriculum manifest",
+      "locator": "lesson-factory/curriculum.json#L38-L75",
+      "version": "schemaVersion 1"
+    },
+    {
+      "id": "S2",
+      "title": "What is Dash Platform (intro)",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash-platform.md#L7-L14,L60-L81",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "intro-dash",
-      "title": "What is Dash",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/intro/what-is-dash.md",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "drive",
+      "id": "S3",
       "title": "Drive",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/drive.md#L7-L10,L23-L31",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "protocol",
-      "title": "Platform Protocol (DPP)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol.md",
-      "version": "Dash Platform Docs 3.1.0"
-    },
-    {
-      "id": "data-contract-exp",
+      "id": "S4",
       "title": "Data Contract",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-data-contract.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-data-contract.md#L7-L11,L23-L42",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "document-exp",
+      "id": "S5",
       "title": "Document",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-document.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/platform-protocol-document.md#L7-L35,L118-L142",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "identity-exp",
+      "id": "S6",
       "title": "Identity",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/identity.md#L7-L21,L37-L40,L65-L69",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "dpns-exp",
+      "id": "S7",
       "title": "Name Service (DPNS)",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dpns.md#L5-L17",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "dapi-exp",
+      "id": "S8",
       "title": "Decentralized API (DAPI)",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dapi.md#L7-L11,L23-L34",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "tokens-exp",
+      "id": "S9",
+      "title": "Query Capabilities",
+      "kind": "vendored authoritative Platform documentation",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/query.md#L26-L44",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S10",
       "title": "Tokens",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/tokens.md#L7-L19,L30-L44,L90-L100,L269-L289",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "nft-exp",
+      "id": "S11",
       "title": "Non-Fungible Tokens (NFTs)",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/nft.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/nft.md#L7-L13,L27-L32,L86-L92",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "dashpay-exp",
-      "title": "DashPay",
+      "id": "S12",
+      "title": "Fees",
       "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/dashpay.md",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/explanations/fees.md#L7-L16,L39-L41",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "tutorials-intro",
-      "title": "Tutorials - Introduction",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/introduction.md",
+      "id": "S13",
+      "title": "Platform Address System",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/address-system.md#L7-L44",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "data-contract-ref",
-      "title": "Data Contracts (Reference)",
-      "kind": "vendored authoritative Platform documentation",
-      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/data-contracts.md",
+      "id": "S14",
+      "title": "State Transition (incl. shielded types and credit rate)",
+      "kind": "vendored authoritative Platform protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/state-transition.md#L14-L29,L151",
       "version": "Dash Platform Docs 3.1.0"
     },
     {
-      "id": "curriculum",
-      "title": "Fixed course curriculum (lessons.json)",
-      "kind": "curriculum manifest",
-      "locator": "lesson-factory/curriculum.json, module 2",
-      "version": "schemaVersion 1"
+      "id": "S15",
+      "title": "Shielded Transaction Endpoints",
+      "kind": "vendored authoritative Platform API reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/reference/dapi-endpoints-platform-endpoints.md#L4313-L4412",
+      "version": "Dash Platform Docs 3.1.0"
+    },
+    {
+      "id": "S16",
+      "title": "Dash Platform Book README (key capabilities)",
+      "kind": "vendored authoritative Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/README.md#L116-L139",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "S17",
+      "title": "Dash Platform Book CHANGELOG (shielded pool rollout)",
+      "kind": "vendored authoritative Platform Book",
+      "locator": ".agents/skills/dash-docs/platform-book/CHANGELOG.md#L649-L1101",
+      "version": "Dash Platform Book v4.2-dev"
+    },
+    {
+      "id": "S18",
+      "title": "What is Dash? (prerequisite lesson)",
+      "kind": "prior lesson (reading context only)",
+      "locator": "content/academy/what-is-dash.mdx",
+      "version": "committed"
+    },
+    {
+      "id": "S19",
+      "title": "Platform glossary (reusable Term ids)",
+      "kind": "course source file",
+      "locator": "lib/glossary.ts#L94-L255",
+      "version": "committed"
     }
   ],
   "claims": [
     {
       "id": "C1",
-      "text": "Dash Platform is a layer-2 Web3 technology stack on top of Dash: a decentralized data storage and application layer where developers define schemas and submit structured state transitions instead of deploying arbitrary user-written code on-chain.",
-      "sourceIds": ["intro-platform"],
+      "text": "Dash Platform is a decentralized data-storage and application layer on top of Dash; Dash Core is the layer-1 payment layer. Platform stores structured state governed by schemas and signed state transitions rather than running arbitrary user-written code.",
+      "sourceIds": ["S1", "S2"],
       "support": "direct"
     },
     {
       "id": "C2",
-      "text": "Its two core components are Drive (consensus-verified decentralized storage of user-created data) and DAPI (a decentralized HTTP API exposing JSON-RPC and gRPC endpoints covering both Core layer 1 and Platform layer 2).",
-      "sourceIds": ["intro-platform", "dapi-exp"],
+      "text": "Drive is Platform's storage component, hosted by the masternode (evonode) network, and holds current Platform state; each registered data contract has its own application state within it.",
+      "sourceIds": ["S2", "S3"],
       "support": "direct"
     },
     {
       "id": "C3",
-      "text": "Application data is stored in Drive and held in GroveDB, an authenticated hierarchical store that returns cryptographic proofs with query responses, so a client does not have to trust the API provider that its data is authentic.",
-      "sourceIds": ["intro-platform", "drive"],
+      "text": "A document is an application record associated with a data contract, carrying application fields plus base fields such as identifier, document type, revision, contract id, and owning identity.",
+      "sourceIds": ["S5"],
       "support": "direct"
     },
     {
       "id": "C4",
-      "text": "To store data, a developer first registers a data contract — a JSON-Schema description of the application's document types (their fields, types, and indexes) — analogous to defining a schema for a document-oriented database like MongoDB.",
-      "sourceIds": ["protocol", "data-contract-exp", "data-contract-ref"],
+      "text": "A data contract is the schema that declares the document types an application may store and the fields and indexes those records satisfy; a write succeeds only if the resulting data matches the schema.",
+      "sourceIds": ["S4"],
       "support": "direct"
     },
     {
       "id": "C5",
-      "text": "A document is the atomic unit of stored user data (resembling a document in a document-oriented DB); every document must comply with its app's data contract and carries base fields such as $id, $type, $dataContractId, $ownerId, $revision, and timestamps.",
-      "sourceIds": ["protocol", "document-exp"],
+      "text": "An identity is a persistent Platform account with public keys and a credit balance that owns data and authorizes changes through signed state transitions.",
+      "sourceIds": ["S6"],
       "support": "direct"
     },
     {
       "id": "C6",
-      "text": "Writes arrive as state transitions — a versioned header, a payload, and the authoring identity's signature — covering operations such as data-contract creation, document and token updates, identity management, credit transfers, and masternode voting.",
-      "sourceIds": ["protocol", "drive"],
+      "text": "DPNS registers human-readable names and associates them with identities; it is implemented as an application on top of Platform and is a capability Dash Core alone does not provide.",
+      "sourceIds": ["S7"],
       "support": "direct"
     },
     {
       "id": "C7",
-      "text": "Identities are the foundational user primitive: one or more public keys recorded on the platform chain that control a user's profile and sign their documents, plus a credit balance established by locking Dash on layer 1.",
-      "sourceIds": ["identity-exp"],
+      "text": "DAPI is a decentralized HTTP/gRPC API served by masternodes that exposes both Core and Platform over one interface; SDKs wrap it and let clients connect without running their own node.",
+      "sourceIds": ["S8", "S2"],
       "support": "direct"
     },
     {
       "id": "C8",
-      "text": "Credits are the fee mechanism: locking Dash on the Core chain creates credit balance that pays the state-transition fees of platform activity, and credits can convert back to Dash subject to a daily network limit.",
-      "sourceIds": ["identity-exp"],
+      "text": "Queries can return locally verifiable cryptographic proofs (inclusion and non-inclusion) so a client can verify a response against committed state instead of trusting the node that answered.",
+      "sourceIds": ["S9", "S16"],
       "support": "direct"
     },
     {
       "id": "C9",
-      "text": "DPNS registers human-readable .dash names tied to an identity and is itself implemented as an application built on top of Platform.",
-      "sourceIds": ["dpns-exp"],
+      "text": "Configurable application tokens are first-class protocol objects declared in a data contract (like ERC-20 style assets) with built-in mint, transfer, burn, freeze, and a direct-purchase action paid in credits.",
+      "sourceIds": ["S10"],
       "support": "direct"
     },
     {
       "id": "C10",
-      "text": "Developers can create and manage fungible tokens (comparable to ERC-20 style assets) without writing smart contracts, using data contracts, token state transitions, and access-control groups.",
-      "sourceIds": ["tokens-exp"],
+      "text": "An NFT is not a separate standard: it is a uniquely identified Platform document with built-in transfer and a set-price purchase mechanism handled by the protocol.",
+      "sourceIds": ["S11", "S5"],
       "support": "direct"
     },
     {
       "id": "C11",
-      "text": "NFTs are supported as Platform documents: each has a unique id, can be immutable or mutable and deletable, supports ownership change, and has a built-in transfer-and-purchase system.",
-      "sourceIds": ["nft-exp"],
+      "text": "The shielded pool moves value privately via Orchard/Halo2 zero-knowledge proofs (shield, shielded transfer, unshield, shielded withdrawal); pool types are credit pool (0), main token pool (1), and individual token pool (2).",
+      "sourceIds": ["S16", "S14", "S15"],
       "support": "direct"
     },
     {
       "id": "C12",
-      "text": "DashPay is a data-contract application providing a user-centric wallet where payments are addressed by username through encrypted contact-request channels.",
-      "sourceIds": ["dashpay-exp", "data-contract-exp"],
-      "support": "direct"
+      "text": "Shielding privatizes movement of value; it does not make application documents private. Documents remain replicated, queryable state.",
+      "sourceIds": ["S16", "S2", "S9"],
+      "support": "inference"
     },
     {
       "id": "C13",
-      "text": "The docs' end-to-end example apps are Dashnote (a notes app exercising the document CRUD lifecycle) and DashMint Lab (an NFT marketplace); DashPay is the flagship data-contract wallet.",
-      "sourceIds": ["tutorials-intro", "dashpay-exp", "data-contract-exp"],
+      "text": "Shielded-pool availability is version-dependent: Docs 3.1.0 lists the shielded endpoints as added in 3.1.0 but 'not yet available on public nodes', while the v4.2-dev book documents pool seeding at genesis and gating behind protocol v12.",
+      "sourceIds": ["S15", "S17"],
       "support": "direct"
     },
     {
       "id": "C14",
-      "text": "The curriculum's remaining hands-on modules (4 through 18) are: environment setup / verified read, fund a Platform address, create a Dash identity, register a DPNS username, data contracts, write a data contract, documents, submit a document, query documents, document transfer and purchase, tokens, and token-paid document creation.",
-      "sourceIds": ["curriculum"],
+      "text": "Credits pay for Platform work (storage and processing fees). They are established by locking Dash on Core; state transition fees are charged against an identity's credit balance.",
+      "sourceIds": ["S12", "S6", "S14"],
       "support": "direct"
     },
     {
       "id": "C15",
-      "text": "Taken together, modules 4-18 compose one small end-to-end testnet application that touches DAPI, identities, names, data contracts, documents, and tokens.",
-      "sourceIds": ["curriculum"],
-      "support": "inference"
+      "text": "Platform addresses are bech32m (DIP-18) destinations that can hold Platform credits and fund identity operations without a pre-existing identity.",
+      "sourceIds": ["S13"],
+      "support": "direct"
     },
     {
       "id": "C16",
-      "text": "Module 2 scope: must cover 'how Platform stores application data', 'concrete things you can build', and 'what you will build in this course'; must not cover masternode quorums and LLMQs, InstantSend-versus-ChainLock mechanics, Tenderdash/consensus internals, or re-teaching what a blockchain is.",
-      "sourceIds": ["curriculum"],
+      "text": "Because anyone can top up any identity's credit balance, an application can sponsor its users' fees by paying for their operations.",
+      "sourceIds": ["S6"],
       "support": "direct"
+    },
+    {
+      "id": "C17",
+      "text": "An app's frontend and custom business logic run where the developer chooses; the network's responsibility is keeping the shared records, their ownership, and the rules that validate changes. Third-party fee funding is a client-side convention, not a protocol requirement.",
+      "sourceIds": ["S2", "S6"],
+      "support": "inference"
     }
   ],
   "apiExamples": [],
-  "conflicts": [],
+  "conflicts": [
+    {
+      "id": "V1",
+      "topic": "Shielded pool public-network availability is contested between Dash Platform Docs 3.1.0 and the v4.2-dev Platform Book",
+      "status": "resolved",
+      "sources": ["S15", "S17"],
+      "resolution": "Describe the pool's purpose (private movement of value via zero-knowledge proofs) and its privacy boundary (application documents stay public) at concept level. Omit any mainnet-availability date, and do not repeat module 4's 'not yet available on public nodes' sentence verbatim. The version conflict is recorded here rather than resolved into a forward-looking claim."
+    }
+  ],
   "uncertainties": [
     {
       "id": "U1",
-      "topic": "Payment-confirmation speed belongs to module 1, not module 2",
+      "topic": "How much of the token-vs-NFT transfer/purchase mechanics belongs in this overview",
       "blocking": false,
-      "resolution": "Payment speed is acknowledged only in passing via 'Core settles Dash payments' — the money-layer contrast — and is never given its own section or quiz item, so module 2 does not duplicate module 1's mustCover."
+      "resolution": "Name the distinction (interchangeable configured token vs unique transferable document) and that transfer and set-price purchase are protocol features, without enumerating the token action set or pricing. The action inventory belongs to later modules."
     },
     {
       "id": "U2",
-      "topic": "Avoiding the hard mustNotCover boundary 're-teaching what a blockchain is'",
+      "topic": "Whether the lesson should make a forward-looking statement about shielded-pool availability",
       "blocking": false,
-      "resolution": "The lesson opens with a single-sentence bridge that assumes module 1 ('you met Dash the money'), and never re-defines a blockchain, a block, or consensus."
+      "resolution": "Describe purpose and privacy boundary only; omit any availability date (see conflict V1)."
     },
     {
       "id": "U3",
-      "topic": "How much of the Core/Platform split to restate",
+      "topic": "The committed what-is-dash-platform.mdx and its evidence ledger predate the expanded manifest",
       "blocking": false,
-      "resolution": "The split is restated in a two-bullet list plus a one-way-relationship sentence, focused solely on the data-storage contrast, so the lesson stays within its 12-minute budget."
+      "resolution": "Re-author the lesson around the current manifest rather than patching the stale draft. The through-line (record after payment -> valid record needs an author -> pick the layer) is kept, with DAPI/proofs, tokens/NFTs, the shielded pool, credits/addresses/sponsorship, and the assembled example added."
     }
   ],
-  "executableExamples": []
+  "executableExamples": [],
+  "teachingPlan": {
+    "priorKnowledge": [
+      "What a blockchain is: an append-only ledger with hash-linked blocks, signatures, consensus, and expense-to-rewrite (content/academy/what-is-a-blockchain.mdx, 'A log that grows at one end', 'What makes rewriting expensive').",
+      "Dash Core as the payment layer: InstantSend locks inputs before a block, ChainLocks protect the block, and masternodes are the collateralized second tier that supplies these services (content/academy/what-is-dash.mdx, 'Who makes the lock stick?', 'Why the checkout benefits from both').",
+      "The one-line handoff to Platform at the end of the prerequisite: 'Dash also supports applications beyond payments through Dash Platform, an application-data layer hosted by a type of masternode called an Evolution masternode' (content/academy/what-is-dash.mdx, final paragraph).",
+      "Glossary terms already defined and reusable via <Term>: masternode, evonode, state-transition, dpns, dapi, drive, data-contract, identity, smart-contract, dapp, state-proof, light-client, grovedb, duff (lib/glossary.ts)."
+    ],
+    "centralQuestion": "I've settled a Dash payment, but my app still needs its own records — usernames, orders, status. Where does that data live once it isn't in my own database, and what can I build on top of it?",
+    "likelyMistake": "Treating Platform either as a private database (assuming data sent there is confidential) or as a general-purpose smart-contract chain, and consequently misrouting features: putting payment-only features on Platform, or expecting arbitrary uploaded code and on-network secrets to be possible there.",
+    "workedExample": "A small invented app: an event organizer (Ada) sells limited-edition seat passes. Core settles the Dash payment; a DPNS name brands the festival; each seat pass is a unique transferable document under Ada's data contract, bought at a set price using the protocol's built-in purchase; buyer identities own their passes; the network stores and validates the records in Drive while the app tops up buyers' credit balances, and the ticket-sales frontend plus pricing logic stay on Ada's own servers. The example shows several features cooperating and marks the boundary between Ada's code and the network's work.",
+    "reasoningChain": [
+      "Accepting a Dash payment still leaves the app needing records a payment can't carry, which raises where shared application data lives without a private database.",
+      "A shared store is only useful if what may be stored is agreed, so a data contract states the rules and documents are the records that satisfy them, held in Drive.",
+      "A valid record still needs an author, so identities own data and sign the changes, and DPNS attaches readable names to those identities.",
+      "An app can't practically reach shared state by running its own node, so DAPI and the SDKs connect clients, which raises how to trust an answering server.",
+      "Query proofs resolve that: a client verifies a response against committed state instead of trusting the node that answered.",
+      "Knowing the store holds more than plain rows, ask what kinds of asset those records can be: interchangeable value is a configured token, a specific ownable thing is a unique transferable document (NFT), both with transfer and purchase built in.",
+      "Putting records on a shared network raises what stays private: the shielded pool moves value privately, but documents themselves remain public state.",
+      "All that network work has a metering cost: credits (from Dash locked into a Platform address) pay it, and because anyone can top up an identity, an app can sponsor its users' fees.",
+      "The closing example assembles several of these pieces into one app and makes explicit which responsibilities are the developer's and which are the network's."
+    ],
+    "continuityGaps": [
+      "The prerequisite's handoff names an 'Evolution masternode', but the glossary term is 'evonode'; the lesson lands on 'evonode' rather than propagating 'Evolution masternode'.",
+      "Credits, DAPI, SDKs, and the shielded pool are first introduced here, but several are already glossary-defined, so reuse <Term> rather than re-defining inline where the sentence does not depend on the meaning.",
+      "The committed why-build-on-dash.mdx (module 4) asserts the shielded-pool endpoints are 'not yet available on public nodes', which may itself be stale; module 3 must not repeat that availability claim verbatim (uncertainty U2 / conflict V1).",
+      "No prior lesson defines what a Platform identity's keys are for (purposes/security levels are mustNotCover here), so the lesson describes ownership and authorization at effect level without touching key derivation."
+    ]
+  },
+  "coverageMap": [
+    {
+      "requirement": "the learner can describe Platform as an application layer on Dash, distinguish it from Core payments, and recognise a feature that needs Platform",
+      "explanation": "Two layers, two jobs",
+      "demonstration": "A checkout that only moves Dash routes to Core; a shared profile its owner edits, or a readable name, routes to Platform, and one shop can use both at once.",
+      "assessment": ["two-layers"]
+    },
+    {
+      "requirement": "the learner can describe identities as accounts that own data and authorize actions, and Dash names (DPNS) as readable names associated with identities",
+      "explanation": "A valid record still needs an author",
+      "demonstration": "A user's profile and readable name both belong to the user's identity, which signs authorized changes to what it owns; another identity's well-formed replacement is refused.",
+      "assessment": ["names-and-identity"]
+    },
+    {
+      "requirement": "the learner can describe Drive as shared network storage, documents as application records, and data contracts as the rules for those records",
+      "explanation": "The record after the payment",
+      "demonstration": "A profile is a document held in Drive; a data contract declares the fields and rules the profile must satisfy before a write is accepted.",
+      "assessment": ["record-and-rules"]
+    },
+    {
+      "requirement": "the learner can say how DAPI and SDKs connect an app to Platform, and what verifiable queries offer beyond trusting a responding server",
+      "explanation": "Reaching the network",
+      "demonstration": "The app talks through DAPI and the SDKs without running a node, and a state proof ties a query answer to committed state so the client verifies it rather than trusting the replying node.",
+      "assessment": ["verifiable-queries"]
+    },
+    {
+      "requirement": "the learner can distinguish configurable application tokens from unique transferable records or NFTs, including built-in transfer and purchase capabilities",
+      "explanation": "Two ways to hold value",
+      "demonstration": "A loyalty currency is a configured token with any two units interchangeable; a numbered seat is a unique NFT document, with transfer and set-price purchase built into the protocol.",
+      "assessment": ["token-or-nft"]
+    },
+    {
+      "requirement": "the learner can describe shielded Dash or shielded balances as private movement of value through Platform's shielded pool, without assuming application documents become private",
+      "explanation": "What stays private",
+      "demonstration": "The shielded pool conceals value movement's sender, receiver, and amount, while documents in Drive remain replicated, queryable state.",
+      "assessment": ["shielding"]
+    },
+    {
+      "requirement": "the learner can recognise credits as payment for Platform work, Platform addresses as funding destinations, and fee sponsorship as something an app can provide",
+      "explanation": "Who pays for the work",
+      "demonstration": "An empty-account buyer is topped up by Ada; credits (created by locking Dash, held at a Platform address) pay the network work, so sponsorship is just an app funding someone's balance.",
+      "assessment": ["credits-and-sponsorship"]
+    },
+    {
+      "requirement": "the learner can connect several Platform features in one small application example and distinguish the app's frontend and custom logic from the network's responsibilities",
+      "explanation": "One app, assembled",
+      "demonstration": "Ada's festival app holds passes in Drive, sells them at a set price as NFTs, brands the sale with a DPNS name, and sponsors buyers' credits; the ticket page and pricing run on Ada's servers while the network keeps ownership and rules.",
+      "assessment": ["network-or-app"]
+    }
+  ],
+  "conceptualExamples": [
+    {
+      "id": "core-vs-platform-routing",
+      "sourceIds": ["S1", "S2", "S6", "S7"],
+      "verification": "conceptual"
+    },
+    {
+      "id": "token-vs-nft-choice",
+      "sourceIds": ["S10", "S11"],
+      "verification": "conceptual"
+    },
+    {
+      "id": "shielding-boundary",
+      "sourceIds": ["S16", "S9"],
+      "verification": "conceptual"
+    },
+    {
+      "id": "festival-app-assembly",
+      "sourceIds": ["S2", "S5", "S6", "S7", "S10", "S11", "S12", "S16"],
+      "verification": "conceptual"
+    }
+  ]
 }

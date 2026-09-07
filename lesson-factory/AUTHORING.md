@@ -21,12 +21,22 @@ handing work over — it catches the mistakes that are easy to make and annoying
 
 ## The curriculum is fixed
 
-The 18 lessons are defined in `lesson-factory/curriculum.json`. That file is the source of truth for each
+The 19 lessons are defined in `lesson-factory/curriculum.json`. That file is the source of truth for each
 lesson's title, description, length, and what it must cover. **You edit the lesson text; a developer
 edits the curriculum.** If a lesson needs a different title or a different scope, ask — don't change
 the frontmatter to disagree with the manifest, because validation will reject it.
 
 ## Anatomy of a lesson
+
+Before drafting, read the preceding lessons and make a teaching plan: what the reader already
+knows, the question to answer, a likely mistake, and one worked example. Follow the
+[lesson workflow](../.agents/skills/write-dash-lesson/references/workflow.md). Keep the plan and a
+coverage map in the evidence ledger. For every `mustCover`, point to its explanation, demonstration,
+and assessment. Drafts run sequentially in the checkout so each can build on the previous one;
+earlier files are reference context, not permission to edit them.
+
+Review reading time after writing. Word count is advisory, not a minimum: never add filler to hit
+the manifest's estimate. Propose metadata changes in the report rather than changing the manifest.
 
 Every file starts with frontmatter between `---` lines. Copy these values from the lesson's row in
 `lesson-factory/curriculum.json`; they must match exactly.
@@ -37,7 +47,6 @@ title: What is Dash Platform?
 description: Meet Dash, and see what Dash Platform lets you build.
 module: 1
 tier: concepts
-estimatedMinutes: 12
 exp: 100
 verification: quiz
 prerequisites: []
@@ -49,17 +58,20 @@ prerequisites: []
 | `title`, `description` | Must match the manifest word for word |
 | `module` | Position in the course, 1–18 |
 | `tier` | `concepts` (reading + quiz) or `sdk` (hands-on testnet work). The two interleave — a concepts lesson sits directly in front of the lab that uses it, so tier does not follow from the module number |
-| `estimatedMinutes`, `exp` | From the manifest |
+| `exp` | From the manifest |
+| `estimatedMinutes` | SDK lessons only, from the manifest. A concepts lesson must omit it: the site derives the estimate from the lesson text (`lib/reading-time.ts`) so it cannot go stale |
 | `verification` | `quiz`, `testnet`, or `hybrid` |
 | `prerequisites` | **Module numbers, not slugs** — `[3]`, not `["identities"]` |
 
-Then the body. Open with a sentence or two saying what the lesson lets the reader do and how it
-follows from the one before it — not a heading, and not a bulleted objectives list.
+Then the body. Start on the subject, with a concrete problem or example that gives the reader a
+reason to keep reading. Omit learning-objective lists, "What you accomplished" recaps, and
+"Checkpoint" headings. The quiz and verifier components provide their own labels.
 
-Two headings are required and validation fails without them:
+Include the quiz or verifier required by the manifest. Validation checks the component and its
+challenge ID, not a heading above it.
 
-- `## Checkpoint` — where the quiz or verifier goes
-- `## What you accomplished` — a short close
+`LessonQuiz` introduces itself with "Check your understanding"; `TestnetVerifier` uses "Verify your
+work". Their built-in headings and visual separation mark the shift from reading to doing.
 
 Don't use a top-level `# Heading` in the body; the title comes from the frontmatter.
 

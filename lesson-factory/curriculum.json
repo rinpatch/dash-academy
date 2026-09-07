@@ -11,44 +11,93 @@
   "lessons": [
     {
       "module": 1,
-      "slug": "what-is-dash",
-      "title": "What is Dash?",
+      "slug": "what-is-a-blockchain",
+      "title": "What is a blockchain?",
       "tier": "concepts",
-      "description": "Start from zero: what a blockchain is, and what makes Dash different.",
-      "estimatedMinutes": 12,
+      "description": "Start from zero: the problem every blockchain exists to solve, and how it solves it.",
       "exp": 100,
       "prerequisites": [],
-      "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
-      "mustCover": ["what a blockchain is, in terms a developer already understands", "transactions, keys, and addresses", "why decentralization matters to someone building an app", "Dash as money", "masternodes as the thing that makes the rest possible", "payments confirm in about a second", "one network, two jobs: Dash Core and Dash Platform"],
-      "mustNotCover": ["LLMQ and quorum formation internals", "the InstantSend versus ChainLock locking protocols", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
+      "verification": { "kind": "quiz", "challengeId": "what-is-a-blockchain" },
+      "mustCover": ["the learner can explain what a blockchain stores and why the only edit it allows is an append, by relating it to a structure they already use", "the learner can say why no single operator can rewrite the record, and what makes that expensive rather than merely forbidden", "the learner can state what a builder gains by having no administrator, and what they give up for it"],
+      "mustNotCover": ["the UTXO model, inputs and outputs, or change", "private keys, public keys, and addresses beyond a <Term> gloss", "Dash's masternodes, second tier, or confirmation speed", "Dash Core versus Dash Platform", "LLMQ and quorum formation internals", "Tenderdash and consensus internals", "Platform identities, contracts, or documents"]
     },
     {
       "module": 2,
-      "slug": "what-is-dash-platform",
-      "title": "What is Dash Platform?",
+      "slug": "what-is-dash",
+      "title": "What is Dash?",
       "tier": "concepts",
-      "description": "See what Dash Platform lets you build, and what you will build here.",
-      "estimatedMinutes": 12,
+      "description": "See how InstantSend, ChainLocks, and masternodes make Dash work as digital cash.",
       "exp": 100,
-      "prerequisites": ["what-is-dash"],
-      "verification": { "kind": "quiz", "challengeId": "what-is-dash-platform" },
-      "mustCover": ["how Platform stores application data", "concrete things you can build", "what you will build in this course"],
-      "mustNotCover": ["masternode quorums and LLMQs", "InstantSend versus ChainLock mechanics", "Tenderdash and consensus internals", "re-teaching what a blockchain is"]
+      "prerequisites": ["what-is-a-blockchain"],
+      "verification": { "kind": "quiz", "challengeId": "what-is-dash" },
+      "mustCover": ["the learner can say why an InstantSend payment can be safely accepted and re-spent before it enters a block", "the learner can distinguish the transaction protection supplied by InstantSend from the block protection supplied by ChainLocks, and say why Dash uses both", "the learner can say what masternodes do that ordinary full nodes do not, and why Dash's fast, secure payment experience depends on them"],
+      "mustNotCover": ["re-teaching what a blockchain or a transaction is", "LLMQ formation, quorum selection, threshold signing, or protocol-message internals", "Tenderdash and consensus internals", "routing features between Dash Core and Dash Platform", "Platform beyond a brief transition to the next lesson"]
     },
     {
       "module": 3,
+      "slug": "what-is-dash-platform",
+      "title": "What is Dash Platform?",
+      "tier": "concepts",
+      "description": "See what Dash Platform adds to Dash and what you can build with it.",
+      "exp": 100,
+      "prerequisites": ["what-is-dash"],
+      "verification": { "kind": "quiz", "challengeId": "what-is-dash-platform" },
+      "mustCover": [
+        "the learner can describe Platform as an application layer on Dash, distinguish it from Core payments, and recognise a feature that needs Platform",
+        "the learner can describe identities as accounts that own data and authorize actions, and Dash names (DPNS) as readable names associated with identities",
+        "the learner can describe Drive as shared network storage, documents as application records, and data contracts as the rules for those records",
+        "the learner can say how DAPI and SDKs connect an app to Platform, and what verifiable queries offer beyond trusting a responding server",
+        "the learner can distinguish configurable application tokens from unique transferable records or NFTs, including built-in transfer and purchase capabilities",
+        "the learner can describe shielded Dash or shielded balances as private movement of value through Platform's shielded pool, without assuming application documents become private",
+        "the learner can recognise credits as payment for Platform work, Platform addresses as funding destinations, and fee sponsorship as something an app can provide",
+        "the learner can connect several Platform features in one small application example and distinguish the app's frontend and custom logic from the network's responsibilities"
+      ],
+      "mustNotCover": [
+        "masternode quorums and LLMQs",
+        "InstantSend versus ChainLock mechanics",
+        "Tenderdash and consensus internals",
+        "re-teaching what a blockchain is",
+        "identity key purposes, security levels, or derivation paths",
+        "document metadata inventories, schema syntax, or detailed contract restrictions",
+        "SDK code, endpoint selection, proof verification steps, or shielded cryptography internals",
+        "fee conversion arithmetic, token configuration inventories, or funding instructions",
+        "a broad product-fit checklist, governance, or a detailed privacy tradeoff discussion reserved for Why build on Dash?"
+      ],
+      "teachingApproach": [
+        "This is a brief feature overview, not a deep lesson on document ownership. Give each capability a few sentences answering what it is and what someone could build with it. Short feature sections are appropriate; do not force every capability into a long worked scenario.",
+        "Start with a concise explanation of what Platform adds to Dash. End the explanation with one small hypothetical application connecting several features. Use a compact comparison table only if it helps; do not add a diagram or an objectives/recap section.",
+        "Explain enough to recognise each capability; subsequent lessons teach the mechanics. Quiz questions should test feature selection and boundaries rather than internal details or acronym recall. Keep the existing metadata unless an editorial report proposes a different reading estimate.",
+        "Check current authoritative documentation for shielded-pool behavior and any claim about public-network availability; the vendored docs and existing Why build on Dash? lesson may be stale. Distinguish documented protocol support from wallet/SDK and network deployment, and record source/version conflicts rather than repeating an unverified roadmap claim."
+      ]
+    },
+    {
+      "module": 4,
       "slug": "why-build-on-dash",
       "title": "Why build on Dash?",
       "tier": "concepts",
       "description": "Decide when Dash is a good fit for an application.",
-      "estimatedMinutes": 12,
       "exp": 100,
       "prerequisites": ["what-is-dash-platform"],
       "verification": { "kind": "quiz", "challengeId": "why-build-on-dash" },
-      "mustCover": ["fit and non-fit", "payments and tokens", "usernames and NFTs", "Dash versus Credits", "privacy", "DAO"]
+      "mustCover": ["the learner can decide, for an app they have in mind, whether Dash fits, and say what would make it a bad choice", "the learner can name what Dash lets them build past payments: tokens, usernames, records that change hands", "the learner can recognize indexed, queryable Platform state and verifiable query results as application capabilities without learning query syntax", "the learner can say when they are spending Dash and when they are spending Credits", "the learner can say what a public ledger means for the people using their app", "the learner can say that Dash introduced its DAO in 2015 and is the oldest DAO still operating, explain at a high level how masternode voting and treasury funding connect, and know where to view current proposals"],
+      "mustNotCover": [
+        "re-teaching the module 3 feature overview or turning the lesson into a feature inventory",
+        "InstantSend, ChainLock, token, NFT, identity, DPNS, document, contract, or shielded-pool mechanics",
+        "exact confirmation times, fee conversion arithmetic, collateral amounts, voting thresholds, or proposal mechanics",
+        "claims about current shielded-pool deployment or wallet availability",
+        "roadmap promises, future virtual machines, or other speculative capabilities"
+      ],
+      "teachingApproach": [
+        "Frame the lesson around a developer deciding whether Dash belongs in an application architecture, not around selling Dash or listing its features. Use one small hypothetical app whose requirements create both good-fit and bad-fit decisions.",
+        "Treat module 3's feature overview as known. Refer back to its capabilities only as choices in the app decision, then spend the explanation on tradeoffs: public shared state, Dash versus Credits, and how the network funds and chooses work.",
+        "Give queryability one short, concrete treatment: applications can ask indexed questions about shared Platform data and verify results against committed state. Leave query syntax, index design, pagination, and proof mechanics to later lessons.",
+        "Make the public-ledger consequence concrete for an app's users: records written to shared state are queryable, so secrets need encryption or off-network storage.",
+        "State Dash's history directly: its DAO began in 2015 and is the oldest DAO still operating. Explain only the useful governance loop—proposals request treasury funding, masternodes vote, and approved work is funded—and link both the official governance guide and a live current-proposals page so the learner can explore real proposals.",
+        "End with a decision the learner can transfer to their own app. Quiz questions should ask whether a requirement fits Dash and why; avoid acronym, product-history, and numeric recall. Do not add an objectives, recap, checkpoint, or diagram section."
+      ]
     },
     {
-      "module": 4,
+      "module": 5,
       "slug": "environment-setup",
       "title": "Environment setup",
       "tier": "sdk",
@@ -56,49 +105,72 @@
       "estimatedMinutes": 18,
       "exp": 150,
       "prerequisites": ["why-build-on-dash"],
-      "verification": { "kind": "testnet", "challengeId": "environment-setup", "operation": "verified-read" },
+      "verification": { "kind": "testnet", "challengeId": "environment-setup" },
       "mustCover": ["install Evo SDK", "connect to testnet", "read from live DAPI"],
       "mustNotCover": ["how DAPI selects an endpoint", "how state proofs are verified"]
     },
     {
-      "module": 5,
+      "module": 6,
       "slug": "dapi-and-proofs",
       "title": "DAPI and Proofs",
       "tier": "concepts",
       "description": "Understand what answered your first request, and why you can trust the answer.",
-      "estimatedMinutes": 15,
       "exp": 100,
       "prerequisites": ["environment-setup"],
       "verification": { "kind": "quiz", "challengeId": "dapi-and-proofs" },
-      "mustCover": ["decentralized API", "Core and Platform access", "endpoint selection", "state proofs", "light-client trust", "verification boundaries"]
+      "mustCover": ["the learner can say what answered their SDK call, and why it is not one company's server", "the learner can say how the SDK picks a node to ask, and why picking a bad one does not have to hurt them", "the learner can say what a state proof gives them that an ordinary API response cannot", "the learner can separate the parts of an answer they can check themselves from the parts they still take on trust"],
+      "mustNotCover": [
+        "proof byte fields, Merkle-path reconstruction, AppHash internals, quorum formation, LLMQs, or threshold signatures",
+        "SDK code, factory or method names, concrete seed hostnames, node IP addresses, or endpoint configuration",
+        "a transport or endpoint inventory beyond what the learner needs to understand who answered",
+        "claiming every DAPI or SDK response is automatically proved or independently verified",
+        "claiming DAPI access has the same trust model as running a full node",
+        "claiming the learner completed Environment setup while that prerequisite remains a placeholder"
+      ],
+      "teachingApproach": [
+        "Start with a hypothetical SDK request that returns an answer from a node the developer does not run. Let four questions drive the explanation: who answered, what happens if that node fails, what stops it from lying, and what trust remains.",
+        "Use the module 3 DAPI overview without repeating Core-versus-Platform basics. Explain endpoint discovery, retry, and avoiding a failed node at effect level; exact network addresses and SDK configuration belong in hands-on material.",
+        "Present a state proof as evidence tied to committed network state, then contrast a proved answer with an ordinary API response. Explain the remaining trusted anchor without teaching proof construction or quorum internals.",
+        "Environment setup is currently a placeholder. Keep the scenario self-contained and never say the learner already ran code. A compact verified-versus-trusted comparison is acceptable if it helps the decision; do not add a diagram, objectives, recap, or checkpoint heading."
+      ]
     },
     {
-      "module": 6,
+      "module": 7,
       "slug": "identities",
       "title": "Identities",
       "tier": "concepts",
       "description": "Understand Platform identities, keys, credits, and their relationship to wallets.",
-      "estimatedMinutes": 12,
       "exp": 100,
       "prerequisites": ["dapi-and-proofs"],
       "verification": { "kind": "quiz", "challengeId": "identities" },
-      "mustCover": ["identity versus wallet address", "identity keys", "credits and fees"]
+      "mustCover": ["the learner can say what an identity is that a wallet address is not, and why Platform asks for one", "the learner can say why an identity carries several keys rather than one, and what each is for", "the learner can work out what a Platform operation costs them and what they have to top up"]
     },
     {
-      "module": 7,
+      "module": 8,
       "slug": "wallets-keys-and-testnet",
       "title": "Wallets, keys, and testnet",
       "tier": "concepts",
       "description": "Handle keys safely and get the testnet funds the next lessons need.",
-      "estimatedMinutes": 14,
       "exp": 100,
       "prerequisites": ["identities"],
       "verification": { "kind": "quiz", "challengeId": "wallets-keys-and-testnet" },
       "mustCover": ["seed phrases and derivation", "what a private key controls, and what losing it costs", "testnet versus mainnet", "getting testnet Dash from a faucet"],
-      "mustNotCover": ["DIP-18 Platform address derivation"]
+      "mustNotCover": [
+        "DIP-18 Platform address derivation",
+        "BIP39 entropy sizes, the complete mnemonic word-count table, concrete BIP32 or BIP44 paths, or coin-type numbers",
+        "identity key purposes, security levels, or derivation paths",
+        "example mnemonic words, real secrets, or instructions to destroy a key or intentionally strand funds",
+        "testnet node counts, infrastructure ownership claims, or promises that a faucet is currently available"
+      ],
+      "teachingApproach": [
+        "Follow one hypothetical developer preparing for the first funded testnet operation. The practical questions are what must be backed up, what the backup can recreate, why losing or leaking it matters, which network is safe for practice, and where valueless test Dash comes from.",
+        "Explain derivation as the reason one seed phrase can recreate many keys and addresses. The learner needs the relationship, not entropy arithmetic, standards history, or path syntax.",
+        "Keep the safety advice precise: never expose a seed phrase or private key, and never imply software support can restore one. Do not ask the learner to delete a key as an experiment.",
+        "Explain mainnet and testnet as separate networks whose funds do not cross between them. Describe a faucet and cite a current authoritative faucet URL if research verifies one, while warning only that public services can be unavailable. Quiz decisions should test recovery, safe network choice, and funding source."
+      ]
     },
     {
-      "module": 8,
+      "module": 9,
       "slug": "fund-a-platform-address",
       "title": "Fund a Platform address",
       "tier": "sdk",
@@ -106,11 +178,11 @@
       "estimatedMinutes": 20,
       "exp": 175,
       "prerequisites": ["wallets-keys-and-testnet"],
-      "verification": { "kind": "testnet", "challengeId": "fund-a-platform-address", "operation": "funded-address" },
+      "verification": { "kind": "testnet", "challengeId": "fund-a-platform-address" },
       "mustCover": ["DIP-18 derivation", "bech32m Platform address", "funding", "identity funding path"]
     },
     {
-      "module": 9,
+      "module": 10,
       "slug": "create-a-dash-identity",
       "title": "Create a Dash Identity",
       "tier": "sdk",
@@ -118,11 +190,11 @@
       "estimatedMinutes": 20,
       "exp": 200,
       "prerequisites": ["fund-a-platform-address"],
-      "verification": { "kind": "testnet", "challengeId": "create-a-dash-identity", "operation": "identity-create" },
+      "verification": { "kind": "testnet", "challengeId": "create-a-dash-identity" },
       "mustCover": ["identity creation", "key purposes and security levels", "credit balance"]
     },
     {
-      "module": 10,
+      "module": 11,
       "slug": "register-a-username",
       "title": "Register a Username (DPNS)",
       "tier": "sdk",
@@ -130,23 +202,36 @@
       "estimatedMinutes": 22,
       "exp": 200,
       "prerequisites": ["create-a-dash-identity"],
-      "verification": { "kind": "testnet", "challengeId": "register-a-username", "operation": "dpns-register" },
+      "verification": { "kind": "testnet", "challengeId": "register-a-username" },
       "mustCover": ["preorder and registration", "salt handling", "premium-name voting"]
     },
     {
-      "module": 11,
+      "module": 12,
       "slug": "data-contracts",
       "title": "Data Contracts",
       "tier": "concepts",
       "description": "Model application data with document types and indexes.",
-      "estimatedMinutes": 14,
       "exp": 100,
       "prerequisites": ["register-a-username"],
       "verification": { "kind": "quiz", "challengeId": "data-contracts" },
-      "mustCover": ["schemas", "document types", "indexes", "contract-time decisions", "no triggers or joins"]
+      "mustCover": ["schemas", "document types", "indexes", "contract-time decisions", "no triggers or joins"],
+      "mustNotCover": [
+        "a complete JSON Schema listing, executable SDK code, contract registration, or deployment steps",
+        "a base-field inventory or document lifecycle, ownership, revision, transfer, and purchase mechanics",
+        "query syntax, pagination, aggregation, or a catalogue of index restrictions",
+        "an exhaustive contract-update compatibility matrix or version-specific configuration inventory",
+        "protocol implementation details for system-contract triggers or storage internals",
+        "claiming the learner registered a username while that prerequisite remains a placeholder"
+      ],
+      "teachingApproach": [
+        "Center the lesson on a developer deciding how to model one small app before its first record exists. Begin with the questions the app must answer, then let those reads determine document types, fields, and indexes.",
+        "Use one compact schema fragment only if it makes the model easier to see; the following hands-on lesson owns syntax and registration. Explain a schema as the rules for valid records and a document type as one family of records.",
+        "Make contract-time decisions feel consequential: a missing field or index can block a needed read after publication. Explain the no-joins and no-developer-trigger boundaries through the app example, showing which relationship data and custom logic must live in the records or app code.",
+        "The register-a-username prerequisite is currently a placeholder, so do not claim the learner performed it. Quiz questions should ask the learner to choose a model or index for a new requirement. Do not mirror the mustCover order in headings or add objectives, recap, checkpoint, or diagram sections."
+      ]
     },
     {
-      "module": 12,
+      "module": 13,
       "slug": "write-your-first-data-contract",
       "title": "Write your first Data Contract",
       "tier": "sdk",
@@ -154,23 +239,36 @@
       "estimatedMinutes": 28,
       "exp": 250,
       "prerequisites": ["data-contracts"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "write-your-first-data-contract:quiz", "challengeId": "write-your-first-data-contract", "operation": "contract-create" },
+      "verification": { "kind": "hybrid", "challengeId": "write-your-first-data-contract" },
       "mustCover": ["document schema", "indexes", "contract registration"]
     },
     {
-      "module": 13,
+      "module": 14,
       "slug": "documents",
       "title": "Documents",
       "tier": "concepts",
       "description": "Understand the lifecycle, ownership, and revision of Platform documents.",
-      "estimatedMinutes": 14,
       "exp": 100,
       "prerequisites": ["write-your-first-data-contract"],
       "verification": { "kind": "quiz", "challengeId": "documents" },
-      "mustCover": ["read and write lifecycle", "ownership", "revisions", "delete refunds"]
+      "mustCover": ["read and write lifecycle", "ownership", "revisions", "delete refunds"],
+      "mustNotCover": [
+        "a complete base-field list, document-ID derivation, entropy, hashes, or binary representation",
+        "SDK code, method signatures, batch-transition internals, or DAPI request syntax",
+        "detailed transfer, purchase, trade-mode, and price-update mechanics reserved for module 17",
+        "re-teaching schemas, document types, or index design from module 12",
+        "the exact long-term storage-fee distribution schedule or fee arithmetic",
+        "claiming the learner published a contract while that prerequisite remains a placeholder"
+      ],
+      "teachingApproach": [
+        "Use one shared record edited from two devices to create the lesson's questions: what a read returns, who may write, how a stale edit is rejected, and what happens when the record is deleted.",
+        "Teach the lifecycle at concept level: create, query, replace, and delete. Mention transfer or purchase only as later ways ownership can change, without teaching their rules.",
+        "Explain ownership as authorization, and revisions as protection against overwriting a newer version. Verify the exact revision rule against current authoritative sources rather than repeating the existing draft's greater-than wording.",
+        "Explain delete refunds as the unused portion of prepaid storage cost returning while processing work remains paid. The preceding contract lab is currently a placeholder, so the example must be hypothetical. Quiz questions should test lifecycle and conflict decisions, not field names or numbers; do not add objectives, recap, checkpoint, or a diagram."
+      ]
     },
     {
-      "module": 14,
+      "module": 15,
       "slug": "submit-a-document",
       "title": "Submit a Document",
       "tier": "sdk",
@@ -178,11 +276,11 @@
       "estimatedMinutes": 22,
       "exp": 200,
       "prerequisites": ["documents"],
-      "verification": { "kind": "testnet", "challengeId": "submit-a-document", "operation": "document-create" },
+      "verification": { "kind": "testnet", "challengeId": "submit-a-document" },
       "mustCover": ["document creation", "state transition", "ownership and fees"]
     },
     {
-      "module": 15,
+      "module": 16,
       "slug": "query-documents",
       "title": "Query Documents",
       "tier": "sdk",
@@ -190,11 +288,11 @@
       "estimatedMinutes": 25,
       "exp": 225,
       "prerequisites": ["submit-a-document"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "query-documents:quiz", "challengeId": "query-documents", "operation": "document-query" },
+      "verification": { "kind": "hybrid", "challengeId": "query-documents" },
       "mustCover": ["filters", "sorting", "range constraints", "v4 aggregation"]
     },
     {
-      "module": 16,
+      "module": 17,
       "slug": "document-transfer-and-purchase",
       "title": "Document Transfer and Purchase",
       "tier": "sdk",
@@ -202,11 +300,11 @@
       "estimatedMinutes": 28,
       "exp": 250,
       "prerequisites": ["query-documents"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "document-transfer-and-purchase:quiz", "challengeId": "document-transfer-and-purchase", "operation": "document-transfer-purchase" },
+      "verification": { "kind": "hybrid", "challengeId": "document-transfer-and-purchase" },
       "mustCover": ["transfer", "purchase", "price updates", "ownership checks"]
     },
     {
-      "module": 17,
+      "module": 18,
       "slug": "tokens",
       "title": "Tokens",
       "tier": "sdk",
@@ -214,11 +312,11 @@
       "estimatedMinutes": 30,
       "exp": 275,
       "prerequisites": ["document-transfer-and-purchase"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "tokens:quiz", "challengeId": "tokens", "operation": "token-actions" },
+      "verification": { "kind": "hybrid", "challengeId": "tokens" },
       "mustCover": ["token configuration", "action set", "groups", "mint and transfer"]
     },
     {
-      "module": 18,
+      "module": 19,
       "slug": "token-paid-document-creation",
       "title": "Token-paid document creation",
       "tier": "sdk",
@@ -226,7 +324,7 @@
       "estimatedMinutes": 30,
       "exp": 300,
       "prerequisites": ["tokens"],
-      "verification": { "kind": "hybrid", "quizChallengeId": "token-paid-document-creation:quiz", "challengeId": "token-paid-document-creation", "operation": "token-paid-documents" },
+      "verification": { "kind": "hybrid", "challengeId": "token-paid-document-creation" },
       "mustCover": ["tokenCost for six document operations", "transfer and burn effects", "sponsored gas", "flags"]
     }
   ]

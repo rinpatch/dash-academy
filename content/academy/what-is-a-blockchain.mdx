@@ -1,0 +1,134 @@
+---
+title: What is a blockchain?
+description: "Start from zero: the problem every blockchain exists to solve, and how it solves it."
+module: 1
+tier: concepts
+exp: 100
+verification: quiz
+prerequisites: []
+---
+
+Every record you rely on today has an owner. Your bank keeps the ledger of your account; your application's database keeps whatever your users care about. Somebody runs that system, and running it means being able to change what it says.
+
+## The centralized ledger
+
+A bank stores every transaction in its own systems. That's convenient: it can fix a mistaken entry, reverse a payment, and answer any question about the account instantly, because it holds all the data in one place.
+
+The cost is that everyone else has to trust the operator. Whoever holds the record can reverse a payment, freeze an account, or refuse to serve a customer, and it can be lost or leaked or quietly rewritten by an insider with the right access. There's nothing for an outsider to check it against, because it's the only copy that counts.
+
+## Everyone keeps a copy
+
+The usual first idea is to make everyone keep a copy. Picture a class with a shared pot of money for trips and supplies. If the president writes every payment in one notebook, the class has a bank, dependent on their honesty and on not losing it. So give every student a notebook instead, and everyone writes down each payment as it happens. Lose one and nothing is lost. Alter your own and it just disagrees with thirty others.
+
+That's a **distributed ledger**: the record isn't held by one operator but copied across many independent participants. A blockchain is one.
+
+Now notice what copying alone doesn't solve. Two students both claim they were handed the last ten dollars, and each wrote it in their own notebook first. Everyone has a copy, and the copies disagree. Nobody in the room has the authority to say which entry is real, because removing that authority was the whole point.
+
+There's another problem. In a physical classroom everyone can see who is spending the money — nobody can impersonate anyone else. Among strangers on a network, an entry is only a message, and anyone can type anyone's name into one.
+
+This is solved by signing. Every transaction carries a **signature**: a value only the holder of the matching <Term id="private-key">private key</Term> could have produced, and that anyone can check without learning that key. It does two jobs: it proves whoever controls the money authorized the entry, and it covers the contents, so altering an amount or recipient afterwards breaks it. Nodes discard anything whose signature doesn't check out, so forgery isn't something the network argues about.
+
+## A log that grows at one end
+
+Signatures settle who may write an entry. They don't settle which of two properly signed entries came first, and that's the harder half: both students signed honestly, and both claim the same ten dollars.
+
+What settles that is agreeing on an **order**. If everyone accepts the same sequence of entries, the conflict resolves itself: the second claim on that money is the one that came later, and it's refused.
+
+This is where a blockchain stops resembling the database you're used to. A table holds current state: a row you overwrite when something changes. A **ledger** holds the entries themselves, in order, and the current state is whatever they add up to. A blockchain is a ledger in that strict sense. It records transactions, meaning signed instructions to move value, gathers them into **blocks**, and adds each new block after the last accepted one. Accepted entries are never overwritten or deleted, so a correction arrives as a later entry while the original stays where it is. That's what **append-only** means.
+
+You might be familiar with this pattern from Git: commits have their own hash and point backward at earlier history, so a sequence of them records how a project reached its current state. Rewriting an old commit changes its identifier, and the identifier of every commit built on top of it.
+
+Blocks link the same way. Each carries a cryptographic fingerprint, called a **hash**, of the block before it, plus a hash-based summary of its own transactions:
+
+```
+block 41   transactions […]   summary 9f2c…   previous 1a7b…   hash 6d31…
+block 42   transactions […]   summary 4e08…   previous 6d31…   hash c902… <-- previous = hash of block 41
+block 43   transactions […]   summary b5aa…   previous c902…   hash 77e4… <-- previous = hash of block 42
+```
+
+Change a transaction in block 41 and its summary changes, so block 41's own hash changes, so the previous-block hash recorded in block 42 is now wrong, and so on to the end of the chain. You can't quietly alter the middle and leave the rest as it is.
+
+## Why nobody can rewrite the history
+
+Hash links make a change visible, but on their own they don't prevent a rewrite. In fact, using the Git analogy, whoever owns the repository can rewrite an old commit, recompute everything after it, and force-push the result. Two things stand in the way of doing that to a blockchain.
+
+The first is that nobody has the owner's role. <Term id="node">Full nodes</Term> receive blocks from the network and check them against shared rules before accepting and relaying them. An operator can edit their own copy, the way anyone can edit a file on their own computer, but publishing it doesn't make it the network's history. Other nodes don't accept a block because someone says it's official. They reject blocks that fail their rules, whoever sent them.
+
+The second is cost, and here is where the classroom analogy stops working. A forged notebook fails in that room because thirty people can compare pages, and because everyone can see that each person holds exactly one notebook. So the obvious digital fix is to let nodes vote: whichever version of history most of them back wins.
+
+That fails, and it fails badly. A node is a program anyone can start, so an attacker spins up thousands of them and holds the majority for the price of the hardware. Faking a crowd out of identities that cost nothing is called a **Sybil attack**, and it rules out counting participants as a way to settle anything. Whatever decides the winner has to be something an attacker can't manufacture cheaply.
+
+## What makes rewriting expensive
+
+That is why many cryptocurrencies (Dash included) require **proof of work**: computational effort that has to be completed before a proposed block can extend the chain. Signing a transaction doesn't put it in the chain; it broadcasts it, and every node holds the ones it has heard about but not yet seen in a block. The people who do the work are **miners**, who pull from that pool to assemble the next block, and whoever produces one the network accepts is paid from a block reward and the fees of the transactions inside it.
+
+This works because the effort between producing a block and verifying it is asymmetrical. The former takes the whole network's hardware, running flat out, minutes of guessing, while the latter is one run of a hash function. So nobody has to trust a miner's claim, or repeat its effort, to confirm the effort happened.
+
+That gives nodes a rule for choosing between two competing chains, and it isn't a vote: they follow whichever chain has the most accumulated work behind it, no matter how many nodes broadcast each chain.
+
+So to rewrite history, an attacker has to redo the proof of work for the changed block and every block after it, then outpace the honest miners piling fresh work onto the chain being chased, all of it before that chain can win on total work. The farther back the change, the more there is to recreate. While this doesn't make a rewrite mathematically impossible, it makes it very hard in practice.
+
+<Callout type="info" title="Proof of work isn't everything">
+Agreeing on one history is called reaching <Term id="consensus">consensus</Term>, and proof of work is only one way to do it. Many chains use an algorithm called proof of stake instead. Dash adds ChainLocks on top of proof of work: a rule that locks in the accepted chain, so a competing one is rejected even if more work went into building it. Later lessons cover how this works.
+</Callout>
+
+## Pros and cons
+
+Taking the operator out changes what your users have to trust. They stop depending on your company to hold the only authoritative copy, and anyone can check the same history under the same rules without trusting you or each other. That's worth having when a record must outlive any single service, or when nobody should be able to revise the past alone.
+
+It also takes a familiar tool away from you. If your application writes a mistaken entry, you can't quietly patch or delete it; you append a correction, in public. And if you want to change the rules nodes use to judge new blocks, shipping code to your own server does nothing. Other participants have to adopt compatible rules, or they end up following a different chain than you do.
+
+<LessonQuiz
+  challengeId="what-is-a-blockchain"
+  passingScore={4}
+  questions={[
+    {
+      id: "copies-are-not-enough",
+      prompt: "Every participant keeps an identical copy of the ledger. Why isn't that enough?",
+      options: [
+        { id: "a", label: "Copies can be lost, so someone still has to hold the backup." },
+        { id: "b", label: "Copies don't settle which of two conflicting entries came first." },
+        { id: "c", label: "Copies are only trustworthy if a majority audit them together." },
+        { id: "d", label: "Copies drift apart, so participants have to re-download the ledger." },
+      ],
+      correctOptionId: "b",
+      explanation: "Distributing the record solves durability and secrecy: no single notebook to lose, nothing hidden. It doesn't settle disagreement — with the operator gone, nobody has the authority to rule on which entry came first. Agreeing on an order is what does that.",
+    },
+    {
+      id: "append-only-log",
+      prompt: "An accepted payment entry needs a correction. What happens on an append-only blockchain?",
+      options: [
+        { id: "a", label: "The old entry is replaced and the updated block re-sent." },
+        { id: "b", label: "A correcting entry is appended; the original stays in history." },
+        { id: "c", label: "The old block is removed and its descendants re-attached." },
+        { id: "d", label: "One node decides whether the original stays visible." },
+      ],
+      correctOptionId: "b",
+      explanation: "The log only grows at one end. The original stays where it is and the correction lands later, which is why the ledger doubles as a history of what the record used to say.",
+    },
+    {
+      id: "rewrite-resistance",
+      prompt: "An operator edits a payment in a year-old block on their own full node, then publishes it. Why doesn't that become the network's history?",
+      options: [
+        { id: "a", label: "Every node checks blocks itself, and overtaking the chain means redoing a year of work." },
+        { id: "b", label: "Transactions live in database rows no operator has permission to update." },
+        { id: "c", label: "Proof of work encrypts accepted transactions, so nobody can read them to change them." },
+        { id: "d", label: "A majority of nodes would have to vote for the edit." },
+      ],
+      correctOptionId: "a",
+      explanation: "Editing the old block breaks the hash links through everything built after it, so the attacker has to rebuild all of it — every rebuilt block costing fresh proof of work, while honest miners keep extending the chain being chased. It isn't a headcount: what's expensive is the work, not persuading a majority.",
+    },
+    {
+      id: "builder-bargain",
+      prompt: "Four companies that don't trust each other want a shared record of asset transfers, one that outlasts any single member. What's the honest summary of the trade?",
+      options: [
+        { id: "a", label: "Any of them can verify the history, and none can correct an entry alone." },
+        { id: "b", label: "One of them administers the record; the rest audit its repairs afterwards." },
+        { id: "c", label: "Each keeps an authoritative copy, and an administrator settles disputes." },
+        { id: "d", label: "Entries stay correctable by unanimous agreement, giving up nothing." },
+      ],
+      correctOptionId: "a",
+      explanation: "Both halves have to be true at once. Verification moves to the participants, and unilateral control leaves all of them, which is the point when nobody should be able to revise the past alone. Every wrong answer keeps an administrator or an in-place edit that this arrangement no longer has.",
+    },
+  ]}
+/>

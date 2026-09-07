@@ -1,12 +1,12 @@
 ---
 title: Create a Dash Identity
 description: Create and verify a Dash Platform identity on testnet.
-module: 9
+module: 10
 tier: sdk
 estimatedMinutes: 20
 exp: 200
 verification: testnet
-prerequisites: [8]
+prerequisites: [9]
 ---
 
 In this lesson you register a real Platform identity on testnet, fund it from a Platform address you already control, and read its credit balance back from the network.
@@ -168,8 +168,6 @@ The `catch` block handles a known SDK quirk: proof verification can report failu
 
 You do not have to trust your own script. The identity is public, and anyone can read it back. The SDK does this with `sdk.identities.fetch(id)`, which returns the identity with its `balance` (a `bigint` of credits) and its `publicKeys`; `sdk.identities.balance(id)` asks for the balance alone. The verifier below performs the same read independently through <Term id="dapi">DAPI</Term> and shows you the resulting credit balance and registered key count.
 
-## Checkpoint
-
 Paste the identity ID your script printed to complete the lesson.
 
 <TestnetVerifier
@@ -178,7 +176,3 @@ Paste the identity ID your script printed to complete the lesson.
   label="Dash identity ID"
   placeholder="Paste the Base58 identity ID"
 />
-
-## What you accomplished
-
-You created a real actor on Dash Platform testnet: an identity with a stable public ID, five standard keys with distinct purposes and security levels, and a credit balance. That identity is what will own your data contracts, submit your documents, and receive a human-readable DPNS name in the lessons ahead.

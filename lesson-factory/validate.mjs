@@ -29,6 +29,11 @@ export function usesComponent(mdx, names, id) {
   return false;
 }
 
+export function hasStockHypotheticalOpening(mdx) {
+  const body = mdx.replace(/^---[\s\S]*?---/, "").trimStart();
+  return /^(?:Suppose|Imagine)\b/i.test(body);
+}
+
 export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   const errors = [];
   const mdxPath = path.join(cwd, "content/academy", `${lesson.slug}.mdx`);
@@ -40,12 +45,18 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   try { ledger = JSON.parse(await readFile(sourcePath, "utf8")); } catch { errors.push(`Missing or invalid lesson-factory/lessons/${lesson.slug}/evidence.json`); }
 
   const frontmatter = parseFrontmatter(mdx);
-  for (const key of ["title", "description", "module", "tier", "estimatedMinutes", "exp"]) {
+  for (const key of ["title", "description", "module", "tier", "exp"]) {
     if (String(frontmatter[key]) !== String(lesson[key])) errors.push(`Frontmatter ${key} does not match manifest`);
   }
-  if (!mdx.includes("## Checkpoint")) errors.push("Missing ## Checkpoint");
-  if (!mdx.includes("## What you accomplished")) errors.push("Missing ## What you accomplished");
+  // A concepts lesson's reading estimate is derived from the file it ships (lib/reading-time.ts).
+  // SDK lessons keep a hand-set one: typing and testnet round-trips dominate that time.
+  if (lesson.tier === "concepts") {
+    if ("estimatedMinutes" in frontmatter) errors.push("Frontmatter must not set estimatedMinutes: concepts lessons derive it from the lesson text");
+  } else if (String(frontmatter.estimatedMinutes) !== String(lesson.estimatedMinutes)) {
+    errors.push("Frontmatter estimatedMinutes does not match manifest");
+  }
   if (/^# /m.test(mdx.replace(/^---[\s\S]*?---/, ""))) errors.push("Lesson body must not contain an H1");
+  if (hasStockHypotheticalOpening(mdx)) errors.push('Lesson must not begin with a stock "Suppose" or "Imagine" prompt');
   if (/\b(?:mnemonic|private[_ -]?key)\s*[:=]\s*["'][^"']+/i.test(mdx)) errors.push("Possible secret in MDX");
   // A substring check used to be enough, so a lesson could name its challenge in prose and pass
   // while shipping no working checkpoint at all. Require the id to be wired into a component that
@@ -61,6 +72,13 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
     const sourceIds = new Set((ledger.sources ?? []).map((source) => source.id));
     for (const claim of ledger.claims ?? []) for (const id of claim.sourceIds ?? []) if (!sourceIds.has(id)) errors.push(`Claim references missing source ${id}`);
     if ((ledger.conflicts ?? []).some((conflict) => conflict.status === "blocked")) errors.push("Evidence ledger has a blocked conflict");
+    if (complete) {
+      if (!ledger.teachingPlan?.centralQuestion || !ledger.teachingPlan?.workedExample) errors.push("Evidence ledger needs a teaching plan");
+      for (const requirement of lesson.mustCover ?? []) {
+        const coverage = ledger.coverageMap?.find((entry) => entry.requirement === requirement);
+        if (!coverage?.explanation || !coverage?.demonstration || !Array.isArray(coverage.assessment) || !coverage.assessment.length) errors.push(`Missing explanation, demonstration, or assessment mapping: ${requirement}`);
+      }
+    }
   }
   if (complete && lesson.tier === "sdk") {
     try { await access(path.join(lessonFiles, "fixture.mjs")); }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Circle, CircleCheckBig, CirclePlay } from "lucide-react";
+import { Circle, CircleCheckBig, CircleDashed, CirclePlay } from "lucide-react";
 import { useActiveAnchor } from "fumadocs-core/toc";
 import type { TableOfContents } from "fumadocs-core/toc";
 import { Card } from "@/components/ui/card";
@@ -13,6 +13,7 @@ export type LessonSummary = {
   title: string;
   estimatedMinutes: number;
   exp: number;
+  isDraft: boolean;
 };
 
 export function LessonNavList({
@@ -53,13 +54,21 @@ function LessonNavItem({
   toc?: TableOfContents;
 }) {
   return (
-    <Card className="gap-4">
+    <Card
+      className={
+        lesson.isDraft
+          ? "gap-4 border border-dashed border-foreground/24 bg-transparent opacity-60"
+          : "gap-4"
+      }
+    >
       <Link href={lesson.url} className="flex items-center gap-3">
-        <StatusIcon completed={isCompleted} current={isCurrent} />
+        <StatusIcon completed={isCompleted} current={isCurrent} draft={lesson.isDraft} />
         <div className="flex flex-col gap-0.5">
           <p className="text-sm font-extrabold">{lesson.title}</p>
           <p className="text-xs font-medium text-foreground/48">
-            {lesson.estimatedMinutes} Mins &middot; {lesson.exp} Exp
+            {lesson.isDraft
+              ? "Not written yet"
+              : `${lesson.estimatedMinutes} Mins \u00b7 ${lesson.exp} Exp`}
           </p>
         </div>
       </Link>
@@ -101,7 +110,19 @@ function TocList({ toc }: { toc: TableOfContents }) {
   );
 }
 
-function StatusIcon({ completed, current }: { completed: boolean; current: boolean }) {
+function StatusIcon({
+  completed,
+  current,
+  draft,
+}: {
+  completed: boolean;
+  current: boolean;
+  draft: boolean;
+}) {
+  if (draft) {
+    return <CircleDashed size={22} aria-hidden="true" className="shrink-0 text-foreground/40" />;
+  }
+
   if (completed) {
     return <CircleCheckBig size={22} aria-hidden="true" className="shrink-0 fill-primary text-white" />;
   }

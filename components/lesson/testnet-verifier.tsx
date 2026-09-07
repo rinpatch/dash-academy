@@ -68,10 +68,10 @@ export function TestnetVerifier({
   const verified = result?.status === "verified" ? result : null;
 
   return (
-    <section id="verify-on-testnet" className="not-prose my-8 rounded-3xl bg-card" aria-labelledby="verification-title">
-      <div className="border-b border-foreground/12 p-5">
-        <h2 id="verification-title" className="text-xl font-extrabold text-card-foreground">
-          Verify on testnet
+    <section id="verify-on-testnet" className="not-prose my-10 rounded-3xl border border-foreground/12 bg-card" aria-labelledby="verification-title">
+      <div className="border-b border-foreground/12 px-5 py-5 sm:px-7">
+        <h2 id="verification-title" className="text-lg font-extrabold text-card-foreground">
+          Verify your work
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-foreground/64">
           Paste the public result your script printed. Dash Academy will look it up independently on Dash Platform testnet.

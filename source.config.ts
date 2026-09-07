@@ -6,12 +6,16 @@ export const docs = defineDocs({
   dir: "content/academy",
   docs: {
     schema: pageSchema.extend({
-      module: z.number().int().min(1).max(18),
+      module: z.number().int().min(1).max(19),
       tier: z.enum(["concepts", "sdk", "projects"]),
-      estimatedMinutes: z.number().int().positive(),
+      // Concepts lessons omit this and let lib/reading-time derive it from the file.
+      estimatedMinutes: z.number().int().positive().optional(),
       exp: z.number().int().positive(),
       verification: z.enum(["quiz", "testnet", "hybrid"]),
-      prerequisites: z.array(z.number().int().min(1).max(18)).default([]),
+      prerequisites: z.array(z.number().int().min(1).max(19)).default([]),
+      // Stub lessons carry status: draft by hand. The factory rewrites the whole file when it
+      // authors a lesson, so the flag disappears on its own once real content lands.
+      status: z.enum(["draft", "published"]).default("published"),
     }),
   },
 });

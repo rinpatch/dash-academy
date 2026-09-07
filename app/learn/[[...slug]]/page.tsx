@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AnchorProvider } from "fumadocs-core/toc";
 import { DocsBody } from "fumadocs-ui/layouts/docs/page";
-import { source } from "@/lib/source";
+import { lessonMinutes, source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { CourseTrackCard } from "@/components/lesson/course-track-card";
 import { LessonNavList, type LessonSummary } from "@/components/lesson/lesson-nav-list";
@@ -17,20 +17,28 @@ export default async function AcademyLesson({ params }: PageProps) {
   const page = source.getPage(slug ?? []);
   if (!page) notFound();
 
-  const lessons: LessonSummary[] = source
-    .getPages()
-    .slice()
-    .sort((a, b) => a.data.module - b.data.module)
-    .map((lesson) => ({
-      slug: lesson.slugs.join("/"),
-      url: lesson.url,
-      title: lesson.data.title,
-      estimatedMinutes: lesson.data.estimatedMinutes,
-      exp: lesson.data.exp,
-    }));
+  const lessons: LessonSummary[] = await Promise.all(
+    source
+      .getPages()
+      .slice()
+      .sort((a, b) => a.data.module - b.data.module)
+      .map(async (lesson) => ({
+        slug: lesson.slugs.join("/"),
+        url: lesson.url,
+        title: lesson.data.title,
+        estimatedMinutes: await lessonMinutes(lesson),
+        exp: lesson.data.exp,
+        isDraft: lesson.data.status === "draft",
+      })),
+  );
+
+  // Unwritten lessons cannot be completed, so counting them would cap the track below 100%.
+  const completableLessons = lessons.filter((lesson) => !lesson.isDraft).length;
 
   const Content = page.data.body;
   const lessonSlug = page.slugs.join("/");
+  const minutes = await lessonMinutes(page);
+  const isDraft = page.data.status === "draft";
 
   return (
     <AnchorProvider toc={page.data.toc}>
@@ -40,26 +48,32 @@ export default async function AcademyLesson({ params }: PageProps) {
         toc={page.data.toc}
         lessonSlug={lessonSlug}
         lessonTitle={page.data.title}
+        completableLessons={completableLessons}
       />
 
       <div className="mx-auto grid max-w-[1360px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[224px_1fr_288px] lg:gap-10 lg:py-12">
         <aside className="hidden lg:sticky lg:top-28 lg:block lg:h-[calc(100vh-8rem)] lg:self-start">
           <ScrollArea className="lg:h-full" viewportClassName="lg:pr-3">
             <div className="flex flex-col gap-4">
-              <CourseTrackCard totalLessons={lessons.length} />
+              <CourseTrackCard totalLessons={completableLessons} />
               <LessonNavList lessons={lessons} currentUrl={page.url} toc={page.data.toc} />
             </div>
           </ScrollArea>
         </aside>
 
         <main className="flex min-w-0 flex-col gap-6">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span className="rounded-xl bg-foreground/4 px-4 py-2 text-sm font-medium">
-              <span className="font-extrabold">{page.data.estimatedMinutes}</span> Min. Read
+              <span className="font-extrabold">{minutes}</span> Min.
             </span>
             <span className="rounded-xl bg-primary/12 px-4 py-2 text-sm font-medium text-primary">
               <span className="font-extrabold">+ {page.data.exp}</span> Exp
             </span>
+            {isDraft && (
+              <span className="rounded-xl border border-dashed border-foreground/24 px-4 py-2 text-sm font-extrabold text-foreground/48">
+                Being written &middot; preview only
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-3">
