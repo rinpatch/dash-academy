@@ -9,6 +9,7 @@ import { useCompletedLessonIds } from "@/components/providers/progress-provider"
 
 export type LessonSummary = {
   slug: string;
+  module: number;
   url: string;
   title: string;
   estimatedMinutes: number;
@@ -62,8 +63,15 @@ function LessonNavItem({
       }
     >
       <Link href={lesson.url} className="flex items-center gap-3">
-        <StatusIcon completed={isCompleted} current={isCurrent} draft={lesson.isDraft} />
-        <div className="flex flex-col gap-0.5">
+        <span
+          aria-hidden="true"
+          className={`w-6 shrink-0 text-sm font-extrabold tabular-nums ${
+            isCurrent ? "text-primary" : "text-foreground/32"
+          }`}
+        >
+          {String(lesson.module).padStart(2, "0")}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <p className="text-sm font-extrabold">{lesson.title}</p>
           <p className="text-xs font-medium text-foreground/48">
             {lesson.isDraft
@@ -71,6 +79,7 @@ function LessonNavItem({
               : `${lesson.estimatedMinutes} Mins \u00b7 ${lesson.exp} Exp`}
           </p>
         </div>
+        <StatusIcon completed={isCompleted} current={isCurrent} draft={lesson.isDraft} />
       </Link>
 
       {toc && toc.length > 0 && (

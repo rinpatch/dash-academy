@@ -24,6 +24,7 @@ export default async function AcademyLesson({ params }: PageProps) {
       .sort((a, b) => a.data.module - b.data.module)
       .map(async (lesson) => ({
         slug: lesson.slugs.join("/"),
+        module: lesson.data.module,
         url: lesson.url,
         title: lesson.data.title,
         estimatedMinutes: await lessonMinutes(lesson),
@@ -63,6 +64,10 @@ export default async function AcademyLesson({ params }: PageProps) {
 
         <main className="flex min-w-0 flex-col gap-6">
           <div className="flex flex-wrap items-center gap-4">
+            <span className="rounded-xl bg-foreground/4 px-4 py-2 text-sm font-medium">
+              Lesson <span className="font-extrabold tabular-nums">{page.data.module}</span> of{" "}
+              <span className="font-extrabold tabular-nums">{lessons.length}</span>
+            </span>
             <span className="rounded-xl bg-foreground/4 px-4 py-2 text-sm font-medium">
               <span className="font-extrabold">{minutes}</span> Min.
             </span>
