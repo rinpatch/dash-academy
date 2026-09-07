@@ -9,178 +9,126 @@ verification: quiz
 prerequisites: [5]
 ---
 
-## Meet DAPI
+Suppose your app asks Dash Platform for a user's public profile. An answer comes back even though you don't run a node and haven't chosen a server. Before your app acts on it, four questions matter: who answered, what happens if that machine fails, what stops it from lying, and what do you still have to trust?
 
-In module 4 you installed the SDK and made your first verified read. That `connect()` call quietly opened a conversation with the network — and the thing on the other end of that conversation was **DAPI**, Dash's decentralized API. This lesson answers two questions about that conversation: *what* answered you, and *why you can trust the answer*.
+## One reply from a network
 
-DAPI is one API for both halves of Dash. It gives every app and SDK a single interface to **layer 1** (Dash Core's blockchain, where Dash moves) and **layer 2** (Dash Platform, where data lives). It runs on Dash's masternode infrastructure — specifically the <Term id="evonode">evonodes</Term>, the <Term id="masternode">masternodes</Term> that also serve Platform.
+The request goes through DAPI, Dash's decentralized API, and one <Term id="evonode">evonode</Term> answers it. That machine is a Dash network node which serves Platform data; it isn't a hidden copy of your application's backend.
 
-Three things follow from DAPI being decentralized:
+One machine still sent the reply, so what makes the API decentralized? DAPI is available through many network nodes rather than one server belonging to the company that built your app. Your app doesn't depend on that company keeping an API process alive, and no single DAPI instance is the only route to Platform.
 
-- You get the *same access and security* you would get from running your own Dash node, without the cost and upkeep of one.
-- Because DAPI is served by many masternode instances, there is **no single point of failure**: if one instance is slow or down, a client can ask a different one.
-- You talk to it the way an app talks to any remote service: over HTTP, with <Term id="tls">TLS</Term> encrypting the connection against interception or tampering.
+This distinction is easy to miss. A decentralized service doesn't mean every request comes from the network as a single voice. It means your client has a choice of network nodes, while a normal company API usually gives it one operator's service as the authority and point of access.
 
-DAPI speaks two endpoint languages. **<Term id="json-rpc">JSON-RPC</Term>** endpoints expose a little layer-1 (Core) information. **<Term id="grpc">gRPC</Term>** endpoints serve layer 2 (Platform) and also stream live events — blocks, transactions and other transitions, and masternode-list updates.
+## If the first node stays silent
 
-<Callout type="info" title="TLS protects the pipe, not the data">
-TLS stops someone from reading or rewriting your request *in transit*. It does not prove that the data inside the response is correct. For that you need proofs, which we get to in a moment. Keep the two jobs separate in your head.
-</Callout>
+The SDK needs candidates before it can choose one. On Dash's live network (mainnet) and its practice network (testnet), it contacts seed nodes, which help it discover addresses for DAPI nodes on that network. It then rotates among the discovered addresses instead of binding the app to one DAPI server.
 
-## How the SDK picks who to ask
+Imagine the first candidate never answers the profile request. The SDK can retry through another discovered node and temporarily avoid the failed address. A bad pick can cost time, but it doesn't have to take the app offline. Later requests aren't stuck waiting on the same broken machine either.
 
-"DAPI" is not one server — it is many masternode instances behind one name. So the SDK has to choose which one to actually talk to. This is **endpoint selection**.
+Discovery solves an access problem, not a truth problem. Seed nodes help the client find candidates; they don't make every answer from those candidates correct. Likewise, an encrypted <Term id="tls">TLS</Term> connection protects bytes while they travel between the app and a node, but a well-protected connection can still carry a false answer.
 
-For a built-in network such as testnet, mainnet, or local, the SDK discovers endpoints from **seed nodes** and rotates between them automatically. If a node fails, it is temporarily banned and the SDK retries against a healthy one:
+Now change the scenario. The selected node replies promptly, but it changes the profile before sending it. Retrying only helps if another node happens to return something different, and then the app has two claims with no reason to prefer either. Availability has been handled; honesty hasn't.
 
-```typescript
-import { EvoSDK } from "@dashevo/evo-sdk";
+## Evidence travels with the answer
 
-const sdk = EvoSDK.testnetTrusted();
-await sdk.connect(); // discovers DAPI endpoints from seed nodes, then connects
-```
+A proof-aware Platform request can return the profile together with a **state proof**: cryptographic evidence tying the result to state the network has finalized and committed. Finalized state is the accepted Platform state for a completed block, rather than a pending change that nodes may still disagree about.
 
-On testnet the seed node lives at `seed-1.testnet.networks.dash.org:1443`; the SDK's factories already know where to look, so you never type it yourself.
+The SDK checks that evidence locally. If it verifies, the app can establish that the returned profile matches the committed state. The same kind of evidence can support an answer that a requested record is absent, so a node can't safely turn "not found" into an unsupported assertion. If verification fails, the SDK rejects the result instead of presenting altered data as verified.
 
-You can also *pin* exact addresses instead of letting the SDK discover them. `EvoSDK.withAddresses` takes a list of masternode URLs and uses only those — discovery is switched off:
+A troublesome node still has ways to waste your time. It can stay silent, delay its reply, omit proof evidence where an ordinary response is allowed, or send evidence that fails the check. Proofs don't force a machine to cooperate, which is why the SDK still needs retry and temporary avoidance. Retry finds another speaker; verification decides whether the proof-bearing statement from that speaker deserves acceptance. Keeping those jobs separate prevents a common mistake: treating a responsive node as an honest one.
 
-```typescript
-const sdk = EvoSDK.withAddresses(["https://52.12.176.90:1443"], "testnet");
-await sdk.connect();
-```
+An ordinary API response can't provide that conclusion. It contains a payload and may arrive through an encrypted connection, but the receiver still has to trust the server's account of the data. Nor does a response become proved merely because it came through DAPI or an SDK. DAPI supports ordinary responses too; only a proof-bearing response that the client successfully verifies crosses this boundary.
 
-Discovery is the convenient default; pinning is the escape hatch for private networks, specific nodes, or debugging.
+Return to the hypothetical profile:
 
-## What answered your first read
+- If the reply has no checked proof, the app trusts the node for the profile.
+- If the proof checks, the app verifies that this profile, or its reported absence, agrees with committed Platform state.
 
-When you read data in module 4, the answer did not come out of thin air. It was read from **Platform state**: the current snapshot of everything stored on the platform.
+Changing nodes improves the first case's chance of getting an answer. It doesn't turn that answer into the second case.
 
-Platform state lives in <Term id="grovedb">GroveDB</Term>, an authenticated data structure maintained by Drive. "Authenticated" is the word that matters here: every change to the state updates one aggregate root hash that commits to the whole tree. Each committed block header carries that root as its <Term id="apphash">AppHash</Term>. Check a node's AppHash against yours and you know you have the correct state.
+## What the proof doesn't say
 
-Two more properties make these reads dependable:
+Proof verification needs an anchor that the responding node can't choose for itself. A lightweight client uses public keys for the group of network nodes that committed that Platform state. Those keys let it check the network's commitment without creating one. In the pinned SDK's trusted setup, a well-known HTTPS service supplies those keys and the discovered node addresses as trusted context.
 
-- **Finalized.** Queries return the latest committed state — the state at the most recent block — not pending or half-applied changes.
-- **Deterministic.** The same query on any two honest, up-to-date nodes returns the same result, so your app behaves the same no matter which node answered.
+That leaves a narrower, but real, trust boundary. For a successfully verified response, your app doesn't have to trust the DAPI node's payload. It still trusts the hosted service to supply the correct public keys for that network group, and it trusts the SDK and cryptographic verifier running locally to perform the check correctly.
 
-## State proofs
-
-A query can do better than "trust the node that answered." When a request sets `prove: true`, Platform returns a **state proof** alongside the data — a cryptographic receipt you can check yourself, so you no longer have to take the node's word for it.
-
-There are two kinds of proof, and they answer two different questions:
-
-- An **inclusion proof** proves that specific data exists and has not been modified. ("This identity really is in the state tree.")
-- A **non-inclusion proof** proves that specific data does *not* exist. That is what makes a uniqueness check — like "is this username already taken?" — safe.
-
-A proof response carries a few parts: a root tree proof and one or more store tree proofs (the Merkle paths through the state tree), plus the quorum hash and a quorum signature that tie those paths to the validator set. In the SDK these are surfaced as the fields of a `ProofInfo` object: `grovedbProof` (the tree path), `quorumHash`, `signature`, `round`, `blockIdHash`, and `quorumType`. None of it is a human-readable guarantee — it is a set of bytes your client can check against a known anchor.
-
-## Why you can trust it
-
-The anchor is the key to the whole idea. A proof only means something if you can check it against a value you already know.
-
-That value is the **AppHash** in the block header — the same committed state root from two sections ago. A state proof is verified against that AppHash, and the AppHash itself is signed by the validator quorum — a <Term id="llmq">Long-Living Masternode Quorum</Term> of masternodes whose threshold signature no single member can forge. So a **light client** can confirm the returned data without downloading or re-running the chain:
-
-1. Reconstruct the tree path from the proof and check it against the AppHash.
-2. Check the AppHash against the quorum's signature.
-
-If both match, you know the data is real Platform state — even though you never trusted the node that handed it to you.
-
-## The one thing you still trust
-
-For step 2 you need the quorum's public keys. A full node reads them from the Core chain for free; a lightweight SDK running in a browser cannot.
-
-**Trusted mode** solves this with a single, explicit trade-off. When you create the SDK with a `*Trusted` factory (like `EvoSDK.testnetTrusted()` above), `connect()` does one extra step first: it fetches the *current quorum public keys* from a well-known HTTPS endpoint and caches them. From then on, every response is verified against those keys.
-
-Read the trade-off carefully:
-
-- You *do not* trust any individual DAPI node for the data itself — every returned byte is checked.
-- You *do* trust one HTTPS endpoint to have handed you the correct quorum keys.
-
-<Callout type="info" title="Trust one key source, verify everything else">
-Trusted mode shrinks your trust surface from "every node you ever query" down to "one key-distribution endpoint." Trusted mode does not mean "no trust at all" — it means trust is concentrated in exactly one place, and everything downstream of it is checked.
-</Callout>
-
-## Verification boundaries
-
-Everything so far adds up to a simple rule — the verification boundary between *verified* and *taken on trust*:
-
-| What happened | Verified or trusted? |
+| Claim or dependency | Checked or trusted? |
 | --- | --- |
-| Core JSON-RPC lookup (`getBestBlockHash`, `getBlockHash`) | Trusted — returns no proof |
-| Platform read with `prove: true` and quorum keys available | Verified — checked against the quorum-signed AppHash |
-| Platform read without a proof, or via an `Unproved` variant | Trusted — you accept the responding node's answer |
+| A proof-bearing profile matches committed Platform state | Checked locally |
+| An unproved profile is correct | Trusted from the responding node |
+| The lightweight client received the correct public keys for the network group | Trusted from the hosted key source |
+| The SDK and verifier implement the check correctly | Trusted software |
+| The person wrote a true claim in their profile | Not established by the state proof |
 
-Two sides of that boundary are worth keeping in mind:
+That last row matters. A valid proof can establish that Platform committed a profile saying "I am a licensed pilot." It can't inspect a licence or decide whether the person told the truth. The proof authenticates what the shared state says, not every real-world claim recorded inside it.
 
-- The layer-1 JSON-RPC endpoints expose only two Core lookups — `getBestBlockHash` and `getBlockHash` — and they return *no* cryptographic proof, so their answers are simply taken from the responding node.
-- A Platform read is proof-verifiable *only when* a proof is requested **and** the quorum keys are available to check it against. Without trusted mode, the SDK still works but cannot verify — you are trusting the node.
+Running a full node changes the boundary because the node can derive those public keys from the Core chain rather than accepting the hosted key source. Lightweight DAPI access therefore doesn't have the same trust model as running a full node. It gives an app locally checkable Platform answers without requiring the app to maintain and validate the full chain, but the remaining anchor and client software still count.
 
-So the answer to "when can I trust a DAPI answer?" is: a Core lookup and an unproved read are trust-based, while a Platform read with a requested, verified proof is something you checked for yourself.
-
-Pass the quiz to complete the lesson.
+For any DAPI result your app might act on, ask two separate questions. Did the response carry a proof that the client actually verified? And where did the client obtain the keys used as its anchor? "The SDK returned it" answers neither one by itself.
 
 <LessonQuiz
   challengeId="dapi-and-proofs"
   passingScore={4}
   questions={[
     {
-      id: "why-decentralized",
-      prompt: "What makes DAPI decentralized, compared to a normal hosted API?",
+      id: "who-answered",
+      prompt: "A hypothetical Platform profile request succeeds without the app choosing a server. What physically answered it?",
       options: [
-        { id: "a", label: "It is served by many masternode instances, so there is no single point of failure." },
-        { id: "b", label: "It runs only on servers operated by a single company." },
-        { id: "c", label: "It encodes every response as JSON." },
-        { id: "d", label: "It requires a username and password to connect." },
+        { id: "a", label: "One DAPI instance on an evonode selected from network candidates." },
+        { id: "b", label: "The app company's single authoritative database server." },
+        { id: "c", label: "Every Dash node sending one combined response." },
+        { id: "d", label: "The user's browser reconstructing Platform state by itself." },
       ],
       correctOptionId: "a",
-      explanation: "DAPI runs on Dash's masternode infrastructure, and clients can connect to different instances. No single instance is essential, so there is no single point of failure.",
+      explanation: "One evonode serves each reply, but DAPI is available through many network nodes rather than one application company's backend.",
     },
     {
-      id: "core-vs-platform",
-      prompt: "Which statement correctly describes DAPI's two endpoint styles?",
+      id: "failed-node",
+      prompt: "On Dash's live or practice network, how does the SDK choose a DAPI node and recover if that node times out?",
       options: [
-        { id: "a", label: "JSON-RPC serves most Platform data; gRPC serves Core transactions." },
-        { id: "b", label: "gRPC serves layer 2 (Platform) and streams events; JSON-RPC exposes a little layer-1 (Core) information." },
-        { id: "c", label: "Both endpoint styles return the same Platform documents." },
-        { id: "d", label: "JSON-RPC returns proofs and gRPC does not." },
+        { id: "a", label: "TLS repairs the failed node before the request expires." },
+        { id: "b", label: "It discovers candidates through seed nodes, rotates among them, then retries elsewhere and temporarily avoids the failed address." },
+        { id: "c", label: "A state proof forces the failed node to respond." },
+        { id: "d", label: "Seed nodes answer every Platform query themselves." },
       ],
       correctOptionId: "b",
-      explanation: "JSON-RPC exposes a few Core lookups; gRPC is the workhorse for Platform data and event streaming. Proofs are a feature of Platform gRPC responses, not JSON-RPC.",
+      explanation: "On both networks, seed-assisted discovery gives the SDK multiple candidates to rotate among. Retry and temporary avoidance reduce dependence on whichever node it selected first.",
     },
     {
-      id: "endpoint-selection",
-      prompt: "How does the SDK choose which DAPI node to talk to on a built-in network?",
+      id: "proved-versus-ordinary",
+      prompt: "Two nodes return the same profile. One response carries a state proof that verifies; the other carries only the profile data. What extra conclusion does the first support?",
       options: [
-        { id: "a", label: "It asks the user to type an IP address on every request." },
-        { id: "b", label: "It broadcasts every request to every node at once." },
-        { id: "c", label: "It discovers endpoints from seed nodes and rotates between them, temporarily banning failed nodes." },
-        { id: "d", label: "It uses one hardcoded IP for the lifetime of the app." },
+        { id: "a", label: "The profile's owner told the truth about every real-world claim." },
+        { id: "b", label: "The node will remain available for later requests." },
+        { id: "c", label: "The profile matches state finalized and committed by the network." },
+        { id: "d", label: "The connection used stronger transport encryption." },
       ],
       correctOptionId: "c",
-      explanation: "The SDK discovers DAPI endpoints from seed nodes and rotates between them, banning failed nodes so it retries against healthy ones. Pinning explicit addresses with EvoSDK.withAddresses turns discovery off.",
+      explanation: "A verified state proof ties the result to committed Platform state. An ordinary response leaves the node as the authority for its payload.",
     },
     {
-      id: "state-proof-anchor",
-      prompt: "What is a Platform state proof checked against?",
+      id: "remaining-trust",
+      prompt: "A lightweight client successfully verifies a proof-bearing response. What does it still take on trust in the SDK's trusted setup?",
       options: [
-        { id: "a", label: "The reputation of the node that answered." },
-        { id: "b", label: "The TLS certificate on the connection." },
-        { id: "c", label: "The AppHash in the block header, which is signed by the validator quorum." },
-        { id: "d", label: "The JSON-RPC method name in the request." },
+        { id: "a", label: "That the responding DAPI node copied the profile honestly." },
+        { id: "b", label: "That every DAPI and SDK response always includes a proof." },
+        { id: "c", label: "That the hosted key source supplied the correct public keys for the network group and the local verifier checks them correctly." },
+        { id: "d", label: "That retrying a failed node proves the next node's payload." },
       ],
       correctOptionId: "c",
-      explanation: "A state proof is a set of Merkle paths that are checked against the committed AppHash, and the AppHash is authenticated by the quorum's threshold signature.",
+      explanation: "Proofs remove the responding node as the authority for verified data, but a lightweight client still relies on its key source and verification software.",
     },
     {
-      id: "trusted-mode-boundary",
-      prompt: "In trusted mode, what is the one thing a client still takes on trust?",
+      id: "proof-limit",
+      prompt: "A verified profile says its owner holds a professional licence. What has the state proof established?",
       options: [
-        { id: "a", label: "The data each DAPI node returns." },
-        { id: "b", label: "The quorum public keys fetched once from a well-known HTTPS endpoint." },
-        { id: "c", label: "The proof attached to a response." },
-        { id: "d", label: "The block timestamp." },
+        { id: "a", label: "The licensing body independently confirmed the claim." },
+        { id: "b", label: "Committed Platform state contains that profile and claim, not that the claim is true outside Platform." },
+        { id: "c", label: "The responding node personally checked the licence." },
+        { id: "d", label: "No software or key source remains trusted." },
       ],
       correctOptionId: "b",
-      explanation: "Trusted mode verifies every response against quorum keys it prefetches once. It does not trust individual DAPI nodes for data, but it does trust that one key-distribution endpoint.",
+      explanation: "A state proof authenticates committed network state. It doesn't turn an assertion stored in that state into a verified real-world fact.",
     },
   ]}
 />
