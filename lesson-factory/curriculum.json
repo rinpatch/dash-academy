@@ -83,19 +83,20 @@
       "exp": 100,
       "prerequisites": ["what-is-dash-platform"],
       "verification": { "kind": "quiz", "challengeId": "why-build-on-dash" },
-      "mustCover": ["the learner can decide, for an app they have in mind, whether Dash fits, and say what would make it a bad choice", "the learner can name what Dash lets them build past payments: tokens, usernames, records that change hands", "the learner can say when they are spending Dash and when they are spending Credits", "the learner can say what a public ledger means for the people using their app", "the learner can say who decides what the network builds next, and where the money for it comes from"],
+      "mustCover": ["the learner can decide, for an app they have in mind, whether Dash fits, and say what would make it a bad choice", "the learner can name what Dash lets them build past payments: tokens, usernames, records that change hands", "the learner can recognize indexed, queryable Platform state and verifiable query results as application capabilities without learning query syntax", "the learner can say when they are spending Dash and when they are spending Credits", "the learner can say what a public ledger means for the people using their app", "the learner can say that Dash introduced its DAO in 2015 and is the oldest DAO still operating, explain at a high level how masternode voting and treasury funding connect, and know where to view current proposals"],
       "mustNotCover": [
         "re-teaching the module 3 feature overview or turning the lesson into a feature inventory",
         "InstantSend, ChainLock, token, NFT, identity, DPNS, document, contract, or shielded-pool mechanics",
         "exact confirmation times, fee conversion arithmetic, collateral amounts, voting thresholds, or proposal mechanics",
         "claims about current shielded-pool deployment or wallet availability",
-        "roadmap promises, future virtual machines, or other speculative capabilities",
-        "claims that Dash was the first or is the longest-running DAO"
+        "roadmap promises, future virtual machines, or other speculative capabilities"
       ],
       "teachingApproach": [
         "Frame the lesson around a developer deciding whether Dash belongs in an application architecture, not around selling Dash or listing its features. Use one small hypothetical app whose requirements create both good-fit and bad-fit decisions.",
-        "Treat module 3's feature overview as known. Refer back to its capabilities only as choices in the app decision, then spend the explanation on tradeoffs: public shared state, Dash versus Credits, and which party controls network funding and direction.",
-        "Make the public-ledger consequence concrete for an app's users: records written to shared state are queryable, so secrets need encryption or off-network storage. Explain governance only far enough to answer who votes and where treasury funding comes from.",
+        "Treat module 3's feature overview as known. Refer back to its capabilities only as choices in the app decision, then spend the explanation on tradeoffs: public shared state, Dash versus Credits, and how the network funds and chooses work.",
+        "Give queryability one short, concrete treatment: applications can ask indexed questions about shared Platform data and verify results against committed state. Leave query syntax, index design, pagination, and proof mechanics to later lessons.",
+        "Make the public-ledger consequence concrete for an app's users: records written to shared state are queryable, so secrets need encryption or off-network storage.",
+        "State Dash's history directly: its DAO began in 2015 and is the oldest DAO still operating. Explain only the useful governance loop—proposals request treasury funding, masternodes vote, and approved work is funded—and link both the official governance guide and a live current-proposals page so the learner can explore real proposals.",
         "End with a decision the learner can transfer to their own app. Quiz questions should ask whether a requirement fits Dash and why; avoid acronym, product-history, and numeric recall. Do not add an objectives, recap, checkpoint, or diagram section."
       ]
     },
