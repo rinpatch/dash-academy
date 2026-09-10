@@ -48,6 +48,9 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   for (const key of ["title", "description", "module", "tier", "exp"]) {
     if (String(frontmatter[key]) !== String(lesson[key])) errors.push(`Frontmatter ${key} does not match manifest`);
   }
+  if (String(frontmatter.verification) !== String(lesson.verification.kind)) {
+    errors.push("Frontmatter verification does not match manifest");
+  }
   // A concepts lesson's reading estimate is derived from the file it ships (lib/reading-time.ts).
   // SDK lessons keep a hand-set one: typing and testnet round-trips dominate that time.
   if (lesson.tier === "concepts") {
@@ -62,7 +65,7 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   // while shipping no working checkpoint at all. Require the id to be wired into a component that
   // is actually registered in mdx-components.tsx.
   const quizId = lesson.verification.quizChallengeId ?? (lesson.verification.kind === "quiz" ? lesson.verification.challengeId : null);
-  const verifierId = lesson.verification.kind === "quiz" ? null : lesson.verification.challengeId;
+  const verifierId = ["testnet", "hybrid"].includes(lesson.verification.kind) ? lesson.verification.challengeId : null;
   if (quizId && !usesComponent(mdx, ["LessonQuiz"], quizId)) errors.push(`Missing <LessonQuiz challengeId="${quizId}">`);
   if (verifierId && !usesComponent(mdx, VERIFICATION_COMPONENTS, verifierId)) {
     errors.push(`Missing a verification component for ${verifierId} (one of ${VERIFICATION_COMPONENTS.join(", ")})`);
@@ -83,8 +86,10 @@ export async function validateLesson(lesson, cwd, { complete = false } = {}) {
   if (complete && lesson.tier === "sdk") {
     try { await access(path.join(lessonFiles, "fixture.mjs")); }
     catch { errors.push(`Missing executable fixture lesson-factory/lessons/${lesson.slug}/fixture.mjs`); }
-    try { await access(path.join(lessonFiles, "verify.mjs")); }
-    catch { errors.push(`Missing independent verifier lesson-factory/lessons/${lesson.slug}/verify.mjs`); }
+    if (["testnet", "hybrid"].includes(lesson.verification.kind)) {
+      try { await access(path.join(lessonFiles, "verify.mjs")); }
+      catch { errors.push(`Missing independent verifier lesson-factory/lessons/${lesson.slug}/verify.mjs`); }
+    }
   }
   return errors;
 }

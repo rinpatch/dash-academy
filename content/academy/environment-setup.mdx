@@ -5,25 +5,76 @@ module: 5
 tier: sdk
 estimatedMinutes: 18
 exp: 150
-verification: testnet
+verification: none
 prerequisites: [4]
 status: draft
 ---
 
-<Callout type="info" title="Coming soon">
-This hands-on lesson has not been written yet. It appears here so you can see where it sits in the course and what it will ask of you.
-</Callout>
+The ticket marketplace has an architecture now, but it still hasn't spoken to Dash Platform. Before you build identities or publish data, make the smallest useful request: ask testnet which chain answered and how far its Platform chain has progressed.
 
-## What this lesson will cover
+This is a read-only setup. You don't need a wallet, a mnemonic, or testnet funds.
 
-- install Evo SDK
-- connect to testnet
-- read from live DAPI
+## Start a Node project
 
-Working through it will take about 18 minutes and is worth 150 EXP.
+Create a directory for the marketplace and initialize it:
 
-## What you will need first
+```bash
+mkdir dash-ticket-marketplace
+cd dash-ticket-marketplace
+npm init -y
+```
 
-Finish [Why build on Dash?](/learn/why-build-on-dash) first.
+Install the pinned JavaScript SDK used by the examples that follow:
 
-There is nothing to complete here yet — the checkpoint arrives with the lesson.
+```bash
+npm install @dashevo/evo-sdk@4.1.1
+```
+
+Pinning `4.1.1` matters because SDK method names and return types can change between releases. The generated `package-lock.json` records the exact package version, so another installation can reproduce the same setup.
+
+The example file will use the `.mjs` extension. Node treats that extension as an ECMAScript module, which lets the script use `import` without changing `package.json`.
+
+## Make one live read
+
+Create `connect.mjs` beside `package.json`:
+
+```js title="connect.mjs"
+import { EvoSDK } from '@dashevo/evo-sdk';
+
+try {
+  const sdk = EvoSDK.testnetTrusted();
+  await sdk.connect();
+
+  const status = await sdk.system.status();
+  const snapshot = status.toJSON();
+
+  console.log('Connected to:', snapshot.network.chainId);
+  console.log('Latest Platform block:', snapshot.chain.latestBlockHeight);
+} catch (error) {
+  console.error('Could not read Dash Platform testnet:', error.message);
+  process.exitCode = 1;
+}
+```
+
+`EvoSDK.testnetTrusted()` creates a client configured for Dash Platform's public test network. Calling `connect()` establishes the connection, but that alone doesn't prove a useful request succeeded. `sdk.system.status()` asks <Term id="dapi">DAPI</Term> for current node and chain status; reaching the two `console.log` lines proves the SDK received and decoded a live response.
+
+The script prints two moving values rather than comparing them with numbers copied into the code. A testnet chain ID identifies the network that answered, while the latest Platform block height changes as new blocks arrive.
+
+## Run it
+
+```bash
+node connect.mjs
+```
+
+A successful run looks like this, with a different height:
+
+```text
+Connected to: dash-testnet-...
+Latest Platform block: ...
+```
+
+Don't copy the abbreviated output into a test. Check the real run instead: the first value should identify Dash testnet, and the height should be present. If the script prints `Could not read Dash Platform testnet`, setup isn't complete yet.
+
+Installation errors happen before the network request. If Node reports that it can't find `@dashevo/evo-sdk`, confirm that the command is running inside the directory whose `package.json` and `node_modules` contain the dependency. A connection error comes later; rerun it after checking that your machine can reach the internet.
+
+Once both lines print, keep `connect.mjs`. The next concept lesson explains what answered this request and what a proof changes; there is no wallet or secret to save from this read.

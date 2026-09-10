@@ -102,7 +102,7 @@ async function runCommand(resume) {
     }
     return state.lessons[lesson.module].status;
   });
-  for (const lesson of args.live ? selected.filter((candidate) => candidate.tier === "sdk") : []) {
+  for (const lesson of args.live ? selected.filter((candidate) => candidate.tier === "sdk" && candidate.verification.kind !== "none") : []) {
     const item = state.lessons[lesson.module];
     if (item.status !== "local-passed") continue;
     const lessonDir = path.join(runDir, "lessons", lessonKey(lesson));

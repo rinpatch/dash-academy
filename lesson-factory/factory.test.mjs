@@ -172,7 +172,7 @@ test("lesson validation requires the quiz and rejects a hand-written concepts es
     tier: "concepts", exp: 100,
     verification: { kind: "quiz", challengeId: "sample" },
   };
-  const frontmatter = `---\ntitle: Sample\ndescription: Example\nmodule: 1\ntier: concepts\nexp: 100\n---\n`;
+  const frontmatter = `---\ntitle: Sample\ndescription: Example\nmodule: 1\ntier: concepts\nexp: 100\nverification: quiz\n---\n`;
   const prose = "A payment arrives before a miner includes it in a block. ".repeat(8);
   const quiz = '<LessonQuiz challengeId="sample" />';
   const mdxPath = path.join(cwd, "content/academy/sample.mdx");

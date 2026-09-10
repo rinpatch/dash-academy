@@ -86,8 +86,8 @@ Do not alter curriculum numbering or scope. Do not access secrets or run live te
 
 ## Hands-on verification
 
-A tier 2 lesson must contain a registered verification component wired to the
-manifest's `challengeId`; validation rejects the id appearing only in prose. Use
+A tier 2 lesson whose manifest verification kind is `testnet` or `hybrid` must contain a registered verification component wired to the
+manifest's `challengeId`; validation rejects the id appearing only in prose. A `none` lesson has no completion component. Use
 `<TestnetVerifier challengeId="..." operation="..." />`, copying both values from the manifest row.
 `<TestnetVerifier>` is the only verification component available.
 

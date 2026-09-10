@@ -196,7 +196,8 @@ Verification is implemented per operation on the server. Today that's `identity-
 `dpns-register`; anything else answers "not verifiable yet" rather than passing the reader. If your
 lesson needs an operation that isn't implemented, a developer has to add the check first.
 
-`TestnetVerifier` is the only verification component; there is no other one to reach for.
+`TestnetVerifier` is the only verification component; there is no other one to reach for. A manifest
+row with `verification.kind: "none"` intentionally has no completion component.
 
 ## Which lessons appear, and in what order
 
