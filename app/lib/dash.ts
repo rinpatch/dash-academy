@@ -54,3 +54,18 @@ export async function normalizeIdentityId(value: string): Promise<string | null>
     return null;
   }
 }
+
+export async function normalizeTestnetPlatformAddress(value: string): Promise<string | null> {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("tdash1") || trimmed.length > 128) return null;
+
+  try {
+    const sdk = await loadSdk();
+    const address = sdk.PlatformAddress.fromBech32m(trimmed);
+    const normalized = address.toBech32m("testnet");
+    address.free();
+    return normalized === trimmed.toLowerCase() ? normalized : null;
+  } catch {
+    return null;
+  }
+}

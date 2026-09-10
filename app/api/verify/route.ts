@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getClient, normalizeIdentityId } from "@/app/lib/dash";
+import { getClient, normalizeIdentityId, normalizeTestnetPlatformAddress } from "@/app/lib/dash";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -62,11 +62,29 @@ export async function POST(request: Request) {
  * lesson can never award progress for work nobody verified.
  */
 async function verifyOperation(operation: string, reference: string) {
-  const identityId = await normalizeIdentityId(reference);
-
   try {
     switch (operation) {
+      case "platform-address-funded": {
+        const address = await normalizeTestnetPlatformAddress(reference);
+        if (!address) return failure("invalid", "Paste a complete Dash Platform testnet address beginning with tdash1.", 400);
+        const info = await (await getClient()).getAddressInfo(address);
+        if (!info || info.balance === BigInt(0)) {
+          info?.free();
+          return failure("not_found", "That Platform address has no testnet credits yet. Fund it, wait for confirmation, and try again.", 404);
+        }
+        const balance = info.balance;
+        info.free();
+        return NextResponse.json({
+          status: "verified" as const,
+          reference: address,
+          facts: [
+            { label: "Platform address", value: address },
+            { label: "Credit balance", value: `${balance} credits` },
+          ],
+        });
+      }
       case "identity-create": {
+        const identityId = await normalizeIdentityId(reference);
         if (!identityId) return failure("invalid", "That is not a valid Dash Platform identity ID. Copy the complete Base58 value and try again.", 400);
         const identity = await (await getClient()).getIdentity(identityId);
         if (!identity) return failure("not_found", "Dash Platform testnet could not find that identity yet. Check the ID, wait a moment, and try again.", 404);
@@ -79,6 +97,7 @@ async function verifyOperation(operation: string, reference: string) {
         return NextResponse.json({ status: "verified" as const, reference: identityId, facts });
       }
       case "dpns-register": {
+        const identityId = await normalizeIdentityId(reference);
         if (!identityId) return failure("invalid", "Paste the identity ID that owns the name, not the name itself.", 400);
         const username = await (await getClient()).getDpnsUsername(identityId);
         if (!username) return failure("not_found", "No DPNS name is registered to that identity yet. Registration can take a moment to confirm.", 404);

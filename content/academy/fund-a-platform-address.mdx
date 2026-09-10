@@ -10,21 +10,131 @@ prerequisites: [8]
 status: draft
 ---
 
-<Callout type="info" title="Coming soon">
-This hands-on lesson has not been written yet. It appears here so you can see where it sits in the course and what it will ask of you.
+Your ticket marketplace is ready to make its first paid Platform action. Before it can create an identity, it needs a Platform address with testnet credits.
+
+A Platform address is not a Dash Core payment address. The SDK derives its key with a testnet <Term id="bip44">BIP-44</Term> path, hashes the compressed public key, and encodes the result as a DIP-18 <Term id="bech32m">bech32m</Term> string. On testnet, that string begins with `tdash1`.
+
+The derivation path chooses which key in your wallet controls the address. DIP-18 defines how the resulting Platform address is represented. Calling the whole process “DIP-18 derivation” mixes those two jobs together.
+
+## Create the wallet file
+
+Add `.env` to `.gitignore` before generating anything:
+
+```bash
+printf '\n.env\n' >> .gitignore
+```
+
+Create `initialize-wallet.mjs` beside `package.json`:
+
+```js title="initialize-wallet.mjs"
+import { writeFile } from 'node:fs/promises';
+import { PlatformAddressSigner, PrivateKey, wallet } from '@dashevo/evo-sdk';
+
+const network = 'testnet';
+const mnemonic = await wallet.generateMnemonic();
+const path = (await wallet.derivationPathBip44Testnet(0, 0, 0)).path;
+const key = await wallet.deriveKeyFromSeedWithPath({ mnemonic, path, network });
+const privateKey = PrivateKey.fromWIF(key.toObject().privateKeyWif);
+const signer = new PlatformAddressSigner();
+const address = signer.addKey(privateKey).toBech32m(network);
+
+await writeFile('.env', `PLATFORM_MNEMONIC=${mnemonic}\n`, {
+  encoding: 'utf8',
+  flag: 'wx',
+  mode: 0o600,
+});
+
+console.log('Platform address:', address);
+```
+
+Run it once:
+
+```bash
+node initialize-wallet.mjs
+```
+
+The script creates `.env` only if the file does not already exist. It stores the mnemonic with owner-only permissions and prints the public address, not the secret that controls it.
+
+<Callout type="warn" title="Back up the mnemonic outside the project">
+The local `.env` file is not a backup. Store the mnemonic using the secure method you chose in the previous lesson. Never commit it, paste it into Dash Academy, or send it through a browser or chat.
 </Callout>
 
-## What this lesson will cover
+## Read the address from the same wallet
 
-- DIP-18 derivation
-- bech32m Platform address
-- funding
-- identity funding path
+Create `setupDashClient.mjs`. Later lessons will add identity keys to this helper; for now it returns the connected SDK, the address, and its signer.
 
-Working through it will take about 20 minutes and is worth 175 EXP.
+```js title="setupDashClient.mjs"
+import { loadEnvFile } from 'node:process';
+import { EvoSDK, PlatformAddressSigner, PrivateKey, wallet } from '@dashevo/evo-sdk';
 
-## What you will need first
+export async function setupDashClient() {
+  loadEnvFile('.env');
 
-Finish [Wallets, keys, and testnet](/learn/wallets-keys-and-testnet) first.
+  const mnemonic = process.env.PLATFORM_MNEMONIC;
+  if (!mnemonic) throw new Error('PLATFORM_MNEMONIC is missing from .env');
 
-There is nothing to complete here yet — the checkpoint arrives with the lesson.
+  const network = 'testnet';
+  const path = (await wallet.derivationPathBip44Testnet(0, 0, 0)).path;
+  const key = await wallet.deriveKeyFromSeedWithPath({ mnemonic, path, network });
+  const privateKey = PrivateKey.fromWIF(key.toObject().privateKeyWif);
+  const signer = new PlatformAddressSigner();
+  const platformAddress = signer.addKey(privateKey);
+
+  const sdk = EvoSDK.testnetTrusted();
+  await sdk.connect();
+
+  return {
+    sdk,
+    addressKeyManager: {
+      primaryAddress: { bech32m: platformAddress.toBech32m(network) },
+      getSigner: () => signer,
+    },
+  };
+}
+```
+
+Deriving the same path from the same mnemonic returns the same key and address. That is why the mnemonic can restore the wallet, and why exposing it exposes every key derived from it.
+
+## Move test funds onto Platform
+
+Copy the complete `tdash1…` address printed by the initialization script. Open the [Dash Platform bridge](https://bridge.thepasta.org/), connect the testnet wallet you funded in the previous lesson, and send test funds to that address.
+
+The bridge handles the Core-to-Platform funding path. Test DASH begins on the Core testnet side; after the bridge transaction confirms, the corresponding credits are held by your Platform address. You do not need to construct an asset lock by hand.
+
+Fund enough for the next lesson. Its five-key identity costs about `34,500,000` credits to create, and the worked example gives the identity another `5,000,000` credits. A balance of at least `39,500,000` credits covers both.
+
+## Check the balance
+
+Create `address-balance.mjs`:
+
+```js title="address-balance.mjs"
+import { setupDashClient } from './setupDashClient.mjs';
+
+const { sdk, addressKeyManager } = await setupDashClient();
+const address = addressKeyManager.primaryAddress.bech32m;
+const info = await sdk.addresses.get(address);
+
+if (!info || info.balance === 0n) {
+  throw new Error('No Platform credits found yet; wait for funding to confirm.');
+}
+
+console.log('Platform address:', address);
+console.log('Balance:', info.balance.toString(), 'credits');
+```
+
+Run it after the bridge confirms:
+
+```bash
+node address-balance.mjs
+```
+
+`sdk.addresses.get(address)` reads the address record from Platform. An unknown or unfunded address returns no usable balance; a funded one returns its current `balance` and transaction `nonce`.
+
+Paste only the public `tdash1…` address below. Dash Academy reads it independently from testnet and checks that it holds credits.
+
+<TestnetVerifier
+  challengeId="fund-a-platform-address"
+  operation="platform-address-funded"
+  label="Funded Platform address"
+  placeholder="Paste the tdash1… address"
+/>

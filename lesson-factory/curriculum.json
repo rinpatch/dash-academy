@@ -178,8 +178,8 @@
       "estimatedMinutes": 20,
       "exp": 175,
       "prerequisites": ["wallets-keys-and-testnet"],
-      "verification": { "kind": "testnet", "challengeId": "fund-a-platform-address" },
-      "mustCover": ["DIP-18 derivation", "bech32m Platform address", "funding", "identity funding path"]
+      "verification": { "kind": "testnet", "challengeId": "fund-a-platform-address", "operation": "platform-address-funded" },
+      "mustCover": ["BIP-44 key derivation and DIP-18 address encoding", "bech32m Platform address", "funding", "identity funding path"]
     },
     {
       "module": 10,

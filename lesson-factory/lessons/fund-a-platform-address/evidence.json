@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "module": 9,
+  "slug": "fund-a-platform-address",
+  "title": "Fund a Platform address",
+  "sources": [
+    {
+      "id": "src-manifest",
+      "title": "Dash Academy curriculum manifest, module 9",
+      "kind": "repository manifest",
+      "locator": "lesson-factory/curriculum.json, module 9",
+      "version": "worktree snapshot 2026-09-10"
+    },
+    {
+      "id": "src-wallet-tutorial",
+      "title": "Create and Fund a Wallet",
+      "kind": "vendored authoritative tutorial",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/tutorials/create-and-fund-a-wallet.md",
+      "version": "Dash Platform docs 3.1.0"
+    },
+    {
+      "id": "src-address-reference",
+      "title": "Dash Platform Address System",
+      "kind": "vendored authoritative protocol reference",
+      "locator": ".agents/skills/dash-docs/docs-platform/docs/protocol-ref/address-system.md",
+      "version": "Dash Platform docs 3.1.0, protocol version 11"
+    },
+    {
+      "id": "src-sdk-types",
+      "title": "Installed SDK address and wallet types",
+      "kind": "installed package type declarations and runtime",
+      "locator": "node_modules/@dashevo/evo-sdk/dist/addresses/facade.d.ts; node_modules/@dashevo/evo-sdk/dist/wallet/functions.d.ts; node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts",
+      "version": "@dashevo/evo-sdk 4.1.1 / @dashevo/wasm-sdk 4.1.1"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-derivation-encoding",
+      "text": "The wallet key uses a BIP-44 testnet derivation path, while the Platform address is encoded as DIP-18 Bech32m with the tdash testnet HRP.",
+      "sourceIds": ["src-wallet-tutorial", "src-address-reference", "src-sdk-types"]
+    },
+    {
+      "id": "claim-funding-path",
+      "text": "The bridge moves test funding from Dash Core into credits held by a Platform address for later address-funded identity creation.",
+      "sourceIds": ["src-wallet-tutorial", "src-address-reference"]
+    },
+    {
+      "id": "claim-balance-read",
+      "text": "sdk.addresses.get returns address information, including its credit balance and nonce, or undefined when it is not found.",
+      "sourceIds": ["src-sdk-types"]
+    }
+  ],
+  "examples": [
+    {
+      "id": "ex-address-flow",
+      "purpose": "Derive, fund, and independently read a testnet Platform address without exposing its mnemonic.",
+      "apiSymbols": ["wallet.derivationPathBip44Testnet", "wallet.deriveKeyFromSeedWithPath", "PlatformAddressSigner.addKey", "PlatformAddress.toBech32m", "sdk.addresses.get"],
+      "sourceIds": ["src-wallet-tutorial", "src-sdk-types"],
+      "verification": "testnet"
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "conflict-dip18-derivation",
+      "description": "The original manifest called the process DIP-18 derivation, although the documented key path is BIP-44 and DIP-18 specifies address encoding.",
+      "sourceIds": ["src-manifest", "src-wallet-tutorial", "src-address-reference"],
+      "resolution": "The manifest and lesson now distinguish BIP-44 key derivation from DIP-18 Bech32m address encoding.",
+      "status": "resolved"
+    }
+  ],
+  "uncertainties": []
+}
