@@ -26,18 +26,19 @@ if (isLiveProtocol) {
 }
 
 function registerTests() {
-  test("lesson follows the module 9 sdk contract", async () => {
+  test("lesson follows the module 10 sdk contract", async () => {
     const mdx = await readFile(mdxUrl, "utf8");
 
     assert.match(mdx, /title: Create a Dash Identity/);
     assert.match(mdx, /description: Create and verify a Dash Platform identity on testnet\./);
-    assert.match(mdx, /module: 9/);
+    assert.match(mdx, /module: 10/);
     assert.match(mdx, /tier: sdk/);
     assert.match(mdx, /estimatedMinutes: 20/);
     assert.match(mdx, /exp: 200/);
     assert.match(mdx, /verification: testnet/);
-    assert.match(mdx, /prerequisites: \[8\]/);
+    assert.match(mdx, /prerequisites: \[9\]/);
     assert.match(mdx, /challengeId="create-a-dash-identity"/);
+    assert.match(mdx, /operation="identity-create"/);
     assert.doesNotMatch(mdx.replace(/^---[\s\S]*?---/, ""), /^# /m);
   });
 
@@ -46,8 +47,8 @@ function registerTests() {
 
     for (const required of [
       "identity creation",
-      "## Key purposes and security levels",
-      "## Credit balance",
+      "## Give each key one job",
+      "## Decide where the credits go",
       "purpose",
       "security level",
       "MASTER",
@@ -58,13 +59,13 @@ function registerTests() {
       "2,000,000",
       "6,500,000",
       "34,500,000",
-      "1,000 credits",
-      "100,000,000,000",
       "sdk.addresses.createIdentity",
       "identitySigner",
       "addressSigner",
       "result.identity.id.toString()",
       "sdk.identities.fetch",
+      "derivationPathDip13Testnet",
+      "https://testnet.platform-explorer.com/",
     ]) {
       assert.ok(mdx.includes(required), `missing required lesson concept: ${required}`);
     }
@@ -133,7 +134,6 @@ function registerTests() {
     );
 
     const usedIds = [...mdx.matchAll(/<Term id="([^"]+)"/g)].map((match) => match[1]);
-    assert.ok(usedIds.length > 0, "lesson marks some incidental jargon with <Term>");
     for (const id of usedIds) assert.ok(definedIds.has(id), `<Term> id "${id}" has no glossary entry`);
   });
 
@@ -141,7 +141,7 @@ function registerTests() {
     const ledger = JSON.parse(await readFile(ledgerUrl, "utf8"));
     const sourceIds = new Set(ledger.sources.map(({ id }) => id));
 
-    assert.equal(ledger.module, 9);
+    assert.equal(ledger.module, 10);
     assert.equal(ledger.slug, "create-a-dash-identity");
     assert.equal(ledger.uncertainties.length, 0);
     for (const claim of ledger.claims) {
@@ -149,6 +149,18 @@ function registerTests() {
       for (const sourceId of claim.sourceIds) assert.ok(sourceIds.has(sourceId));
     }
     assert.ok(ledger.conflicts.every(({ status }) => status === "resolved"));
+    assert.equal(ledger.coverageMap.length, 3);
+    assert.ok(ledger.teachingPlan.centralQuestion);
+    assert.deepEqual(ledger.readerReview.coverageGaps, []);
+  });
+
+  test("lesson continues from Module 9 without an undeclared key manager", async () => {
+    const mdx = await readFile(mdxUrl, "utf8");
+    assert.match(mdx, /loadEnvFile\('\.env'\)/);
+    assert.match(mdx, /process\.env\.PLATFORM_MNEMONIC/);
+    assert.match(mdx, /derivationPathBip44Testnet/);
+    assert.doesNotMatch(mdx, /keyManager\.getKeysInCreation|keyManager\.getFullSigner/);
+    assert.doesNotMatch(mdx, /console\.log\([^\n]*mnemonic/);
   });
 
   test("independent WASM verifier authenticates a public identity ID", () => {

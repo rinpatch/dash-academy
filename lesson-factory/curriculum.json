@@ -190,7 +190,7 @@
       "estimatedMinutes": 20,
       "exp": 200,
       "prerequisites": ["fund-a-platform-address"],
-      "verification": { "kind": "testnet", "challengeId": "create-a-dash-identity" },
+      "verification": { "kind": "testnet", "challengeId": "create-a-dash-identity", "operation": "identity-create" },
       "mustCover": ["identity creation", "key purposes and security levels", "credit balance"]
     },
     {
