@@ -1,0 +1,43 @@
+name: Testnet lessons
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dash-academy-testnet-writer
+  cancel-in-progress: false
+
+jobs:
+  module-10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: testnet-live
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prepare isolated signer
+        env:
+          TREASURY_WIF: ${{ secrets.DASH_TESTNET_CI_TREASURY_WIF }}
+        run: |
+          test -n "$TREASURY_WIF"
+          install -m 700 lesson-factory/testnet-signer.mjs "$RUNNER_TEMP/dash-testnet-signer.mjs"
+          umask 077
+          printf '%s' "$TREASURY_WIF" > "$RUNNER_TEMP/treasury.wif"
+      - name: Verify Module 10 on testnet
+        env:
+          DASH_TESTNET_LIVE: "1"
+          DASH_TESTNET_SIGNER_COMMAND: ${{ runner.temp }}/dash-testnet-signer.mjs
+          DASH_TESTNET_RESERVE_CREDITS: "100000000"
+          DASH_TESTNET_MAX_RUN_CREDITS: "165000000"
+          DASH_TESTNET_MAX_LESSON_CREDITS: "165000000"
+          DASH_TESTNET_MAX_TRANSITION_FEE_CREDITS: "15000000"
+        run: npm run lessons -- live 10

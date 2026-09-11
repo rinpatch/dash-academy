@@ -29,6 +29,7 @@ try {
   else if (action === "questions") await questionsCommand();
   else if (action === "answer") await answerCommand();
   else if (action === "test") await withWorkspaceLock(testCommand);
+  else if (action === "live") await withWorkspaceLock(liveCommand);
   else if (action === "integrate") await withWorkspaceLock(integrateCommand);
   else usage(`Unknown command ${action}`);
 } catch (error) {
@@ -265,6 +266,24 @@ async function testCommand() {
     console.log(JSON.stringify({ validation, deterministic, browser }, null, 2));
     if (validation.length || deterministic.some((entry) => !entry.passed) || browser?.passed === false) process.exitCode = 1;
   }
+}
+
+async function liveCommand() {
+  const moduleNumber = Number(args._[1] ?? args.module);
+  const manifest = await loadManifest();
+  const lesson = manifest.lessons.find((candidate) => candidate.module === moduleNumber);
+  if (!lesson || lesson.tier !== "sdk" || lesson.verification.kind === "none") {
+    throw new Error("live requires a Tier 2 module with testnet verification");
+  }
+  validateLiveConfiguration();
+  const validation = await validateLesson(lesson, repoRoot, { complete: true });
+  const deterministic = validation.length ? [] : await deterministicTests(lesson, repoRoot);
+  if (validation.length || deterministic.some((entry) => !entry.passed)) {
+    throw new Error("Local lesson checks must pass before a live write");
+  }
+  const lessonDir = path.join(runRoot, `live-${Date.now()}`, "lessons", lessonKey(lesson));
+  await liveTest({ lesson, worktree: repoRoot, lessonDir });
+  console.log(`Live test passed for module ${moduleNumber}.`);
 }
 
 async function integrateCommand() {

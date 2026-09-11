@@ -177,6 +177,7 @@ Run one reviewed lesson first, then the tier:
 ```sh
 npm run lessons -- test 10 --live --run-id <run-id>
 npm run lessons -- resume --tier 2 --live --run-id <run-id>
+npm run lessons -- live 10 # current checkout, for trusted CI
 ```
 
 All live writes share a lock in the repository’s Git common directory. Funding and observed treasury spend are checked against per-lesson, per-run, fee-headroom, and reserve limits. Lesson fixtures and verifiers run unsandboxed, with the privileges of the user running the factory.

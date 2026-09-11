@@ -3,6 +3,9 @@ import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+process.on("uncaughtException", reportError);
+process.on("unhandledRejection", reportError);
+
 const mdxUrl = new URL("../../../content/academy/create-a-dash-identity.mdx", import.meta.url);
 const ledgerUrl = new URL("./evidence.json", import.meta.url);
 const verifierUrl = new URL("./verify.mjs", import.meta.url);
@@ -59,6 +62,7 @@ function registerTests() {
       "2,000,000",
       "6,500,000",
       "34,500,000",
+      "processing fee",
       "sdk.addresses.createIdentity",
       "identitySigner",
       "addressSigner",
@@ -219,7 +223,7 @@ async function runLiveProtocol() {
 
   const network = "testnet";
   const identityBalanceCredits = 5_000_000n;
-  const creationFeeCredits = 2_000_000n + 5n * 6_500_000n;
+  const liveFundingCredits = 150_000_000n;
 
   const mnemonic = await wallet.generateMnemonic();
 
@@ -238,7 +242,7 @@ async function runLiveProtocol() {
     type: "funding-request",
     operation: "identity-create",
     address: addressBech32,
-    amountCredits: (identityBalanceCredits + creationFeeCredits).toString(),
+    amountCredits: liveFundingCredits.toString(),
   })}\n`);
 
   let raw = "";
@@ -315,4 +319,12 @@ function hexToBytes(hex) {
     out[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
   }
   return out;
+}
+
+function reportError(error) {
+  const details = error && typeof error === "object" && "message" in error
+    ? [error.name, error.kind, error.message, error.code].filter((value) => value !== undefined).join(": ")
+    : String(error);
+  process.stderr.write(`${details}\n`);
+  process.exit(1);
 }

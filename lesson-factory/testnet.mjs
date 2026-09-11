@@ -51,7 +51,13 @@ export async function liveTest({ lesson, worktree, lessonDir }) {
     learner.stdin.on("error", () => {});
     learner.stdin.write(`${JSON.stringify({ type: "funding-result", ...funding })}\n`);
     learner.stdin.end();
-    const outcome = parseProtocol(await nextLine(lines, 180_000, "learner result"));
+    let outcome;
+    try {
+      outcome = parseProtocol(await nextLine(lines, 180_000, "learner result"));
+    } catch (error) {
+      if (learner.exitCode === null) await new Promise((resolve) => learner.once("close", resolve));
+      throw new Error(`Learner operation failed: ${redact(learnerStderr) || error.message}`);
+    }
     const exitCode = await new Promise((resolve) => learner.once("close", (code) => resolve(code ?? 1)));
     if (exitCode !== 0 || outcome.type !== "result" || outcome.status !== "passed") throw new Error(`Learner operation failed: ${redact(learnerStderr)}`);
     const verifierProcess = learnerNodeArgs([verifier, "--live"]);

@@ -138,7 +138,7 @@ The address pays two separate amounts. Platform charges an identity creation fee
 2,000,000 + (5 × 6,500,000) = 34,500,000 credits
 ```
 
-The `amount: 5000000n` input isn't that fee. It transfers another `5,000,000` credits into the new identity's balance, where later name, contract, and document operations can spend them. The source address therefore needs at least `39,500,000` credits before this script runs.
+The `amount: 5000000n` input assigns `5,000,000` credits to the new identity. The source address must hold that amount in addition to the creation cost and the transition's processing fee. Processing depends on current Platform fee parameters, so `34,500,000 + 5,000,000` is a floor, not a safe funding target. Keep extra testnet credits on the address; Platform charges the actual processing fee when it accepts the transition. Later name, contract, and document operations can spend the identity's starting balance.
 
 If creation succeeds, the address balance falls by the fee and transferred amount. The identity begins with the transferred `5,000,000` credits; owning test DASH elsewhere doesn't increase that balance.
 
