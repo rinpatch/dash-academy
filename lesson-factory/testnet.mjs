@@ -58,7 +58,7 @@ export async function liveTest({ lesson, worktree, lessonDir }) {
       if (learner.exitCode === null) await new Promise((resolve) => learner.once("close", resolve));
       throw new Error(`Learner operation failed: ${redact(learnerStderr) || error.message}`);
     }
-    const exitCode = await new Promise((resolve) => learner.once("close", (code) => resolve(code ?? 1)));
+    const exitCode = learner.exitCode ?? await new Promise((resolve) => learner.once("close", (code) => resolve(code ?? 1)));
     if (exitCode !== 0 || outcome.type !== "result" || outcome.status !== "passed") throw new Error(`Learner operation failed: ${redact(learnerStderr)}`);
     const verifierProcess = learnerNodeArgs([verifier, "--live"]);
     const verification = await command(verifierProcess.program, verifierProcess.args, { cwd: worktree, env: secretlessEnv(), input: `${JSON.stringify(outcome.publicResult)}\n` });
