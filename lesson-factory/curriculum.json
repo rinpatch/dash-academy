@@ -105,7 +105,7 @@
       "estimatedMinutes": 18,
       "exp": 150,
       "prerequisites": ["why-build-on-dash"],
-      "verification": { "kind": "none" },
+      "verification": { "kind": "testnet", "challengeId": "environment-setup", "operation": "platform-height-observed" },
       "mustCover": ["install Evo SDK", "connect to testnet", "read from live DAPI"],
       "mustNotCover": ["how DAPI selects an endpoint", "how state proofs are verified"]
     },

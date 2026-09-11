@@ -7,13 +7,15 @@
     {"id":"src-manifest","title":"Dash Academy curriculum manifest, module 5","kind":"repository manifest","locator":"lesson-factory/curriculum.json, module 5","version":"worktree snapshot 2026-09-10"},
     {"id":"src-connect-tutorial","title":"Connect to a network","kind":"vendored authoritative tutorial","locator":".agents/skills/dash-docs/docs-platform/docs/tutorials/connecting-to-testnet.md — Connect via Dash SDK","version":"Dash Platform docs 3.1.0"},
     {"id":"src-setup-tutorial","title":"Setup SDK Client","kind":"vendored authoritative tutorial","locator":".agents/skills/dash-docs/docs-platform/docs/tutorials/setup-sdk-client.md — SDK client helpers","version":"Dash Platform docs 3.1.0"},
-    {"id":"src-sdk-types","title":"@dashevo/evo-sdk installed package types","kind":"installed package type declarations and runtime","locator":"node_modules/@dashevo/evo-sdk/dist/sdk.d.ts; node_modules/@dashevo/evo-sdk/dist/system/facade.d.ts; node_modules/@dashevo/wasm-sdk/dist/raw/wasm_sdk.d.ts StatusResponse","version":"@dashevo/evo-sdk 4.1.1 / @dashevo/wasm-sdk 4.1.1"}
+    {"id":"src-sdk-types","title":"@dashevo/evo-sdk installed package types","kind":"installed package type declarations and runtime","locator":"node_modules/@dashevo/evo-sdk/dist/sdk.d.ts; node_modules/@dashevo/evo-sdk/dist/system/facade.d.ts; node_modules/@dashevo/wasm-sdk/dist/raw/wasm_sdk.d.ts StatusResponse","version":"@dashevo/evo-sdk 4.1.1 / @dashevo/wasm-sdk 4.1.1"},
+    {"id":"src-platform-explorer","title":"Dash Platform Explorer","kind":"public network explorer","locator":"https://testnet.platform-explorer.com/ — testnet dashboard and block height","version":"observed 2026-09-11"}
   ],
   "claims": [
     {"id":"claim-install","text":"The JavaScript SDK is installed from @dashevo/evo-sdk; this course pins version 4.1.1.","sourceIds":["src-manifest","src-connect-tutorial","src-sdk-types"],"support":"direct"},
     {"id":"claim-connect","text":"EvoSDK.testnetTrusted() creates a client configured for testnet, and await sdk.connect() establishes its connection.","sourceIds":["src-connect-tutorial","src-setup-tutorial","src-sdk-types"],"support":"direct"},
     {"id":"claim-status","text":"sdk.system.status() returns a StatusResponse whose JSON form includes network.chainId and chain.latestBlockHeight.","sourceIds":["src-connect-tutorial","src-sdk-types"],"support":"direct"},
-    {"id":"claim-no-secret","text":"Connecting and reading system status needs no identity, wallet, mnemonic, or funded balance.","sourceIds":["src-connect-tutorial","src-sdk-types"],"support":"direct"}
+    {"id":"claim-no-secret","text":"Connecting and reading system status needs no identity, wallet, mnemonic, or funded balance.","sourceIds":["src-connect-tutorial","src-sdk-types"],"support":"direct"},
+    {"id":"claim-explorer","text":"The testnet Platform Explorer publishes the network and current Platform block height as a second public view of testnet state.","sourceIds":["src-platform-explorer"],"support":"direct"}
   ],
   "conflicts": [],
   "uncertainties": [],
@@ -24,20 +26,20 @@
     "priorKnowledge": ["content/academy/why-build-on-dash.mdx — the learner has chosen which ticket-marketplace state belongs on Platform", "content/academy/what-is-dash-platform.mdx — the learner recognizes Platform and DAPI but has not used the SDK"],
     "centralQuestion": "What is the smallest program that proves a local Node project can talk to Dash Platform testnet?",
     "likelyMistake": "Treating successful SDK construction as proof that a live DAPI request worked, or adding wallet secrets to a read-only setup.",
-    "workedExample": "The developer connects the ticket-marketplace project to testnet and prints the live chain ID and Platform block height.",
-    "reasoningChain": ["The marketplace architecture needs a working connection before it can create anything.", "A pinned SDK installation makes the following code reproducible.", "Constructing and connecting a client opens the path to testnet, but a status request proves data came back.", "The returned chain ID distinguishes testnet, and the changing height shows live state rather than copied output.", "Because the operation only reads public status, wallet setup and funding can wait for later lessons."],
+    "workedExample": "The developer connects the ticket-marketplace project to testnet, prints the live chain ID and Platform block height, then compares the height with the testnet Platform Explorer.",
+    "reasoningChain": ["The marketplace architecture needs a working connection before it can create anything.", "A pinned SDK installation makes the following code reproducible.", "Constructing and connecting a client opens the path to testnet, but a status request proves data came back.", "The returned chain ID distinguishes testnet, and the changing height shows live state rather than copied output.", "The explorer provides another public view of the same moving height, so the learner can inspect the response instead of trusting a sample.", "Because the operation only reads public status, wallet setup and funding can wait for later lessons."],
     "continuityGaps": []
   },
   "coverageMap": [
     {"requirement":"install Evo SDK","explanation":"Start a Node project explains the exact 4.1.1 install and why it is pinned.","demonstration":"The shell commands initialize npm and install @dashevo/evo-sdk@4.1.1.","assessment":["fixture asserts the pinned install command and imports the installed package"]},
     {"requirement":"connect to testnet","explanation":"Make one live read explains testnetTrusted() and connect() without endpoint-selection internals.","demonstration":"connect.mjs constructs the testnet client and awaits sdk.connect().","assessment":["fixture constructs the same client and checks the connect API exists", "learner confirms the returned chain ID identifies testnet"]},
-    {"requirement":"read from live DAPI","explanation":"Make one live read distinguishes opening a connection from receiving a decoded status response.","demonstration":"connect.mjs awaits sdk.system.status() and prints network.chainId plus chain.latestBlockHeight.","assessment":["fixture checks every status-read API and output accessor", "learner runs the script and sees both live values"]}
+    {"requirement":"read from live DAPI","explanation":"Make one live read distinguishes opening a connection from receiving a decoded status response; Compare two views of testnet relates that response to the explorer.","demonstration":"connect.mjs awaits sdk.system.status() and prints network.chainId plus chain.latestBlockHeight, which the learner compares with the explorer dashboard.","assessment":["fixture checks every status-read API and output accessor", "the independent verifier compares the submitted height with a fresh testnet status response"]}
   ],
   "readerReview": {
     "reasoningChain": "A project that has only an architecture needs a reproducible SDK installation, then a configured testnet client, then a request whose returned values prove the connection did useful work. Since status is public and read-only, secrets and funding don't belong yet.",
     "transferQuestion": "A script constructs an EvoSDK testnet client but never sends a request. Has the developer proved DAPI is reachable?",
     "answer": "No. The script must await a live method such as sdk.system.status() and receive its decoded response.",
-    "supportingPassages": ["Make one live read", "Run it"],
+    "supportingPassages": ["Make one live read", "Run it", "Compare two views of testnet"],
     "coverageGaps": [],
     "continuityGaps": []
   }

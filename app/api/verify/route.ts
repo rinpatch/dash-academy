@@ -64,6 +64,27 @@ export async function POST(request: Request) {
 async function verifyOperation(operation: string, reference: string) {
   try {
     switch (operation) {
+      case "platform-height-observed": {
+        if (!/^\d+$/.test(reference)) {
+          return failure("invalid", "Paste the complete Platform block height printed by your script.", 400);
+        }
+        const observed = BigInt(reference);
+        const status = await (await getClient()).getStatus();
+        const current = BigInt(status.chain.latest_block_height);
+        status.free();
+        const oldestAccepted = current > BigInt(5000) ? current - BigInt(5000) : BigInt(0);
+        if (observed > current + BigInt(10) || observed < oldestAccepted) {
+          return failure("not_found", "That isn't a recent Dash Platform testnet height. Run connect.mjs again and paste the number it prints.", 404);
+        }
+        return NextResponse.json({
+          status: "verified" as const,
+          reference: observed.toString(),
+          facts: [
+            { label: "Your observed height", value: observed.toString() },
+            { label: "Current testnet height", value: current.toString() },
+          ],
+        });
+      }
       case "platform-address-funded": {
         const address = await normalizeTestnetPlatformAddress(reference);
         if (!address) return failure("invalid", "Paste a complete Dash Platform testnet address beginning with tdash1.", 400);

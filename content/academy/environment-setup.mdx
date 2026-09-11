@@ -5,7 +5,7 @@ module: 5
 tier: sdk
 estimatedMinutes: 18
 exp: 150
-verification: none
+verification: testnet
 prerequisites: [4]
 status: draft
 ---
@@ -75,6 +75,21 @@ Latest Platform block: ...
 
 Don't copy the abbreviated output into a test. Check the real run instead: the first value should identify Dash testnet, and the height should be present. If the script prints `Could not read Dash Platform testnet`, setup isn't complete yet.
 
+## Compare two views of testnet
+
+Open the [Dash Platform testnet explorer](https://testnet.platform-explorer.com/). Its dashboard shows the current Platform block height without using your code.
+
+Compare that height with the number printed by `connect.mjs`. They may differ slightly because you didn't load both views at the same instant. They should still be close, and both should move forward as testnet produces blocks. Make sure the explorer's network switch says `testnet`; the mainnet explorer reports a different chain.
+
 Installation errors happen before the network request. If Node reports that it can't find `@dashevo/evo-sdk`, confirm that the command is running inside the directory whose `package.json` and `node_modules` contain the dependency. A connection error comes later; rerun it after checking that your machine can reach the internet.
 
 Once both lines print, keep `connect.mjs`. The next concept lesson explains what answered this request and what a proof changes; there is no wallet or secret to save from this read.
+
+Paste the complete block height printed by your script. Dash Academy reads the current testnet height independently and accepts a recent height, rather than comparing your answer with a number frozen into the lesson.
+
+<TestnetVerifier
+  challengeId="environment-setup"
+  operation="platform-height-observed"
+  label="Platform block height"
+  placeholder="Paste the number printed by connect.mjs"
+/>
