@@ -15,6 +15,7 @@ lesson-factory/lessons/*/*.draft.json
 test-results/e2e/
 test-results/e2e-store/
 playwright-report/
+.vercel/
 
 # Ad-hoc key dumps from the platform scripts
 keys

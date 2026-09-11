@@ -1,0 +1,7 @@
+.agents/
+lesson-factory/.runs/
+node_modules/
+.next/
+.source/
+test-results/
+playwright-report/
