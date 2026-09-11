@@ -31,6 +31,13 @@
       "kind": "installed package type declarations and runtime",
       "locator": "node_modules/@dashevo/evo-sdk/dist/addresses/facade.d.ts; node_modules/@dashevo/evo-sdk/dist/wallet/functions.d.ts; node_modules/@dashevo/wasm-sdk/dist/sdk.d.ts",
       "version": "@dashevo/evo-sdk 4.1.1 / @dashevo/wasm-sdk 4.1.1"
+    },
+    {
+      "id": "src-platform-explorer",
+      "title": "Dash Platform Explorer",
+      "kind": "public network explorer",
+      "locator": "https://testnet.platform-explorer.com/ — testnet dashboard and public search",
+      "version": "observed 2026-09-11"
     }
   ],
   "claims": [
@@ -48,6 +55,11 @@
       "id": "claim-balance-read",
       "text": "sdk.addresses.get returns address information, including its credit balance and nonce, or undefined when it is not found.",
       "sourceIds": ["src-sdk-types"]
+    },
+    {
+      "id": "claim-explorer-search",
+      "text": "The testnet Platform Explorer provides public search for inspecting testnet state outside the learner's SDK process.",
+      "sourceIds": ["src-platform-explorer"]
     }
   ],
   "examples": [

@@ -18,6 +18,7 @@ function registerTests() {
       "verification: testnet", "prerequisites: [8]", 'challengeId="fund-a-platform-address"',
       'operation="platform-address-funded"', "derivationPathBip44Testnet", "toBech32m(network)",
       "tdash1", "sdk.addresses.get(address)", "39,500,000", "Core-to-Platform funding path",
+      "https://testnet.platform-explorer.com/", "paste the same `tdash1…` address into its search box",
     ]) assert.ok(mdx.includes(required), `missing lesson requirement: ${required}`);
     assert.doesNotMatch(mdx.replace(/^---[\s\S]*?---/, ""), /^# /m);
   });

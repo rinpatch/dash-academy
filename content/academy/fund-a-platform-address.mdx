@@ -130,6 +130,8 @@ node address-balance.mjs
 
 `sdk.addresses.get(address)` reads the address record from Platform. An unknown or unfunded address returns no usable balance; a funded one returns its current `balance` and transaction `nonce`.
 
+Open the [Dash Platform testnet explorer](https://testnet.platform-explorer.com/) and paste the same `tdash1…` address into its search box. The explorer and your script should show the same funded balance. If the bridge has just finished, one view may take a moment to catch up; rerun the script before changing any wallet code.
+
 Paste only the public `tdash1…` address below. Dash Academy reads it independently from testnet and checks that it holds credits.
 
 <TestnetVerifier
